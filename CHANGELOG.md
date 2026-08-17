@@ -1,41 +1,41 @@
 # 1.4.6
-* Tested up to WordPress 6.9 and WooCommerce 10.6
+* Testado até WordPress 6.9 e WooCommerce 10.6
 
 # 1.4.5
-* Tested up to WordPress 6.6
+* Testado até WordPress 6.6
 
 # 1.4.4
-* Tested up to WordPress 6.4
+* Testado até WordPress 6.4
 
 # 1.4.3
-* Fix donation notice
+* Correção no aviso de doação
 
 # 1.4.2
-* Bump Tested to up
+* Atualização da versão testada
 
 # 1.4.1
-* Fix call to undefined method
+* Correção de chamada a método indefinido
 
 # 1.4.0
-* Fix: redirect not working with custom login page
-* Tweak: Now uses a cookie to dismiss the donation notice in admin panel, instead of the database
+* Correção: redirecionamento não funcionava com página de login personalizada
+* Ajuste: agora usa um cookie para dispensar o aviso de doação no painel administrativo, em vez do banco de dados
 
 # 1.3.2
-* Fix an syntax error with older versions of PHP
+* Correção de um erro de sintaxe em versões antigas do PHP
 
 # 1.3.1 - 2020/4/19
-* Small fix.
+* Pequena correção.
 
 # 1.3.0 - 2020/4/19
-* New filter: wc_force_auth_redirect_to_account_page
-* New filter: wc_force_auth_login_page_url
-* New filter: wc_force_auth_checkout_page_url
+* Novo filtro: wc_force_auth_redirect_to_account_page
+* Novo filtro: wc_force_auth_login_page_url
+* Novo filtro: wc_force_auth_checkout_page_url
 
 # 1.2.3 - 2018/10/28
-* Minor fix
+* Correção menor
 
 # 1.2.2 - 2018/09/17
-* Minor fix
+* Correção menor
 
 # 1.2.1 - 2018/07/16
-* First public release.
+* Primeiro lançamento público.
