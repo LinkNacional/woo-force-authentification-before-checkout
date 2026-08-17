@@ -15,6 +15,8 @@ Force customer to log in or register before checkout
 
 Force customer to log in or register before checkout to increase your conversion rate.
 
+Plugin developed and maintained by [Link Nacional](https://www.linknacional.com/).
+
 = Contribuitions =
 
 - For bugs, suggestions or contribuitions open a issue in our [Github Repository](https://github.com/LinkNacional/woo-force-authentification-before-checkout/issues) or create a topic in [WordPress Plugin Forum](https://wordpress.org/support/plugin/woo-force-authentification-before-checkout).
