@@ -6,6 +6,8 @@ Version: 1.5.0
 Author: Link Nacional
 Author URI: https://linknacional.com.br/
 
+Requires at least: 6.0
+Requires PHP: 8.2
 Requires Plugins: woocommerce
 
 License: GPLv3

@@ -9,10 +9,11 @@ Atualiza **todos** os arquivos que contêm o número de versão para uma nova re
 
 ## Parâmetros (via `arguments`)
 
-O usuário pode passar os valores diretamente: `"version=1.5.0 tested_up=6.7 php=7.3 highlights=Correção de bug X"`. Se algum valor faltar, pergunte.
+O usuário pode passar os valores diretamente: `"version=1.5.0 tested_up=7.1 requires_at_least=6.0 php=8.2 highlights=Correção de bug X"`. Se algum valor faltar, pergunte.
 
 - **version** — nova versão (Stable tag)
 - **tested_up** — versão do WP testada (Tested up to)
+- **requires_at_least** — versão mínima do WordPress (Requires at least)
 - **php** — versão mínima do PHP (Requires PHP)
 - **highlights** — resumo da versão (opcional, usa git log se vazio)
 
@@ -21,7 +22,7 @@ O usuário pode passar os valores diretamente: `"version=1.5.0 tested_up=6.7 php
 ### 1. Coletar valores
 Se não recebidos via arguments, pergunte ao usuário um por um. Detecte a versão atual via grep no `.php` raiz:
 ```
-grep -E "Version:|Requires PHP:" *.php
+grep -E "Version:|Requires at least:|Requires PHP:" *.php
 ```
 
 ### 2. Capturar git log
@@ -40,6 +41,7 @@ A versão aparece em **6 locais** espalhados por **6 arquivos**. Atualize todos:
 
 #### 3a. `readme.txt`
 - `Stable tag:` → nova versão
+- `Requires at least:` → versão mínima do WP
 - `Tested up to:` e `Requires PHP:` se alterados
 - Adicionar entrada no topo da seção `== Changelog ==`, **em inglês**, preservando o formato atual do arquivo (`= VERSION - DATA =` + bullets + linha em branco antes da versão anterior). Incluir a **data de hoje** no formato `YYYY/M/D` (sem zero à esquerda):
   ```
@@ -62,6 +64,7 @@ A versão aparece em **6 locais** espalhados por **6 arquivos**. Atualize todos:
 
 #### 3c. `woo-force-authentification-before-checkout.php`
 - `* Version: NOVA_VERSION` (cabeçalho do plugin)
+- `* Requires at least:` → versão mínima do WP
 - `* Requires PHP:` se alterado
 
 #### 3d. `.github/workflows/main.yml`
@@ -88,6 +91,7 @@ Deve retornar 6+ matches (múltiplas entradas no changelog do `readme.txt` são 
 
 ## Observações específicas deste plugin
 - Plugin single-file: **não** há constante `VERSION`, nem fallback em `Includes/`, nem `tests/`, nem array `$old_versions`.
+- Cabeçalho PHP tem `Requires at least:` (WP mínimo) e `Requires PHP:` (PHP mínimo) — ambos devem ser mantidos em sincronia com o `readme.txt`.
 - `README.md` **não** tem campo de versão explícito (as badges são dinâmicas via shields.io) — não precisa editar.
 - `composer.json` **não** tem campo `version` — não precisa editar.
 - Não há `release-candidate.yml`; o fluxo de pré-release usa `dev-release.yml`.
