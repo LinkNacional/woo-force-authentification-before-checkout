@@ -3,9 +3,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: wc-force-auth\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-17 12:11-0300\n"
+"Project-Id-Version: woo-force-authentification-before-checkout\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-force-authentification-before-checkout\n"
+"POT-Creation-Date: 2026-08-17 12:25-0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -21,32 +21,19 @@ msgstr ""
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: woo-force-authentification-before-checkout.php:98
+#: woo-force-authentification-before-checkout.php:97
 msgid "Please log in or register to complete your purchase."
 msgstr ""
 
-#: woo-force-authentification-before-checkout.php:115
+#: woo-force-authentification-before-checkout.php:114
 msgid "You need install and activate the WooCommerce plugin."
 msgstr ""
 
-#: woo-force-authentification-before-checkout.php:133
+#: woo-force-authentification-before-checkout.php:132
 msgid "Force Authentification Before Checkout for WooCommerce:"
 msgstr ""
 
-#: woo-force-authentification-before-checkout.php:135
+#: woo-force-authentification-before-checkout.php:136
 #, php-format
 msgid "customer registration on the \"My account\" page is disabled. <a href=\"%s\">Enable it</a> so customers can create an account before checkout."
-msgstr ""
-
-#: woo-force-authentification-before-checkout.php:160
-#, php-format
-msgid "Thanks for using the %s plugin! Consider making a donation to help keep this plugin always up to date."
-msgstr ""
-
-#: woo-force-authentification-before-checkout.php:166
-msgid "Donate"
-msgstr ""
-
-#: woo-force-authentification-before-checkout.php:169
-msgid "Make a review"
 msgstr ""

@@ -92,7 +92,8 @@ $wpdb->prepare("SELECT * FROM $wpdb->postmeta WHERE meta_key = %s", $key);
 
 ### Internacionalização
 - Toda string visível ao usuário: `__()`, `_e()`, `_n()`
-- Text domain: `wc-force-auth`
+- Text domain: `woo-force-authentification-before-checkout` (idêntico ao slug do plugin no WordPress.org, exigência do PHPCS)
+- String com placeholder (`%s`, `%d`, etc.): o comentário `/* translators: ... */` deve ficar na linha IMEDIATAMENTE acima da chamada `__()` (dentro do `printf`/`wp_kses_post`, não acima do `printf`). PHPCS (`WordPress.WP.I18n.MissingTranslatorsComment`) valida a linha acima da própria função de tradução.
 
 ### Comportamento (regras de negócio)
 - `redirect_to_account_page()`: só redireciona se `is_checkout() && ! is_user_logged_in()`.

@@ -3,8 +3,8 @@ Contributors: linknacional
 Donate link: https://linknacional.com.br/
 Tags: woocommerce, checkout, login, register, cart
 Requires at least: 4.8
-Tested up to: 6.6
-Requires PHP: 7.3
+Tested up to: 7.1
+Requires PHP: 8.2
 Stable tag: 1.4.6
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
