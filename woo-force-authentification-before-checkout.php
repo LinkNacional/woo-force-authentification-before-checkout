@@ -54,6 +54,7 @@ class WC_Force_Auth_Before_Checkout {
 
 		add_action( 'init', [ $this, 'load_plugin_textdomain' ] );
 		add_action( 'admin_notices', [ $this, 'add_donation_notice' ] );
+		add_action( 'admin_notices', [ $this, 'add_registration_disabled_notice' ] );
 
 		add_action( 'template_redirect', [ $this, 'redirect_to_account_page' ] );
 		add_action( 'wp_head', [ $this, 'add_wc_notice' ] );
@@ -112,6 +113,28 @@ class WC_Force_Auth_Before_Checkout {
 		<div class="notice notice-error">
 			<p>
 				<?php echo esc_html__( 'You need install and activate the WooCommerce plugin.', 'wc-force-auth' ) ?>
+			</p>
+		</div>
+		<?php
+	}
+
+	protected function is_registration_enabled () {
+		return 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' );
+	}
+
+	public function add_registration_disabled_notice () {
+		if ( $this->is_registration_enabled() ) {
+			return;
+		}
+		$settings_url = admin_url( 'admin.php?page=wc-settings&tab=account' );
+		?>
+		<div class="notice notice-warning">
+			<p>
+				<strong><?php echo esc_html__( 'Force Authentification Before Checkout for WooCommerce:', 'wc-force-auth' ); ?></strong>
+				<?php printf(
+					wp_kses_post( __( 'customer registration on the "My account" page is disabled. <a href="%s">Enable it</a> so customers can create an account before checkout.', 'wc-force-auth' ) ),
+					esc_url( $settings_url )
+				); ?>
 			</p>
 		</div>
 		<?php
