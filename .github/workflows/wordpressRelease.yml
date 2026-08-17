@@ -5,8 +5,8 @@ on:
 
 env:
   PLUGIN_NAME: woo-force-authentification-before-checkout
-  PHP_VERSION: "7.3"
-  DEPLOY_TAG: "1.4.6"
+  PHP_VERSION: "8.2"
+  DEPLOY_TAG: "1.5.0"
 
 jobs:
   deploy-to-wp:
