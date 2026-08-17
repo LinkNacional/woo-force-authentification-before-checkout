@@ -5,7 +5,7 @@ Tags: woocommerce, checkout, login, register, cart
 Requires at least: 4.8
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.4.6
+Stable tag: 1.5.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -40,6 +40,13 @@ Yes. With this [code](https://gist.github.com/luizbills/25d2c83848de1fb23beceb0e
 1. Notice in "my account" page.
 
 == Changelog ==
+
+= 1.5.0 - 2026/8/17 =
+
+* Added plugin banners
+* Improved the "my account" page option notification
+* Updated documentation links to Link Nacional
+* Minor WordPress.org compliance adjustments
 
 = 1.4.6 =
 

@@ -41,9 +41,9 @@ A versão aparece em **6 locais** espalhados por **6 arquivos**. Atualize todos:
 #### 3a. `readme.txt`
 - `Stable tag:` → nova versão
 - `Tested up to:` e `Requires PHP:` se alterados
-- Adicionar entrada no topo da seção `== Changelog ==`, **em inglês**, preservando o formato atual do arquivo (`= VERSION =` + bullets + linha em branco antes da versão anterior):
+- Adicionar entrada no topo da seção `== Changelog ==`, **em inglês**, preservando o formato atual do arquivo (`= VERSION - DATA =` + bullets + linha em branco antes da versão anterior). Incluir a **data de hoje** no formato `YYYY/M/D` (sem zero à esquerda):
   ```
-  = 1.5.0 =
+  = 1.5.0 - 2026/8/17 =
 
   * Item baseado nos commits
 
@@ -91,4 +91,5 @@ Deve retornar 6+ matches (múltiplas entradas no changelog do `readme.txt` são 
 - `README.md` **não** tem campo de versão explícito (as badges são dinâmicas via shields.io) — não precisa editar.
 - `composer.json` **não** tem campo `version` — não precisa editar.
 - Não há `release-candidate.yml`; o fluxo de pré-release usa `dev-release.yml`.
-- O changelog do `readme.txt` usa formato `= VERSION =` (WordPress clássico), **diferente** do `CHANGELOG.md` que usa `# VERSION`.
+- O changelog do `readme.txt` usa formato `= VERSION - YYYY/M/D =` (WordPress clássico), **diferente** do `CHANGELOG.md` que usa `# VERSION - DD/MM/YY`.
+- **Datas**: nas entradas **novas** de ambos os changelogs, incluir a data de hoje. Entradas antigas sem data não devem ser alteradas.

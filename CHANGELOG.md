@@ -1,3 +1,9 @@
+# 1.5.0 - 17/08/26
+* Adição dos banners do plugin
+* Ajuste na notificação de opção da página "minha conta"
+* Atualização dos links da documentação para Link Nacional
+* Ajustes de conformidade para o WordPress.org
+
 # 1.4.6
 * Testado até WordPress 6.9 e WooCommerce 10.6
 
