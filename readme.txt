@@ -1,6 +1,6 @@
 === Force Authentification Before Checkout for WooCommerce ===
-Contributors: luizbills
-Donate link: https://luizpb.com/donate/
+Contributors: linknacional
+Donate link: https://linknacional.com.br/
 Tags: woocommerce, checkout, login, register, cart
 Requires at least: 4.8
 Tested up to: 6.6
@@ -17,11 +17,11 @@ Force customer to log in or register before checkout to increase your conversion
 
 = Contribuitions =
 
-- For bugs, suggestions or contribuitions open a issue in our [Github Repository](https://github.com/luizbills/woo-force-authentification-before-checkout/issues) or create a topic in [WordPress Plugin Forum](https://wordpress.org/support/plugin/woo-force-authentification-before-checkout).
+- For bugs, suggestions or contribuitions open a issue in our [Github Repository](https://github.com/LinkNacional/woo-force-authentification-before-checkout/issues) or create a topic in [WordPress Plugin Forum](https://wordpress.org/support/plugin/woo-force-authentification-before-checkout).
 
 = Donations =
 
-Support this plugin on [https://luizpb.com/donate/](https://luizpb.com/donate/)
+Support this plugin on [https://linknacional.com.br/](https://linknacional.com.br/)
 
 == Frequently Asked Questions ==
 

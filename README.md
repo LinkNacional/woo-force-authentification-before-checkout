@@ -12,11 +12,11 @@ Force customer to log in or register before checkout to increase your conversion
 
 ### Donations
 
-[![Donate](https://img.shields.io/badge/SUPPORT%20ME-DONATE-2b8a3e?style=for-the-badge)](https://luizpb.com/donate/)
+[![Donate](https://img.shields.io/badge/SUPPORT%20ME-DONATE-2b8a3e?style=for-the-badge)](https://linknacional.com.br/)
 
 ## Contribuitions
 
-- For bugs, suggestions or contribuitions open a issue in our [Github Repository](https://github.com/luizbills/woo-force-authentification-before-checkout/issues) or create a topic in [WordPress Plugin Forum](https://wordpress.org/support/plugin/woo-force-authentification-before-checkout).
+- For bugs, suggestions or contribuitions open a issue in our [Github Repository](https://github.com/LinkNacional/woo-force-authentification-before-checkout/issues) or create a topic in [WordPress Plugin Forum](https://wordpress.org/support/plugin/woo-force-authentification-before-checkout).
 
 ## Frequently Asked Questions
 
