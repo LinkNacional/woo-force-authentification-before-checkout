@@ -89,6 +89,10 @@ grep -rn "NOVA_VERSAO" --include="*.php" --include="*.md" --include="*.txt" --in
 ```
 Deve retornar 6+ matches (múltiplas entradas no changelog do `readme.txt` são normais).
 
+## Alinhamento com o corpo da release
+
+O corpo das GitHub Releases é gerado por `.github/scripts/generate-release-body.sh` a partir de `readme.txt` + `CHANGELOG.md`. Não é preciso editá-lo: ele lê `Stable tag`, `Tested up to` e a entrada correspondente do `CHANGELOG.md` automaticamente. Mantenha a entrada do `CHANGELOG.md` com o formato `# VERSION - DD/MM/AA` + bullets, pois é ela que alimenta a release.
+
 ## Observações específicas deste plugin
 - Plugin single-file: **não** há constante `VERSION`, nem fallback em `Includes/`, nem `tests/`, nem array `$old_versions`.
 - Cabeçalho PHP tem `Requires at least:` (WP mínimo) e `Requires PHP:` (PHP mínimo) — ambos devem ser mantidos em sincronia com o `readme.txt`.

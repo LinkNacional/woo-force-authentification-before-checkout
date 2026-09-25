@@ -20,6 +20,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    # Gera o body da release (metadados + resumo do changelog) — mesmo conteúdo do PR
+    - name: Generate release body
+      run: |
+        mkdir -p dist
+        bash .github/scripts/generate-release-body.sh > dist/release-body.md
+
     # Add plugin files to a root directory
     - name: Prepare plugin folder
       run: |
@@ -56,6 +62,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         artifacts: "dist/${{ env.PLUGIN_NAME }}.zip"
+        bodyFile: "dist/release-body.md"
         token: ${{ secrets.GITHUB_TOKEN }}
         commit: "main"
         draft: true
