@@ -2,7 +2,7 @@
 /*
 Plugin Name: Force Authentification Before Checkout for WooCommerce
 Description: Force customer to log in or register before checkout, with optional email OTP authentication.
-Version: 2.0.0
+Version: 1.6.0
 Author: Link Nacional
 Author URI: https://linknacional.com.br/
 

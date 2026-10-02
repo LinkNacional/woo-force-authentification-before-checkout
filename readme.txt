@@ -5,7 +5,7 @@ Tags: woocommerce, checkout, login, register, cart
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 2.0.0
+Stable tag: 1.6.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,7 +51,7 @@ Yes. With this [code](https://gist.github.com/luizbills/25d2c83848de1fb23beceb0e
 
 == Changelog ==
 
-= 2.0.0 - 2026/10/02 =
+= 1.6.0 - 2026/10/2 =
 
 * New class-based architecture (PSR-4, `Lkn\WcForceAuth`) with `Admin/`, `Public/` and `Includes/` separation
 * Dependency-free test layer (`tests/`): a custom runner that boots the real Local WordPress, with real email captured by Mailpit; covers the code formats (4/6/8, `plain`/`space`/`dash`/`pair`, single and segmented input), the REST flow (send/verify/limits) and Force Authentication

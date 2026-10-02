@@ -1,4 +1,4 @@
-# 2.0.0 - 02/10/26
+# 1.6.0 - 02/10/26
 * Nova arquitetura em classes (PSR-4, `Lkn\WcForceAuth`), com separação `Admin/`, `Public/` e `Includes/`
 * Camada de testes (`tests/`) sem dependências: runner próprio que roda contra o WordPress real do Local, com e-mail real capturado pelo Mailpit; cobre os formatos do código (4/6/8, `plain`/`space`/`dash`/`pair`, input único e segmentado), o fluxo REST (envio/verificação/limites) e o Force Authentication
 * Correção: as opções de OTP não usam mais o fallback das opções do plugin Invoice Payment (`lkn_wcip_otp_email_*`), que fazia valores como o tempo de expiração vazarem entre os plugins

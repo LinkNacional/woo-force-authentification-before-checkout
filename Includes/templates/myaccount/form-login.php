@@ -13,7 +13,7 @@
  * available, so new customers can still sign up the classic way.
  *
  * @package Lkn\WcForceAuth
- * @version 2.0.0
+ * @version 1.6.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

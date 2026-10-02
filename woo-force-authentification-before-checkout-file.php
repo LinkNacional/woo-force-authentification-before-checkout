@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 if ( ! defined( 'WC_FORCE_AUTH_VERSION' ) ) {
-	define( 'WC_FORCE_AUTH_VERSION', '2.0.0' );
+	define( 'WC_FORCE_AUTH_VERSION', '1.6.0' );
 }
 
 if ( ! defined( 'WC_FORCE_AUTH_FILE' ) ) {
