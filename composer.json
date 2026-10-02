@@ -19,6 +19,9 @@
     "require-dev": {
         "phan/phan": "5.4.1"
     },
+    "scripts": {
+        "test": "tests/run.sh"
+    },
     "config": {
         "allow-plugins": {
             "composer/installers": true

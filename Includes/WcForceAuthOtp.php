@@ -120,19 +120,11 @@ class WcForceAuthOtp {
 	}
 
 	/**
-	 * Legacy (Invoice Payment) option keys, used as a migration fallback.
+	 * Retrieve an OTP setting.
 	 *
-	 * @return array<string,string>
-	 */
-	private static function legacy_map(): array {
-		return array(
-			'enable_type'     => 'lkn_wcip_otp_email_enable_type',
-			'expiration_time' => 'lkn_wcip_otp_email_expiration_time',
-		);
-	}
-
-	/**
-	 * Read an OTP setting, falling back to legacy values when present.
+	 * Only the plugin's own option namespace is read: the sibling Invoice
+	 * Payment plugin's `lkn_wcip_otp_email_*` options are NOT used as a
+	 * fallback (that leaked another plugin's config into this one).
 	 *
 	 * @param string $key     Setting key (without the prefix).
 	 * @param mixed  $default Fallback default.
@@ -148,16 +140,6 @@ class WcForceAuthOtp {
 		$value = get_option( self::OPTION_PREFIX . $key, null );
 
 		if ( null === $value || '' === $value ) {
-			$legacy = self::legacy_map();
-
-			if ( isset( $legacy[ $key ] ) ) {
-				$legacy_value = get_option( $legacy[ $key ], null );
-
-				if ( null !== $legacy_value && '' !== $legacy_value ) {
-					return $legacy_value;
-				}
-			}
-
 			return $default;
 		}
 
@@ -255,7 +237,7 @@ class WcForceAuthOtp {
 	 *
 	 * @return int[]
 	 */
-	private function get_code_group_sizes() {
+	public function get_code_group_sizes() {
 		$length = $this->get_code_length();
 		$format = $this->get_code_format();
 
@@ -706,7 +688,7 @@ class WcForceAuthOtp {
 	 *
 	 * @return string
 	 */
-	private function generate_code() {
+	public function generate_code() {
 		$length = $this->get_code_length();
 		$max    = (int) str_repeat( '9', $length );
 

@@ -54,6 +54,8 @@ Yes. With this [code](https://gist.github.com/luizbills/25d2c83848de1fb23beceb0e
 = 2.0.0 - 2026/10/02 =
 
 * New class-based architecture (PSR-4, `Lkn\WcForceAuth`) with `Admin/`, `Public/` and `Includes/` separation
+* Dependency-free test layer (`tests/`): a custom runner that boots the real Local WordPress, with real email captured by Mailpit; covers the code formats (4/6/8, `plain`/`space`/`dash`/`pair`, single and segmented input), the REST flow (send/verify/limits) and Force Authentication
+* Fix: OTP options no longer fall back to the Invoice Payment plugin's options (`lkn_wcip_otp_email_*`), which leaked values such as the expiration time between plugins
 * New WordPress admin sidebar menu ("Force Authentification" → "OTP")
 * Admin menu restructure: the top-level "Force Authentification" item opens the main feature settings; hovering reveals the "Force Authentification" and "OTP" submenus
 * New settings screen for the main feature (Force Authentication): enable/disable, notice message, login/checkout URLs and post-login destination; these options now drive the behavior (previously hardcoded)

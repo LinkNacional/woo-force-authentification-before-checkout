@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-02T18:36:49+00:00\n"
+"POT-Creation-Date: 2026-10-02T19:25:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woo-force-authentification-before-checkout\n"
@@ -67,7 +67,7 @@ msgstr ""
 
 #: Includes/templates/otp-email-template.php:41
 #: Includes/WcForceAuthOtp.php:116
-#: Includes/WcForceAuthOtp.php:827
+#: Includes/WcForceAuthOtp.php:809
 #: Includes/WcForceAuthSettings.php:321
 msgid "Your access code"
 msgstr ""
@@ -302,31 +302,31 @@ msgid "\"Back to the checkout\" sends the customer to the checkout to finish the
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:109
-#: Includes/WcForceAuthOtp.php:1121
+#: Includes/WcForceAuthOtp.php:1103
 #: Includes/WcForceAuthSettings.php:254
 msgid "Welcome back"
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:110
-#: Includes/WcForceAuthOtp.php:1122
+#: Includes/WcForceAuthOtp.php:1104
 #: Includes/WcForceAuthSettings.php:264
 msgid "Enter your email to sign up or access your account"
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:111
-#: Includes/WcForceAuthOtp.php:1123
+#: Includes/WcForceAuthOtp.php:1105
 #: Includes/WcForceAuthSettings.php:274
 msgid "Verify your account"
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:112
-#: Includes/WcForceAuthOtp.php:1124
+#: Includes/WcForceAuthOtp.php:1106
 #: Includes/WcForceAuthSettings.php:284
 msgid "Enter the verification code sent to your email"
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:113
-#: Includes/WcForceAuthOtp.php:1125
+#: Includes/WcForceAuthOtp.php:1107
 #: Includes/WcForceAuthSettings.php:294
 msgid "A one-time password (OTP) has been sent to your registered email address."
 msgstr ""
@@ -336,219 +336,219 @@ msgstr ""
 msgid "By clicking on \"Login\" you agree to our Privacy Policy and Terms of Service."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:420
-#: Includes/WcForceAuthOtp.php:570
+#: Includes/WcForceAuthOtp.php:402
+#: Includes/WcForceAuthOtp.php:552
 msgid "Too many requests. Please try again later."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:436
-#: Includes/WcForceAuthOtp.php:486
+#: Includes/WcForceAuthOtp.php:418
+#: Includes/WcForceAuthOtp.php:468
 msgid "Could not send the report. Please try again later."
 msgstr ""
 
 #. translators: %s: site name.
-#: Includes/WcForceAuthOtp.php:444
+#: Includes/WcForceAuthOtp.php:426
 #, php-format
 msgid "[%s] A customer did not receive the OTP code"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:451
+#: Includes/WcForceAuthOtp.php:433
 msgid "A customer reported that they did not receive the one-time password (OTP) code."
 msgstr ""
 
 #. translators: %s: customer email.
-#: Includes/WcForceAuthOtp.php:455
+#: Includes/WcForceAuthOtp.php:437
 #, php-format
 msgid "Customer email: %s"
 msgstr ""
 
 #. translators: %s: contact provided by the customer.
-#: Includes/WcForceAuthOtp.php:460
+#: Includes/WcForceAuthOtp.php:442
 #, php-format
 msgid "Contact: %s"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:464
+#: Includes/WcForceAuthOtp.php:446
 msgid "Message:"
 msgstr ""
 
 #. translators: %s: site URL.
-#: Includes/WcForceAuthOtp.php:469
+#: Includes/WcForceAuthOtp.php:451
 #, php-format
 msgid "Sent from: %s"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:495
+#: Includes/WcForceAuthOtp.php:477
 msgid "Thank you! Your report was sent and our team will look into it."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:544
+#: Includes/WcForceAuthOtp.php:526
 msgid "OTP authentication is not enabled."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:550
-#: Includes/WcForceAuthSettingsPage.php:199
+#: Includes/WcForceAuthOtp.php:532
+#: Includes/WcForceAuthSettingsPage.php:213
 msgid "Security check failed. Please reload the page."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:582
+#: Includes/WcForceAuthOtp.php:564
 msgid "Email not registered."
 msgstr ""
 
 #. translators: %d: seconds to wait before requesting a new code.
-#: Includes/WcForceAuthOtp.php:601
+#: Includes/WcForceAuthOtp.php:583
 #, php-format
 msgid "Please wait %d seconds before requesting a new code."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:621
+#: Includes/WcForceAuthOtp.php:603
 msgid "Could not send the code. Please try again."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:632
+#: Includes/WcForceAuthOtp.php:614
 msgid "A one-time password (OTP) has been sent to your email."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:911
+#: Includes/WcForceAuthOtp.php:893
 msgid "Invalid or expired code."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:921
+#: Includes/WcForceAuthOtp.php:903
 msgid "User not found."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:930
+#: Includes/WcForceAuthOtp.php:912
 msgid "Could not create the account."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:938
+#: Includes/WcForceAuthOtp.php:920
 msgid "Could not log you in."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:944
+#: Includes/WcForceAuthOtp.php:926
 msgid "Login successful!"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1154
+#: Includes/WcForceAuthOtp.php:1136
 #: Includes/WcForceAuthSettings.php:312
 msgid "Email"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1166
+#: Includes/WcForceAuthOtp.php:1148
 msgid "Enter your email"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1174
+#: Includes/WcForceAuthOtp.php:1156
 msgid "Login"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1204
+#: Includes/WcForceAuthOtp.php:1186
 msgid "Verification Code"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1211
+#: Includes/WcForceAuthOtp.php:1193
 msgid "Verification code"
 msgstr ""
 
 #. translators: %d: digit position.
-#: Includes/WcForceAuthOtp.php:1232
+#: Includes/WcForceAuthOtp.php:1214
 #, php-format
 msgid "Digit %d"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1266
+#: Includes/WcForceAuthOtp.php:1248
 msgid "Verify & Continue"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1271
-#: Includes/WcForceAuthOtp.php:1441
+#: Includes/WcForceAuthOtp.php:1253
+#: Includes/WcForceAuthOtp.php:1423
 msgid "Resend code"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1276
-#: Includes/WcForceAuthOtp.php:1443
+#: Includes/WcForceAuthOtp.php:1258
+#: Includes/WcForceAuthOtp.php:1425
 msgid "Use another email"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1284
+#: Includes/WcForceAuthOtp.php:1266
 msgid "Didn't receive the code?"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1435
+#: Includes/WcForceAuthOtp.php:1417
 msgid "Sending code..."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1436
+#: Includes/WcForceAuthOtp.php:1418
 msgid "Verifying code..."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1437
+#: Includes/WcForceAuthOtp.php:1419
 msgid "Connection error. Please try again."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1438
+#: Includes/WcForceAuthOtp.php:1420
 msgid "Please enter a valid email address."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1439
+#: Includes/WcForceAuthOtp.php:1421
 #, php-format
 msgid "You can resend in %ds"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1440
+#: Includes/WcForceAuthOtp.php:1422
 #, php-format
 msgid "Code expires at %s"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1442
+#: Includes/WcForceAuthOtp.php:1424
 msgid "Go back and change the email?"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1444
+#: Includes/WcForceAuthOtp.php:1426
 msgid "Something went wrong"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1445
+#: Includes/WcForceAuthOtp.php:1427
 msgid "Code detected"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1446
+#: Includes/WcForceAuthOtp.php:1428
 msgid "We found your access code in the clipboard."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1447
+#: Includes/WcForceAuthOtp.php:1429
 msgid "Use code"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1448
+#: Includes/WcForceAuthOtp.php:1430
 msgid "Report a problem"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1449
+#: Includes/WcForceAuthOtp.php:1431
 msgid "Your email"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1450
+#: Includes/WcForceAuthOtp.php:1432
 msgid "Contact (optional)"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1451
+#: Includes/WcForceAuthOtp.php:1433
 msgid "Message"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1452
+#: Includes/WcForceAuthOtp.php:1434
 msgid "Send"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1453
+#: Includes/WcForceAuthOtp.php:1435
 msgid "I did not receive the verification code for {{email}}."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1454
+#: Includes/WcForceAuthOtp.php:1436
 msgid "Cancel"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1473
+#: Includes/WcForceAuthOtp.php:1455
 msgid "Traditional registration is disabled. Please use the email code to continue."
 msgstr ""
 
@@ -941,19 +941,19 @@ msgstr ""
 msgid "Enter a full URL (for example https://example.com/thank-you). Leave empty to send customers to their account dashboard."
 msgstr ""
 
-#: Includes/WcForceAuthSettingsPage.php:197
-#: Includes/WcForceAuthSettingsPage.php:250
+#: Includes/WcForceAuthSettingsPage.php:211
+#: Includes/WcForceAuthSettingsPage.php:264
 msgid "Settings saved successfully!"
 msgstr ""
 
-#: Includes/WcForceAuthSettingsPage.php:198
+#: Includes/WcForceAuthSettingsPage.php:212
 msgid "An error occurred while saving the settings."
 msgstr ""
 
-#: Includes/WcForceAuthSettingsPage.php:220
+#: Includes/WcForceAuthSettingsPage.php:234
 msgid "Permission denied."
 msgstr ""
 
-#: Includes/WcForceAuthSettingsPage.php:230
+#: Includes/WcForceAuthSettingsPage.php:244
 msgid "Invalid settings data."
 msgstr ""
