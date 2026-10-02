@@ -5,15 +5,25 @@ Tags: woocommerce, checkout, login, register, cart
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.5.0
+Stable tag: 2.0.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Force customer to log in or register before checkout
+Force customer to log in or register before checkout, with optional email OTP authentication.
 
 == Description ==
 
 Force customer to log in or register before checkout to increase your conversion rate.
+
+Optionally, replace the login and registration forms on the "My account" page with a passwordless email OTP (one-time password) flow: customers enter their email, receive a code and are logged in (a new account is created automatically in "Register and login" mode).
+
+**Features**
+
+* Forces authentication before checkout (redirects guests to the account page).
+* Email OTP authentication with three modes: Disabled, Login only and Register and login.
+* Configurable code length, expiration time and resend interval (countdown timer).
+* Branded login and verification screens using your store identity (logo, primary color, headings and legal text).
+* Codes stored hashed, with attempt limiting and resend throttling.
 
 Plugin developed and maintained by [Link Nacional](https://www.linknacional.com/).
 
@@ -40,6 +50,37 @@ Yes. With this [code](https://gist.github.com/luizbills/25d2c83848de1fb23beceb0e
 1. Notice in "my account" page.
 
 == Changelog ==
+
+= 2.0.0 - 2026/10/02 =
+
+* New class-based architecture (PSR-4, `Lkn\WcForceAuth`) with `Admin/`, `Public/` and `Includes/` separation
+* New WordPress admin sidebar menu ("Force Authentification" → "OTP")
+* Admin menu restructure: the top-level "Force Authentification" item opens the main feature settings; hovering reveals the "Force Authentification" and "OTP" submenus
+* New settings screen for the main feature (Force Authentication): enable/disable, notice message, login/checkout URLs and post-login destination; these options now drive the behavior (previously hardcoded)
+* Settings architecture with a shared base class (`WcForceAuthSettingsPage`) and one page per feature
+* Top spacing fixed on the settings screens (our own pages lack the WooCommerce tab nav that provided this spacing in the fraud plugin)
+* "Invoice Payment Link for WooCommerce" card: installation detection aligned with the antifraud plugin (checks only the WordPress.org slug folder, `invoice-payment-for-woocommerce/wc-invoice-payment.php`)
+* New feature: email OTP authentication (login and/or passwordless registration)
+* Login and verification screens with the new layout, using the store identity (logo, primary color and texts are configurable)
+* REST code sending/verification, hashed code storage, attempt limiting and resend throttling
+* Dedicated OTP email template
+* Settings saved over AJAX with SweetAlert2
+* Frontend notifications (sending, verification, errors) with SweetAlert2, plus automatic clipboard detection (offers to use the code when the customer returns with it copied)
+* Consistent input/button heights; the login/register button and the field icon highlight in the brand color once a valid email is entered; email and lock icons use inline SVG
+* Removed the browser autofill background on the fields (email, code and register)
+* Verify button shares the login button state/animation; the timer and "Resend" button are overlaid (no longer push the code input) and "Resend" uses the brand color
+* Fixed the close (×) alignment and made the "Use code" button use the brand color in the detected-code notice
+* Larger fonts, wider card and fixed-height controls with explicit `box-sizing` (inputs and buttons share the same height; the theme can no longer blow up the input)
+* "Use another email" button with standardized height and font; gray field placeholders; the detected-code toast stays visible longer
+* Timer and "Resend" below the "Verify" button: the countdown shows inside the button in a quiet gray style, then it takes the light brand tint (secondary look); the code is centered with the icon on the left; the "Use another email" button uses a light brand tint
+* Legal text only on the login step; the verification step has a "Didn't receive the code?" link that opens a SweetAlert2 popup (email, contact, prefilled editable message) and emails a report to every WordPress administrator
+* Code expiration time shown below the field (formatted with the WordPress date/time) and a loading spinner on the action buttons
+* New "Code length" select (4, 6 or 8 digits)
+* New "Code input style" option: single field or one box per digit (PIN style, with auto-advance/backspace/paste and visual grouping per the "Code format")
+* Fix: the segmented boxes are no longer stretched by the theme (fixed width/height with higher specificity); also fixed the default value shown in the selects (a strict comparison made the select show the first option instead of the saved value)
+* Critical fix: the expired-code cleanup was deleting plugin settings (the `LIKE` matched `code_length`/`code_format`/`code_input`), making options revert to default after every login and the email generate a default-length code — transient codes now use an isolated `auth_` prefix that cannot collide with any option
+* New "Code format" option for the code field: plain (123456), groups with space (123 456), groups with dash (123-456) or pairs (12 34 56) — the separator is visual only and is stripped before sending; the "code detected" clipboard check accepts both the raw and the formatted value
+* New "Notification style" option (floating or inline): chooses whether feedback (code sent, errors, confirmations) appears as floating pop-ups (SweetAlert2) or inside the component; in inline mode each message shows right below the active step's input; the "code detected" alert always stays floating
 
 = 1.5.0 - 2026/8/17 =
 

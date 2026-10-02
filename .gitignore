@@ -1,2 +1,4 @@
 *.po~
 *.pot~
+vendor/
+node_modules/
