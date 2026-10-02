@@ -1,0 +1,28 @@
+# Development-only files — never shipped to the WordPress.org release.
+# The generated ZIP / SVN deploy includes ONLY: Admin/, Includes/, Public/,
+# languages/, the root *.php files, readme.txt and LICENSE.
+
+# Non-production directories
+.github/
+.reasonix/
+tests/
+node_modules/
+vendor/
+.wp-org/
+
+# Dev/config files
+.git/
+.gitignore
+.distignore
+AGENTS.md
+CHANGELOG.md
+README.md
+composer.json
+composer.lock
+package.json
+package-lock.json
+*.sh
+*.zip
+
+# Build output
+build/

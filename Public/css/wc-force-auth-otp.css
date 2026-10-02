@@ -1,0 +1,977 @@
+/**
+ * OTP authentication screens (login + verification) for the account page.
+ *
+ * Uses the --wcfa-primary custom property (set inline) for the brand accent.
+ *
+ * @package WcForceAuth
+ */
+
+.wcfa-otp-wrapper {
+	--wcfa-primary: #22c1dc;
+	--wcfa-text: #121519;
+	--wcfa-muted: #6b7280;
+	--wcfa-border: #e2e8f0;
+	--wcfa-radius: 10px;
+	--wcfa-control-height: 58px;
+
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 32px 16px;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.wcfa-otp-wrapper *,
+.wcfa-otp-wrapper *::before,
+.wcfa-otp-wrapper *::after {
+	box-sizing: border-box;
+}
+
+.wcfa-otp-card {
+	width: 100%;
+	max-width: 480px;
+	background: #fff;
+	border: 1px solid var(--wcfa-border);
+	border-radius: 16px;
+	padding: 44px 40px 32px;
+	box-shadow: 0 18px 45px -30px rgba(15, 23, 42, 0.35);
+}
+
+.wcfa-brand {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 28px;
+	text-align: center;
+}
+
+.wcfa-logo {
+	max-height: 52px;
+	width: auto;
+}
+
+.wcfa-brand-name {
+	font-size: 26px;
+	font-weight: 700;
+	color: var(--wcfa-text);
+}
+
+.wcfa-tagline {
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	color: var(--wcfa-muted);
+}
+
+/* The [hidden] attribute must win over the element's own display rule (author
+   styles otherwise beat the user-agent `[hidden] { display: none }`). */
+.wcfa-otp-wrapper [hidden] {
+	display: none !important;
+}
+
+.wcfa-badge {
+	width: 72px;
+	height: 72px;
+	margin: 0 auto 20px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(34, 193, 220, 0.12);
+	background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--wcfa-primary) 28%, #fff), color-mix(in srgb, var(--wcfa-primary) 12%, #fff));
+}
+
+.wcfa-badge-lock {
+	color: var(--wcfa-primary);
+	font-size: 30px;
+	line-height: 1;
+}
+
+.wcfa-heading {
+	margin: 0 0 8px;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--wcfa-text);
+	text-align: center;
+}
+
+.wcfa-subheading {
+	margin: 0 0 24px;
+	font-size: 16px;
+	line-height: 1.5;
+	color: var(--wcfa-muted);
+	text-align: center;
+}
+
+.wcfa-email {
+	display: block;
+	margin-top: 4px;
+	color: var(--wcfa-primary);
+	word-break: break-word;
+}
+
+.wcfa-alert {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 14px;
+	border-radius: var(--wcfa-radius);
+	font-size: 14px;
+	line-height: 1.5;
+	margin-bottom: 22px;
+}
+
+.wcfa-alert--success {
+	background: #ecfdf3;
+	border: 1px solid #b7e6c6;
+	color: #1c7c45;
+}
+
+.wcfa-alert-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	color: #1c7c45;
+}
+
+.wcfa-alert-icon svg {
+	display: block;
+	width: 20px;
+	height: 20px;
+}
+
+.wcfa-form {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.wcfa-label {
+	display: block;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--wcfa-text);
+}
+
+.wcfa-required {
+	color: #e5484d;
+}
+
+.wcfa-input-wrap {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	width: 100%;
+	height: var(--wcfa-control-height);
+	box-sizing: border-box;
+	padding: 0 14px;
+	background: #fff;
+	border: 1px solid var(--wcfa-border);
+	border-radius: var(--wcfa-radius);
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.wcfa-input-wrap:focus-within {
+	border-color: var(--wcfa-primary);
+	box-shadow: 0 0 0 3px rgba(34, 193, 220, 0.22);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--wcfa-primary) 22%, transparent);
+}
+
+/* Code field: the lock icon is pinned to the left and the code is centered.
+   Symmetric padding keeps the centered text aligned with the card, and no
+   control sits inside the field anymore (Resend moved below the button). */
+.wcfa-input-wrap--code {
+	padding-left: 48px;
+	padding-right: 48px;
+}
+
+.wcfa-input-wrap--code .wcfa-input-icon {
+	position: absolute;
+	left: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+/* Border + icon adopt the brand color once the field holds a valid value. */
+.wcfa-input-wrap.wcfa-valid {
+	border-color: var(--wcfa-primary);
+}
+
+.wcfa-input-wrap.wcfa-valid .wcfa-input-icon {
+	color: var(--wcfa-primary);
+}
+
+.wcfa-input-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	color: #9aa3af;
+	transition: color 0.15s ease;
+}
+
+.wcfa-input-icon svg {
+	display: block;
+	width: 18px;
+	height: 18px;
+}
+
+.wcfa-input {
+	flex: 1;
+	box-sizing: border-box;
+	border: 0 !important;
+	background: transparent !important;
+	padding: 0 !important;
+	margin: 0;
+	font-size: 16px !important;
+	line-height: 1.4;
+	color: var(--wcfa-text) !important;
+	box-shadow: none !important;
+	min-width: 0;
+	height: 100% !important;
+	min-height: 0 !important;
+	max-height: none !important;
+}
+
+.wcfa-input:focus {
+	outline: none;
+}
+
+.wcfa-input::placeholder,
+.wcfa-input::-webkit-input-placeholder {
+	color: var(--wcfa-muted) !important;
+	opacity: 1;
+}
+
+/* Neutralize the browser autofill background. Chrome/Firefox paint their own
+   box behind the field (it does not fill our wrapper), so we repaint it white
+   and restore the text color. Applies to the email, the verification code and
+   the native register form inputs. */
+.wcfa-otp-wrapper input.wcfa-input:-webkit-autofill,
+.wcfa-otp-wrapper input.wcfa-input:-webkit-autofill:hover,
+.wcfa-otp-wrapper input.wcfa-input:-webkit-autofill:focus,
+.wcfa-account-register input:-webkit-autofill,
+.wcfa-account-register input:-webkit-autofill:hover,
+.wcfa-account-register input:-webkit-autofill:focus {
+	-webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+	box-shadow: 0 0 0 1000px #fff inset !important;
+	-webkit-text-fill-color: var(--wcfa-text) !important;
+	caret-color: var(--wcfa-text);
+	transition: background-color 9999s ease-in-out 0s;
+}
+
+.wcfa-otp-wrapper input.wcfa-input:autofill,
+.wcfa-otp-wrapper input.wcfa-input:autofill:hover,
+.wcfa-otp-wrapper input.wcfa-input:autofill:focus,
+.wcfa-account-register input:autofill,
+.wcfa-account-register input:autofill:hover,
+.wcfa-account-register input:autofill:focus {
+	background-color: #fff !important;
+	-webkit-text-fill-color: var(--wcfa-text) !important;
+	caret-color: var(--wcfa-text);
+}
+
+.wcfa-input--code {
+	letter-spacing: 8px;
+	font-size: 22px !important;
+	font-weight: 600;
+	text-align: center;
+}
+
+/* When a separator format is used the grouping already spaces the digits, so
+   keep the letter-spacing tighter. */
+.wcfa-input--code[data-code-format="space"],
+.wcfa-input--code[data-code-format="dash"],
+.wcfa-input--code[data-code-format="pair"] {
+	letter-spacing: 3px;
+}
+
+.wcfa-input--code::placeholder {
+	letter-spacing: 6px;
+	color: #c2c9d1 !important;
+	opacity: 1;
+}
+
+.wcfa-input--code[data-code-format="space"]::placeholder,
+.wcfa-input--code[data-code-format="dash"]::placeholder,
+.wcfa-input--code[data-code-format="pair"]::placeholder {
+	letter-spacing: 3px;
+}
+
+/* Segmented input: one box per digit, grouped like the chosen format. Rules are
+   scoped under .wcfa-otp-boxes (class + class) to beat the theme's
+   input[type="text"] { width:100% ... } rule. */
+.wcfa-otp-boxes {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 8px;
+	width: 100%;
+}
+
+.wcfa-otp-boxes .wcfa-otp-box {
+	flex: 0 0 auto !important;
+	box-sizing: border-box;
+	width: 48px !important;
+	min-width: 48px !important;
+	max-width: 48px !important;
+	height: var(--wcfa-control-height) !important;
+	min-height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 1px solid var(--wcfa-border) !important;
+	border-radius: var(--wcfa-radius) !important;
+	background: #fff !important;
+	color: var(--wcfa-text) !important;
+	font-size: 22px !important;
+	font-weight: 600;
+	line-height: 1;
+	text-align: center;
+	box-shadow: none !important;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.wcfa-otp-boxes .wcfa-otp-box:focus {
+	outline: none;
+	border-color: var(--wcfa-primary) !important;
+	box-shadow: 0 0 0 3px rgba(34, 193, 220, 0.22) !important;
+}
+
+.wcfa-otp-boxes .wcfa-otp-box:-webkit-autofill,
+.wcfa-otp-boxes .wcfa-otp-box:-webkit-autofill:hover,
+.wcfa-otp-boxes .wcfa-otp-box:-webkit-autofill:focus {
+	-webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+	box-shadow: 0 0 0 1000px #fff inset !important;
+	-webkit-text-fill-color: var(--wcfa-text) !important;
+	caret-color: var(--wcfa-text);
+	transition: background-color 9999s ease-in-out 0s;
+}
+
+.wcfa-otp-sep {
+	flex: none;
+	width: 10px;
+	height: 2px;
+	border-radius: 2px;
+	background: var(--wcfa-border);
+}
+
+@media (max-width: 480px) {
+	.wcfa-otp-boxes .wcfa-otp-box {
+		width: 40px !important;
+		min-width: 40px !important;
+		max-width: 40px !important;
+	}
+}
+
+/* Code expiration line, right below the input. */
+.wcfa-expires {
+	margin: 8px 0 0;
+	font-size: 13px;
+	line-height: 1.4;
+	color: var(--wcfa-muted);
+	text-align: center;
+}
+
+.wcfa-expires[hidden] {
+	display: none;
+}
+
+.wcfa-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	width: 100%;
+	height: var(--wcfa-control-height);
+	box-sizing: border-box;
+	margin-top: 12px;
+	padding: 0 18px;
+	border: 0;
+	border-radius: var(--wcfa-radius);
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 1.2;
+	cursor: pointer;
+	transition: background-color 0.15s ease, opacity 0.15s ease, box-shadow 0.25s ease;
+}
+
+.wcfa-btn--primary {
+	background: var(--wcfa-primary);
+	color: #fff;
+}
+
+/* Force the brand color with high specificity so the active theme cannot
+   repaint the button gray (which made it look disabled). */
+.wcfa-otp-wrapper .wcfa-btn--primary {
+	background: var(--wcfa-primary) !important;
+	color: #fff !important;
+}
+
+.wcfa-otp-wrapper .wcfa-btn--primary:hover:not(:disabled):not(.wcfa-btn--muted) {
+	filter: brightness(0.92);
+}
+
+/* Not ready (empty email or incomplete code): keep the brand color, only dimmed
+   — never gray, so it does not look disabled. Keeps the login and verification
+   buttons looking the same in every state. */
+.wcfa-otp-wrapper .wcfa-btn--primary.wcfa-btn--muted,
+.wcfa-otp-wrapper .wcfa-btn--primary:disabled {
+	opacity: 0.55;
+}
+
+.wcfa-otp-wrapper .wcfa-btn--primary:disabled {
+	cursor: not-allowed;
+}
+
+/* Ready (valid email / complete code): full brand color plus a soft glow. */
+.wcfa-otp-wrapper .wcfa-btn--primary:not(.wcfa-btn--muted):not(:disabled) {
+	opacity: 1;
+	box-shadow: 0 8px 20px -10px rgba(34, 193, 220, 0.55);
+	box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--wcfa-primary) 80%, transparent);
+}
+
+/* Resend row, below the "Verify & Continue" button. The button is always full
+   width. While the interval runs it shows a solid gray background with the
+   countdown text inside; once it elapses it takes the light brand tint (same
+   look as the "Use another email" button). */
+.wcfa-resend-row {
+	display: flex;
+	width: 100%;
+	margin-top: 8px;
+}
+
+.wcfa-btn-resend {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: var(--wcfa-control-height);
+	box-sizing: border-box;
+	border: 0;
+	border-radius: var(--wcfa-radius);
+	background: #e6f9fc;
+	color: var(--wcfa-primary);
+	font-size: 16px;
+	font-weight: 600;
+	padding: 0 18px;
+	cursor: pointer;
+	line-height: 1.2;
+	white-space: nowrap;
+}
+
+/* Available: same light brand tint as the "Use another email" button. */
+.wcfa-otp-wrapper .wcfa-btn-resend {
+	width: 100%;
+	height: var(--wcfa-control-height);
+	background: #e6f9fc !important;
+	background: color-mix(in srgb, var(--wcfa-primary) 12%, #fff) !important;
+	color: var(--wcfa-primary) !important;
+	font-size: 16px;
+	font-weight: 600;
+	text-transform: none;
+	letter-spacing: normal;
+	text-decoration: none;
+}
+
+/* Counting down: solid gray background (clearly not clickable yet). */
+.wcfa-otp-wrapper .wcfa-btn-resend.wcfa-btn--muted,
+.wcfa-otp-wrapper .wcfa-btn-resend:disabled {
+	background: #cbd5e1 !important;
+	color: #f8fafc !important;
+	text-decoration: none;
+	cursor: default;
+}
+
+/* Same hover as the "Use another email" button for consistency. */
+.wcfa-otp-wrapper .wcfa-btn-resend:not(.wcfa-btn--muted):not(:disabled):hover {
+	background: #d3f4fa !important;
+	background: color-mix(in srgb, var(--wcfa-primary) 20%, #fff) !important;
+	color: var(--wcfa-primary) !important;
+}
+
+/* "Didn't receive the code?" — small link with a brand-colored icon. */
+.wcfa-report {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	width: 100%;
+	margin-top: 14px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--wcfa-primary);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.4;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	box-shadow: none;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.wcfa-otp-wrapper .wcfa-report {
+	background: transparent !important;
+	color: var(--wcfa-primary) !important;
+	text-transform: none;
+	letter-spacing: normal;
+}
+
+.wcfa-report:hover {
+	text-decoration: underline;
+}
+
+.wcfa-report-icon {
+	display: inline-flex;
+	align-items: center;
+	color: var(--wcfa-primary);
+}
+
+.wcfa-report-icon svg {
+	display: block;
+	width: 16px;
+	height: 16px;
+}
+
+/* Report popup fields (inside the SweetAlert2 modal). */
+.wcfa-report-modal .wcfa-report-field {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 4px;
+	margin-bottom: 12px;
+	text-align: left;
+}
+
+.wcfa-report-modal .wcfa-report-field > span {
+	font-size: 13px;
+	font-weight: 600;
+	color: #5b6472;
+}
+
+.wcfa-report-modal .wcfa-report-input,
+.wcfa-report-modal .wcfa-report-textarea {
+	width: 100%;
+	box-sizing: border-box;
+	padding: 10px 12px;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	font-size: 15px;
+	color: #121519;
+	background: #fff;
+}
+
+.wcfa-report-modal .wcfa-report-input:focus,
+.wcfa-report-modal .wcfa-report-textarea:focus {
+	outline: none;
+	border-color: var(--wcfa-primary, #22c1dc);
+	box-shadow: 0 0 0 3px rgba(34, 193, 220, 0.22);
+}
+
+.wcfa-report-modal .wcfa-report-textarea {
+	min-height: 110px;
+	resize: vertical;
+	font-family: inherit;
+}
+
+/* Report popup actions: rounded "Send" in the brand color and a ghost "Cancel"
+   with a red border/text (no background). */
+.wcfa-report-modal .swal2-confirm {
+	background-color: var(--wcfa-primary, #22c1dc) !important;
+	color: #fff !important;
+	border: 0 !important;
+	border-radius: 8px !important;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+.wcfa-report-modal .swal2-confirm:hover {
+	filter: brightness(0.92);
+}
+
+.wcfa-report-modal .swal2-cancel {
+	background: transparent !important;
+	border: 1px solid #e5484d !important;
+	color: #e5484d !important;
+	border-radius: 8px !important;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+.wcfa-report-modal .swal2-cancel:hover {
+	background: #fef2f2 !important;
+	color: #c1373c !important;
+	border-color: #c1373c !important;
+}
+
+.wcfa-legal {
+	margin: 22px 0 0;
+	font-size: 12px;
+	line-height: 1.6;
+	color: var(--wcfa-muted);
+	text-align: center;
+}
+
+.wcfa-legal a {
+	color: #3b82f6;
+	text-decoration: none;
+}
+
+.wcfa-messages {
+	margin-top: 16px;
+	font-size: 14px;
+	line-height: 1.5;
+	text-align: center;
+}
+
+/* Per-step message (right below the email/code input). */
+.wcfa-step-messages {
+	margin-top: 10px;
+	text-align: left;
+}
+
+.wcfa-messages:empty {
+	display: none;
+}
+
+.wcfa-messages .wcfa-msg {
+	padding: 10px 12px;
+	border-radius: var(--wcfa-radius);
+}
+
+.wcfa-messages .wcfa-msg--info {
+	background: #eef9fc;
+	background: color-mix(in srgb, var(--wcfa-primary) 10%, #fff);
+	color: var(--wcfa-text);
+}
+
+.wcfa-messages .wcfa-msg--success {
+	background: #ecfdf3;
+	color: #1c7c45;
+}
+
+.wcfa-messages .wcfa-msg--error {
+	background: #fef2f2;
+	color: #b91c1c;
+}
+
+.wcfa-back {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: var(--wcfa-control-height);
+	box-sizing: border-box;
+	margin-top: 8px;
+	padding: 0 18px;
+	border: 0;
+	border-radius: var(--wcfa-radius);
+	background: #e6f9fc;
+	color: var(--wcfa-primary);
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.2;
+	cursor: pointer;
+	text-align: center;
+	text-decoration: none;
+	box-shadow: none;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+/* Secondary action: light brand tint with brand-colored text, so it is clearly
+   available (not disabled) without competing with the solid "Verify" button. */
+.wcfa-otp-wrapper .wcfa-back {
+	height: var(--wcfa-control-height);
+	padding: 0 18px;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-transform: none;
+	letter-spacing: normal;
+	background: #e6f9fc !important;
+	background: color-mix(in srgb, var(--wcfa-primary) 12%, #fff) !important;
+	color: var(--wcfa-primary) !important;
+	text-decoration: none;
+}
+
+.wcfa-otp-wrapper .wcfa-back:hover {
+	background: #d3f4fa !important;
+	background: color-mix(in srgb, var(--wcfa-primary) 20%, #fff) !important;
+}
+
+/* Inline loading spinner on the action buttons (login / verify / resend). */
+.wcfa-otp-wrapper .wcfa-btn,
+.wcfa-otp-wrapper .wcfa-btn-resend {
+	position: relative;
+}
+
+.wcfa-otp-wrapper .wcfa-btn.wcfa-loading,
+.wcfa-otp-wrapper .wcfa-btn-resend.wcfa-loading {
+	color: transparent !important;
+	pointer-events: none;
+}
+
+/* Keep the loading spinner crisp even if the button was dimmed (muted). */
+.wcfa-otp-wrapper .wcfa-btn--primary.wcfa-loading {
+	opacity: 1;
+}
+
+.wcfa-otp-wrapper .wcfa-btn.wcfa-loading::after,
+.wcfa-otp-wrapper .wcfa-btn-resend.wcfa-loading::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 18px;
+	height: 18px;
+	margin: -9px 0 0 -9px;
+	border: 2px solid rgba(255, 255, 255, 0.45);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: wcfa-spin 0.7s linear infinite;
+}
+
+/* Muted (gray) buttons need a darker spinner for contrast. */
+.wcfa-otp-wrapper .wcfa-btn--muted.wcfa-loading::after,
+.wcfa-otp-wrapper .wcfa-btn-resend.wcfa-btn--muted.wcfa-loading::after {
+	border-color: rgba(90, 100, 115, 0.35);
+	border-top-color: #5a6473;
+}
+
+@keyframes wcfa-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Keep the button styling independent from the active theme (themes often
+   restyle every <button> on the page, dropping our border-radius/background). */
+.wcfa-otp-wrapper .wcfa-btn,
+.wcfa-otp-wrapper .wcfa-btn-resend,
+.wcfa-otp-wrapper .wcfa-back {
+	border-radius: var(--wcfa-radius);
+	-webkit-appearance: none;
+	appearance: none;
+	box-shadow: none;
+	text-transform: none;
+	letter-spacing: normal;
+}
+
+.wcfa-otp-wrapper .wcfa-btn {
+	width: 100%;
+	min-height: var(--wcfa-control-height);
+	padding: 0 18px;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-transform: none;
+	letter-spacing: normal;
+}
+
+/* Account page layout. The native forms are gone (template override), so this
+   only arranges the OTP component, splitting it with the registration form in
+   "Login only" mode when registration is enabled. */
+.wcfa-account-auth {
+	--wcfa-primary: #22c1dc;
+	--wcfa-text: #121519;
+	--wcfa-muted: #6b7280;
+	--wcfa-border: #e2e8f0;
+	--wcfa-radius: 10px;
+	--wcfa-control-height: 58px;
+
+	display: block;
+	width: 100%;
+}
+
+.wcfa-account-auth--split {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 40px;
+	align-items: start;
+}
+
+.wcfa-account-register {
+	width: 100%;
+	max-width: 480px;
+	margin: 0 auto;
+}
+
+.wcfa-account-register .wcfa-register-title {
+	margin: 0 0 16px;
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--wcfa-text);
+	text-align: center;
+}
+
+/* Native WooCommerce registration form (login-only mode): match the OTP design
+   and force the brand color so the theme cannot render it gray. */
+.wcfa-account-register .woocommerce-form-register .input-text {
+	height: var(--wcfa-control-height) !important;
+	box-sizing: border-box;
+	padding: 0 14px !important;
+	font-size: 16px !important;
+	border: 1px solid var(--wcfa-border) !important;
+	border-radius: var(--wcfa-radius) !important;
+	background: #fff !important;
+	box-shadow: none !important;
+}
+
+.wcfa-account-register .woocommerce-form-register .input-text:focus {
+	border-color: var(--wcfa-primary) !important;
+	box-shadow: 0 0 0 3px rgba(34, 193, 220, 0.22) !important;
+}
+
+.wcfa-account-register .woocommerce-form-register__submit {
+	width: 100%;
+	height: var(--wcfa-control-height);
+	box-sizing: border-box;
+	padding: 0 18px;
+	border: 0 !important;
+	border-radius: var(--wcfa-radius) !important;
+	background: var(--wcfa-primary) !important;
+	color: #fff !important;
+	font-size: 18px;
+	font-weight: 600;
+	line-height: 1.2;
+	text-transform: none;
+	letter-spacing: normal;
+	cursor: pointer;
+}
+
+.wcfa-account-register .woocommerce-form-register__submit.wcfa-btn--muted {
+	opacity: 0.55;
+}
+
+.wcfa-account-register .woocommerce-form-register__submit:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.wcfa-account-register .woocommerce-form-register__submit:not(.wcfa-btn--muted):hover {
+	filter: brightness(0.92);
+}
+
+@media (max-width: 860px) {
+	.wcfa-account-auth--split {
+		grid-template-columns: 1fr;
+		gap: 32px;
+	}
+}
+
+@media (max-width: 480px) {
+	.wcfa-otp-card {
+		padding: 32px 22px 24px;
+		border-radius: 14px;
+	}
+
+	.wcfa-heading {
+		font-size: 24px;
+	}
+}
+
+/* ── SweetAlert2 toasts / modals used by the OTP screens ─────────────────── */
+
+/* Rounded corners everywhere + a slightly longer, smoother hide animation so
+   the toast slides away like the top notifications instead of blinking out. */
+.wcfa-swal-toast,
+.wcfa-swal-modal {
+	--swal2-border-radius: 12px;
+	--swal2-toast-show-animation: swal2-toast-show 0.45s;
+	--swal2-toast-hide-animation: wcfa-swal-hide 0.4s forwards;
+}
+
+.swal2-popup.wcfa-swal-toast {
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.swal2-popup.wcfa-swal-modal {
+	border-radius: 16px;
+}
+
+/* Progress bar (bottom edge) follows the popup rounding. */
+.wcfa-swal-toast .swal2-timer-progress-bar-container {
+	border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+	overflow: hidden;
+}
+
+/* In the toast the close (×) sits in a grid cell; pin it to the top-right
+   corner. No background, just a rounded red border with a red ×. */
+.wcfa-swal-toast button.swal2-close {
+	position: absolute;
+	top: 0.5em;
+	right: 0.5em;
+	align-self: auto;
+	margin: 0;
+	z-index: 3;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 30px;
+	height: 30px;
+	min-width: 30px;
+	min-height: 30px;
+	max-width: 30px;
+	max-height: 30px;
+	padding: 0;
+	font-size: 20px;
+	line-height: 1;
+	color: #e5484d !important;
+	background: transparent !important;
+	border: 1px solid #e5484d !important;
+	border-radius: 6px !important;
+	transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.wcfa-swal-toast button.swal2-close:hover {
+	background: #fef2f2 !important;
+	color: #c1373c !important;
+	border-color: #c1373c !important;
+}
+
+/* Confirm buttons ("Use code", modal actions): rounded, in the brand color.
+   The color comes from confirmButtonColor (inline); these rules are a safety
+   net that also picks up the --wcfa-primary var set on the popup. */
+.wcfa-swal-toast .swal2-confirm,
+.wcfa-swal-modal .swal2-confirm {
+	border-radius: 8px;
+	font-weight: 600;
+	box-shadow: none;
+}
+
+.wcfa-swal-toast .swal2-confirm {
+	padding: 8px 22px;
+	background-color: var(--wcfa-primary, #22c1dc) !important;
+	color: #fff !important;
+}
+
+.wcfa-swal-toast .swal2-confirm:hover {
+	background-color: var(--wcfa-primary, #22c1dc) !important;
+	color: #fff !important;
+	filter: brightness(0.92);
+}
+
+@keyframes wcfa-swal-hide {
+	0% {
+		transform: translateX(0);
+		opacity: 1;
+	}
+	100% {
+		transform: translateX(130%);
+		opacity: 0;
+	}
+}
