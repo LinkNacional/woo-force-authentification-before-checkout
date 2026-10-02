@@ -2,6 +2,8 @@
 
 namespace WcfaTests\Cases;
 
+// phpcs:disable WordPress.Security.EscapeOutput -- CLI test case; not shipped in the plugin release.
+
 use Lkn\WcForceAuth\Includes\WcForceAuthCheckoutSettings;
 use WcfaTests\Lib\WpTestCase;
 

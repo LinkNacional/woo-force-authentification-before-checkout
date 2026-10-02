@@ -6,6 +6,8 @@ use Lkn\WcForceAuth\Includes\WcForceAuthCheckoutSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthOtp;
 use Lkn\WcForceAuth\Includes\WcForceAuthSettings;
 
+// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.NamingConventions.PrefixAllGlobals -- CLI test helper; not shipped in the plugin release.
+
 /**
  * WordPress-aware helpers shared by the test cases.
  */

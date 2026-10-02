@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable WordPress.Security.EscapeOutput, WordPress.NamingConventions.PrefixAllGlobals, WordPress.DB.DirectDatabaseQuery -- CLI test runner; not shipped in the plugin release.
+
 /**
  * Test runner entry point.
  *

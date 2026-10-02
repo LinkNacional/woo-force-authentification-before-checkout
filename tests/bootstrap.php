@@ -1,5 +1,7 @@
 <?php
 
+// phpcs:disable WordPress.Security.EscapeOutput, WordPress.NamingConventions.PrefixAllGlobals, WordPress.DB.DirectDatabaseQuery -- CLI test bootstrap; not shipped in the plugin release.
+
 /**
  * Test bootstrap: loads the REAL WordPress + WooCommerce of the Local site so
  * the suite exercises the same database, options, plugins and mail (Mailpit)

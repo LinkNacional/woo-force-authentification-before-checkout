@@ -319,10 +319,12 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'type'              => 'text',
 				'id'                => $p . 'email_subject',
 				'default'           => __( 'Your access code', 'woo-force-authentification-before-checkout' ),
+				/* translators: %s: placeholder token that is replaced by the code. */
 				'description'       => __( 'Subject line of the email that delivers the code. Accepts a %s placeholder for the code.', 'woo-force-authentification-before-checkout' ),
 				'block_title'       => __( 'Email subject', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Subject of the OTP email sent to the customer.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Use %s where the code should appear (for example "Your code: %s"). If left empty, "Your access code" is used.', 'woo-force-authentification-before-checkout' ),
+				/* translators: 1: placeholder token, 2: example of the subject line. */
+				'input_description' => __( 'Use %1$s where the code should appear (for example "Your code: %2$s"). If left empty, "Your access code" is used.', 'woo-force-authentification-before-checkout' ),
 			),
 
 			'redirect_title' => array(

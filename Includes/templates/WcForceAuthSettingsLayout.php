@@ -1,6 +1,8 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template variables are local to the including method, not globals.
+
 if (!isset($form_fields) || !is_array($form_fields)) return;
 
 // Agrupa campos por títulos (type 'title')

@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 		<div class="linkn-support-links">
 			<div class="linkn-stars-div">
-				<a target="_blank" rel="noopener noreferrer" href="<?php echo esc_url( 'https://wordpress.org/support/plugin/woo-force-authentification-before-checkout/reviews/?filter=5#postform' ); ?>">
+				<a target="_blank" rel="noopener noreferrer" href="<?php echo esc_url( 'https://wordpress.org/support/plugin/woo-force-authentification-before-checkout/reviews/' ); ?>">
 					<p><?php esc_html_e( 'Rate the plugin', 'woo-force-authentification-before-checkout' ); ?></p>
 					<div class="linkn-stars">
 						<span class="dashicons dashicons-star-filled linkn-stars-icon"></span>

@@ -80,6 +80,7 @@ register_deactivation_hook( WC_FORCE_AUTH_FILE, array( WcForceAuthDeactivator::c
 /**
  * Begins execution of the plugin.
  */
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Bootstrap entry point, defined in the global namespace before the autoloaded classes are used.
 function run_wc_force_auth(): void {
 	$plugin = new WcForceAuth();
 	$plugin->run();

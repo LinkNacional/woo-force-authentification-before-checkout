@@ -1028,6 +1028,7 @@ class WcForceAuthOtp {
 		 * wp_signon() flow so integrations (WooCommerce session/cart merge, etc.)
 		 * run as expected.
 		 */
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Firing the WordPress core login hook so integrations (WooCommerce session/cart merge, etc.) run.
 		do_action( 'wp_login', $user->user_login, $user );
 
 		return true;
@@ -1418,7 +1419,9 @@ class WcForceAuthOtp {
 					'verifying'    => __( 'Verifying code...', 'woo-force-authentification-before-checkout' ),
 					'connection'   => __( 'Connection error. Please try again.', 'woo-force-authentification-before-checkout' ),
 					'invalidEmail' => __( 'Please enter a valid email address.', 'woo-force-authentification-before-checkout' ),
+					/* translators: %d: number of seconds until the resend button is enabled. */
 					'resendIn'     => __( 'You can resend in %ds', 'woo-force-authentification-before-checkout' ),
+					/* translators: %s: time when the code expires. */
 					'expiresAt'    => __( 'Code expires at %s', 'woo-force-authentification-before-checkout' ),
 					'resendButton' => __( 'Resend code', 'woo-force-authentification-before-checkout' ),
 					'confirmBack'  => __( 'Go back and change the email?', 'woo-force-authentification-before-checkout' ),

@@ -94,6 +94,7 @@ class WcForceAuthCheckout {
 			$url = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public filter kept for backwards compatibility.
 		return apply_filters( 'wc_force_auth_login_page_url', $url );
 	}
 
@@ -109,6 +110,7 @@ class WcForceAuthCheckout {
 			$url = wc_get_checkout_url();
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public filter kept for backwards compatibility.
 		return apply_filters( 'wc_force_auth_checkout_page_url', $url );
 	}
 
@@ -136,6 +138,7 @@ class WcForceAuthCheckout {
 		}
 
 		$condition = apply_filters(
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public filter kept for backwards compatibility.
 			'wc_force_auth_redirect_to_account_page',
 			is_checkout() && ! is_user_logged_in()
 		);
@@ -191,6 +194,7 @@ class WcForceAuthCheckout {
 			$message = __( 'Please log in or register to complete your purchase.', 'woo-force-authentification-before-checkout' );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public filter kept for backwards compatibility.
 		return apply_filters( 'wc_force_auth_message', $message );
 	}
 

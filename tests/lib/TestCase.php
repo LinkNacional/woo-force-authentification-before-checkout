@@ -2,6 +2,8 @@
 
 namespace WcfaTests\Lib;
 
+// phpcs:disable WordPress.Security.EscapeOutput, WordPress.NamingConventions.PrefixAllGlobals -- CLI test helper; not shipped in the plugin release.
+
 /**
  * Thrown when an assertion fails.
  */
