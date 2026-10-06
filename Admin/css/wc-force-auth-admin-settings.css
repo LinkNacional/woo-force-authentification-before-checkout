@@ -12,6 +12,12 @@ body,
     display: flex;
     padding: 0px 20px;
     box-sizing: border-box;
+    /* Clip any horizontal overflow our own chrome could add (e.g. the tab-nav
+       arrows): on narrow screens WordPress collapses the admin menu and any
+       stray few px would otherwise produce a page-wide horizontal scrollbar and
+       shift the whole block sideways. `clip` (not `hidden`) keeps the sticky
+       sidebar working — it does not create a scroll container. */
+    overflow-x: clip;
     /* Unlike the fraud plugin (a WC Settings page, which gets top spacing from
        WooCommerce's tab nav above the header), our screens are custom admin
        pages with no nav above, so add the missing top gap here. */
@@ -130,11 +136,11 @@ body,
 }
 
 .admin-layout-nav-arrow--prev {
-    left: -30px;
+    left: 0;
 }
 
 .admin-layout-nav-arrow--next {
-    right: -30px;
+    right: 0;
 }
 
 .admin-layout-top-menu-outer.has-overflow .admin-layout-nav-arrow {
@@ -471,6 +477,52 @@ input[type="color"].admin-layout-input {
 
 .admin-layout-submit-wrapper button {
     font-size: 1.2em !important;
+}
+
+/* Notice rendered above the save button (e.g. OTP email-delivery warning). */
+.admin-layout-save-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 24px 0 4px;
+    padding: 16px 20px;
+    background: #fff8e5;
+    border: 1px solid #f0c33c;
+    border-left: 5px solid #f0b849;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(240, 184, 73, 0.12);
+}
+
+.admin-layout-save-notice-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+    width: 26px;
+    height: 26px;
+    font-size: 26px;
+    line-height: 26px;
+    color: #b37800;
+}
+
+.admin-layout-save-notice-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-layout-save-notice-title {
+    margin: 0;
+    font-size: 1.05em;
+    font-weight: 700;
+    color: #7a5200;
+}
+
+.admin-layout-save-notice-text {
+    margin: 0;
+    font-size: 0.97em;
+    line-height: 1.55;
+    color: #4a4a4a;
 }
 
 p.submit {
@@ -893,4 +945,172 @@ p.submit {
 .admin-layout-button.lkn-fsdw-whatsapp-btn:focus-visible {
     outline: 2px solid #1a8f43;
     outline-offset: 2px;
+}
+/* ── Joined child controlled by a "Display" toggle ─────────────────────── */
+/* Fake "disabled" state (input still submits). */
+.admin-layout-joined-child.wcfa-child--disabled {
+	opacity: 0.45;
+	filter: grayscale(0.4);
+}
+
+.admin-layout-joined-child.wcfa-child--disabled .admin-layout-joined-component-bg {
+	pointer-events: none;
+}
+
+/* ── "Visualizar" link beside appearance inputs ────────────────────────── */
+.admin-layout-input-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.admin-layout-input-row > .admin-layout-input {
+    flex: 1 1 220px;
+    width: auto;
+    min-width: 0;
+}
+
+.admin-layout-input-row > input[type="color"].admin-layout-input {
+    flex: 0 0 64px;
+    width: 64px;
+    min-width: 64px;
+    max-width: 64px;
+}
+
+.admin-layout-preview-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #2271b1;
+    font-size: 1.05em;
+    line-height: 1.4;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.admin-layout-preview-link:hover,
+.admin-layout-preview-link:focus {
+    color: #135e96;
+    text-decoration: underline;
+}
+
+.admin-layout-preview-link:focus-visible {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+.admin-layout-preview-link .dashicons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+}
+
+/* ── Preview modal (opens the "Texts" editor) ──────────────────────────── */
+body.wcfa-preview-modal-open {
+    overflow: hidden;
+}
+
+.wcfa-preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    /* Keep the dialog centred where it was before the scrollbar was hidden:
+       add the (now hidden) scrollbar width to the right so the content box keeps
+       its original width. The var is set from JS on open. */
+    padding-right: calc(24px + var(--wcfa-scrollbar-comp, 0px));
+    box-sizing: border-box;
+}
+
+.wcfa-preview-modal[hidden] {
+    display: none !important;
+}
+
+.wcfa-preview-modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.wcfa-preview-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 780px;
+    max-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    background: #f4f4f4;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.wcfa-preview-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.wcfa-preview-modal__title {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #121519;
+}
+
+.wcfa-preview-modal__close {
+    border: none;
+    background: none;
+    padding: 0 4px;
+    font-size: 24px;
+    line-height: 1;
+    color: #646970;
+    cursor: pointer;
+}
+
+.wcfa-preview-modal__close:hover,
+.wcfa-preview-modal__close:focus {
+    color: #121519;
+}
+
+.wcfa-preview-modal__body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* ── Preview modal: lighter padding on narrow screens ──────────────────── */
+@media (max-width: 700px) {
+    .wcfa-preview-modal {
+        padding: 10px;
+        padding-right: calc(10px + var(--wcfa-scrollbar-comp, 0px));
+    }
+
+    .wcfa-preview-modal__dialog {
+        max-height: calc(100vh - 20px);
+    }
+
+    .wcfa-preview-modal__header {
+        padding: 12px 14px;
+    }
+
+    .wcfa-preview-modal__body {
+        padding: 10px;
+    }
 }

@@ -85,46 +85,79 @@ class WcForceAuthCheckout {
 	/**
 	 * URL of the page customers are redirected to when they must authenticate.
 	 *
+	 * Sourced from the shared redirect configuration (WcForceAuthRedirectSettings).
+	 *
 	 * @return string
 	 */
 	protected function get_login_page_url() {
-		$url = (string) $this->option( 'login_url', '' );
-
-		if ( '' === $url ) {
-			$url = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
-		}
-
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public filter kept for backwards compatibility.
-		return apply_filters( 'wc_force_auth_login_page_url', $url );
+		return WcForceAuthRedirectSettings::get_login_page_url();
 	}
 
 	/**
 	 * URL of the checkout page.
 	 *
+	 * Sourced from the shared redirect configuration (WcForceAuthRedirectSettings).
+	 *
 	 * @return string
 	 */
 	protected function get_checkout_page_url() {
-		$url = (string) $this->option( 'checkout_url', '' );
-
-		if ( '' === $url ) {
-			$url = wc_get_checkout_url();
-		}
-
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Public filter kept for backwards compatibility.
-		return apply_filters( 'wc_force_auth_checkout_page_url', $url );
+		return WcForceAuthRedirectSettings::get_checkout_page_url();
 	}
 
 	/**
 	 * Where the customer lands right after authenticating.
 	 *
+	 * Sourced from the shared redirect configuration (WcForceAuthRedirectSettings).
+	 *
 	 * @return string
 	 */
 	protected function get_after_login_url() {
-		if ( 'account' === $this->option( 'redirect_after', 'checkout' ) ) {
-			return wc_get_account_endpoint_url( 'dashboard' );
+		return WcForceAuthRedirectSettings::get_after_login_url();
+	}
+
+	/**
+	 * Remember the page the customer came from when they land on the account
+	 * page to log in, so the "Previous page" destination can send them back
+	 * there after they authenticate.
+	 *
+	 * Hook: template_redirect.
+	 */
+	public function capture_return_url() {
+		if ( is_user_logged_in() || is_admin() || wp_doing_ajax() || wp_doing_cron() ) {
+			return;
 		}
 
-		return $this->get_checkout_page_url();
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return;
+		}
+
+		// Only the page that hosts the login form is a useful capture point.
+		if ( ! is_account_page() ) {
+			return;
+		}
+
+		$referer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
+
+		if ( '' === $referer ) {
+			return;
+		}
+
+		// Same-site referrers only (a foreign referer must never become the
+		// post-login destination — that would be an open redirect).
+		if ( wp_parse_url( $referer, PHP_URL_HOST ) !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
+			return;
+		}
+
+		// Never remember the account/login page itself (e.g. an internal refresh
+		// or the checkout→account redirect), so "Previous page" does not loop.
+		$referer_path = wp_parse_url( $referer, PHP_URL_PATH );
+		$account_path = wp_parse_url( $this->get_login_page_url(), PHP_URL_PATH );
+
+		if ( $referer_path && $account_path && untrailingslashit( $referer_path ) === untrailingslashit( $account_path ) ) {
+			return;
+		}
+
+		WcForceAuthRedirectSettings::store_return_url( $referer );
 	}
 
 	/**

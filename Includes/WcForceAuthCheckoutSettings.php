@@ -82,11 +82,8 @@ class WcForceAuthCheckoutSettings extends WcForceAuthSettingsPage {
 	 */
 	public static function defaults(): array {
 		return array(
-			'enable'         => 'yes',
-			'message'        => __( 'Please log in or register to complete your purchase.', 'woo-force-authentification-before-checkout' ),
-			'login_url'      => '',
-			'checkout_url'   => '',
-			'redirect_after' => 'checkout',
+			'enable'  => 'yes',
+			'message' => __( 'Please log in or register to complete your purchase.', 'woo-force-authentification-before-checkout' ),
 		);
 	}
 
@@ -135,54 +132,6 @@ class WcForceAuthCheckoutSettings extends WcForceAuthSettingsPage {
 				'block_sub_title'   => __( 'Text displayed to the redirected customer.', 'woo-force-authentification-before-checkout' ),
 				'input_description' => __( 'Shown as a WooCommerce notice on the account page. If left empty, the default message is used.', 'woo-force-authentification-before-checkout' ),
 			),
-
-			'urls_title' => array(
-				'title'    => __( 'Pages', 'woo-force-authentification-before-checkout' ),
-				'type'     => 'title',
-				'id'       => $p . 'urls_section',
-				'block_id' => 'urls',
-			),
-			$p . 'login_url' => array(
-				'title'             => __( 'Login page URL', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'login_url',
-				'default'           => '',
-				'description'       => __( 'Page customers are sent to in order to authenticate.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Login page URL', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Where the guest is redirected to log in.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Leave empty to use the WooCommerce "My account" page. Useful when you use a custom login page.', 'woo-force-authentification-before-checkout' ),
-			),
-			$p . 'checkout_url' => array(
-				'title'             => __( 'Checkout page URL', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'checkout_url',
-				'default'           => '',
-				'description'       => __( 'Page the customer is sent back to after authenticating.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Checkout page URL', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Where the logged-in customer returns to.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Leave empty to use the WooCommerce checkout page. Useful when you use a custom checkout page.', 'woo-force-authentification-before-checkout' ),
-			),
-
-			'redirect_title' => array(
-				'title'    => __( 'After login', 'woo-force-authentification-before-checkout' ),
-				'type'     => 'title',
-				'id'       => $p . 'redirect_section',
-				'block_id' => 'redirect',
-			),
-			$p . 'redirect_after' => array(
-				'title'             => __( 'Destination after login', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'select',
-				'id'                => $p . 'redirect_after',
-				'options'           => array(
-					'checkout' => __( 'Back to the checkout', 'woo-force-authentification-before-checkout' ),
-					'account'  => __( 'My account dashboard', 'woo-force-authentification-before-checkout' ),
-				),
-				'default'           => 'checkout',
-				'description'       => __( 'Where the customer lands right after authenticating.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Destination after login', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Landing page once the customer is authenticated.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( '"Back to the checkout" sends the customer to the checkout to finish the purchase. "My account dashboard" sends them to their account area instead.', 'woo-force-authentification-before-checkout' ),
-			),
 		);
 	}
 
@@ -202,13 +151,6 @@ class WcForceAuthCheckoutSettings extends WcForceAuthSettingsPage {
 
 			case 'message':
 				return sanitize_textarea_field( $value );
-
-			case 'login_url':
-			case 'checkout_url':
-				return esc_url_raw( $value );
-
-			case 'redirect_after':
-				return in_array( $value, array( 'checkout', 'account' ), true ) ? $value : 'checkout';
 
 			default:
 				return sanitize_text_field( $value );

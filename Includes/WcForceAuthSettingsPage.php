@@ -105,17 +105,54 @@ abstract class WcForceAuthSettingsPage {
 
 			add_filter(
 				'default_option_' . $option_name,
-				static function ( $default, $option, $passed_default ) use ( $value ) {
+				function ( $default, $option, $passed_default ) use ( $key ) {
 					if ( $passed_default && false !== $default ) {
 						return $default;
 					}
 
-					return $value;
+					return $this->default_value( $key );
 				},
 				10,
 				3
 			);
+
+			// Normalize the value on every read so a stored value that is still
+			// one of the known defaults keeps following the current mode (both in
+			// the admin fields and on the front-end).
+			add_filter(
+				'option_' . $option_name,
+				function ( $value ) use ( $key ) {
+					return $this->normalize_value( $key, $value );
+				},
+				10,
+				1
+			);
 		}
+	}
+
+	/**
+	 * Normalize a stored option value. No-op by default; overridden by screens
+	 * whose stored defaults may need to follow the current configuration.
+	 *
+	 * @param string $key   Setting key.
+	 * @param mixed  $value Stored value.
+	 * @return mixed
+	 */
+	protected function normalize_value( $key, $value ) {
+		return $value;
+	}
+
+	/**
+	 * Default value for a setting key. Overridden by screens whose defaults
+	 * depend on the current configuration (e.g. mode-aware texts).
+	 *
+	 * @param string $key Setting key.
+	 * @return mixed
+	 */
+	protected function default_value( $key ) {
+		$defaults = $this->get_defaults();
+
+		return isset( $defaults[ $key ] ) ? $defaults[ $key ] : '';
 	}
 
 	/**
@@ -131,6 +168,10 @@ abstract class WcForceAuthSettingsPage {
 		$form_fields  = $this->get_fields();
 		$method_title = $this->get_page_title();
 
+		// Optional notice shown right above the save button (screens opt in by
+		// overriding get_save_notice()).
+		$wcfa_save_notice = $this->get_save_notice();
+
 		// Data for the sidebar promotional card.
 		$wcfa_invoice_plugin_installed = $this->is_invoice_plugin_installed();
 		$wcfa_install_url = wp_nonce_url(
@@ -139,6 +180,18 @@ abstract class WcForceAuthSettingsPage {
 		);
 
 		include WC_FORCE_AUTH_DIR . 'Includes/templates/WcForceAuthSettingsLayout.php';
+	}
+
+	/**
+	 * Optional notice rendered above the "Save changes" button.
+	 *
+	 * Screens opt in by overriding this method. Returning an empty array (the
+	 * default) hides the notice entirely.
+	 *
+	 * @return array{title?: string, texts?: string[]}
+	 */
+	protected function get_save_notice(): array {
+		return array();
 	}
 
 	/**
@@ -183,6 +236,22 @@ abstract class WcForceAuthSettingsPage {
 
 		wp_enqueue_style( 'dashicons' );
 
+		// Front-end component CSS so the visual editor's preview looks identical
+		// to the real screens (the preview reuses the front classes).
+		wp_enqueue_style(
+			'wc-force-auth-otp',
+			WC_FORCE_AUTH_URL . 'Public/css/wc-force-auth-otp.css',
+			array( 'wc-force-auth-admin-settings' ),
+			WC_FORCE_AUTH_VERSION
+		);
+
+		wp_enqueue_style(
+			'wc-force-auth-text-editor',
+			WC_FORCE_AUTH_URL . 'Admin/css/wc-force-auth-admin-text-editor.css',
+			array( 'wc-force-auth-otp' ),
+			WC_FORCE_AUTH_VERSION
+		);
+
 		wp_enqueue_script(
 			'wc-force-auth-sweetalert2',
 			WC_FORCE_AUTH_URL . 'Includes/assets/sweetalert2/sweetalert2.all.min.js',
@@ -221,6 +290,33 @@ abstract class WcForceAuthSettingsPage {
 			array( 'jquery' ),
 			WC_FORCE_AUTH_VERSION,
 			true
+		);
+
+		wp_enqueue_script(
+			'wc-force-auth-text-editor',
+			WC_FORCE_AUTH_URL . 'Admin/js/wc-force-auth-admin-text-editor.js',
+			array(),
+			WC_FORCE_AUTH_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
+			'wc-force-auth-admin-preview',
+			WC_FORCE_AUTH_URL . 'Admin/js/wc-force-auth-admin-preview.js',
+			array( 'wc-force-auth-text-editor' ),
+			WC_FORCE_AUTH_VERSION,
+			true
+		);
+
+		wp_localize_script(
+			'wc-force-auth-text-editor',
+			'wcForceAuthEditor',
+			array(
+				'i18n' => array(
+					'save'   => __( 'Save', 'woo-force-authentification-before-checkout' ),
+					'cancel' => __( 'Cancel', 'woo-force-authentification-before-checkout' ),
+				),
+			)
 		);
 	}
 

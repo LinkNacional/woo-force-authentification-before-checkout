@@ -28,6 +28,16 @@ $field_index = [];
 foreach ($form_fields as $key => $field) {
     $field_index[$key] = $field;
 }
+
+// Whether this screen ships the visual text editor (the "Texts" tab). When it
+// does, appearance fields can open it in a preview modal.
+$wcfa_has_editor = false;
+foreach ($form_fields as $wcfa_field) {
+    if (($wcfa_field['type'] ?? '') === 'editor') {
+        $wcfa_has_editor = true;
+        break;
+    }
+}
 ?>
 <div class="admin-layout-page-wrapper">
     <div class="admin-layout-content">
@@ -55,6 +65,12 @@ foreach ($form_fields as $key => $field) {
                         <?php
                         foreach (($block['fields'] ?? []) as $key => $field):
                             if (!empty($field['join'])) continue;
+
+                            // Visual text editor: full-width, rendered on its own.
+                            if (($field['type'] ?? '') === 'editor') {
+                                include WC_FORCE_AUTH_DIR . 'Includes/templates/WcForceAuthTextEditor.php';
+                                continue;
+                            }
 
                             // Busca filhos deste campo
                             $children = [];
@@ -98,6 +114,13 @@ foreach ($form_fields as $key => $field) {
                                 <hr class="admin-layout-hr">
                                 <div class="admin-layout-field-input-wrapper">
                                     <?php
+                                    // Fields flagged with `preview_link` get a "Visualizar"
+                                    // link beside the input (it drops below on narrow screens).
+                                    $wcfa_show_preview = ! empty($field['preview_link']) && in_array($field['type'], array('text', 'number', 'color'), true);
+                                    if ($wcfa_show_preview) {
+                                        echo '<div class="admin-layout-input-row">';
+                                    }
+
                                     // Renderiza o campo pai
                                     switch ($field['type']) {
                                         case 'text':
@@ -121,12 +144,16 @@ foreach ($form_fields as $key => $field) {
                                             <?php
                                             break;
                                         case 'color':
+                                            $color_val = get_option($field['id'] ? $field['id'] : $key);
+                                            if (empty($color_val) || !preg_match('/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', (string) $color_val)) {
+                                                $color_val = !empty($field['default']) ? $field['default'] : '#ffffff';
+                                            }
                                             ?>
                                             <input
                                                 type="color"
                                                 name="<?php echo esc_attr($field['id'] ? $field['id'] : $key); ?>"
                                                 id="<?php echo esc_attr($field['id'] ? $field['id'] : $key); ?>"
-                                                value="<?php echo esc_attr(get_option($field['id'] ? $field['id'] : $key)); ?>"
+                                                value="<?php echo esc_attr($color_val); ?>"
                                                 class="admin-layout-input"
                                             />
                                             <?php
@@ -195,8 +222,9 @@ foreach ($form_fields as $key => $field) {
                                                         <input
                                                             type="radio"
                                                             name="<?php echo esc_attr($field['id'] ? $field['id'] : $key); ?>"
+                                                            value="<?php echo esc_attr($option_value); ?>"
                                                             <?php checked((string) get_option($field['id'] ?: $key, $field['default'] ?? ''), (string) $option_value); ?>
-                                                            id="<?php echo esc_attr($field['id'] ? $field['id'] : $key); ?>"
+                                                            id="<?php echo esc_attr(($field['id'] ? $field['id'] : $key) . '_' . sanitize_title((string) $option_value)); ?>"
                                                             class="<?php echo !empty($field['class']) ? esc_attr($field['class']) : 'admin-layout-radio'; ?>"
                                                             <?php
                                                             if (isset($field['custom_attributes']) && is_array($field['custom_attributes'])) {
@@ -253,7 +281,8 @@ foreach ($form_fields as $key => $field) {
                                                     class="admin-layout-select"
                                                 >
                                                     <?php foreach ($field['options'] as $option_key => $option_label): ?>
-                                                        <option value="<?php echo esc_attr($option_key); ?>" <?php selected((string) get_option($field['id'] ?: $key, $field['default'] ?? ''), (string) $option_key); ?>>
+                                                        <?php $option_disabled = !empty($field['options_disabled']) && in_array((string) $option_key, array_map('strval', $field['options_disabled']), true); ?>
+                                                        <option value="<?php echo esc_attr($option_key); ?>" <?php selected((string) get_option($field['id'] ?: $key, $field['default'] ?? ''), (string) $option_key); ?> <?php disabled($option_disabled); ?>>
                                                             <?php echo esc_html($option_label); ?>
                                                         </option>
                                                     <?php endforeach; ?>
@@ -285,6 +314,16 @@ foreach ($form_fields as $key => $field) {
                                             }
                                             break;
                                     }
+
+                                    if ($wcfa_show_preview) {
+                                        ?>
+                                        <button type="button" class="admin-layout-preview-link wcfa-preview-open">
+                                            <span class="dashicons dashicons-visibility" aria-hidden="true"></span>
+                                            <span class="admin-layout-preview-link__text"><?php esc_html_e('Visualizar', 'woo-force-authentification-before-checkout'); ?></span>
+                                        </button>
+                                        <?php
+                                        echo '</div>';
+                                    }
                                     ?>
                                     <?php if (!empty($field['input_description'])): ?>
                                         <div class="admin-layout-input-description">
@@ -303,249 +342,39 @@ foreach ($form_fields as $key => $field) {
                                     <?php endif; ?>
                                 </div>
                                 <?php
-                                $provider_groups = [];
-                                foreach (($children ?? []) as $child_key => $child_field) {
-                                    $provider_key = !empty($child_field['provider']) ? $child_field['provider'] : '';
-                                    $provider_groups[$provider_key][$child_key] = $child_field;
-                                }
-                                foreach ($provider_groups as $provider_key => $group_children):
-                                    $wrap_provider_group = '' !== $provider_key;
-                                    if ($wrap_provider_group) {
-                                        echo '<div class="admin-layout-provider-group" data-captcha-provider="' . esc_attr($provider_key) . '">';
-                                    }
-                                    foreach ($group_children as $child_key => $child_field):
+                                $joined_children = $children;
+                                include WC_FORCE_AUTH_DIR . 'Includes/templates/WcForceAuthSettingsJoined.php';
                                 ?>
-                                    <div class="admin-layout-joined-label-desc">
-                                        <?php if (!empty($child_field['block_title'])): ?>
-                                            <span class="admin-layout-label">
-                                                <?php echo esc_html($child_field['block_title']); ?>
-                                            </span>
-                                        <?php endif; ?>
-                                        <?php
-                                        $sub = !empty($child_field['block_sub_title']) ? $child_field['block_sub_title'] : (!empty($child_field['description']) ? $child_field['description'] : '');
-                                        if ($sub):
-                                        ?>
-                                            <span class="admin-layout-description admin-layout-joined-description">
-                                                <?php echo esc_html($sub); ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="admin-layout-joined-component-bg">
-                                        <hr class="admin-layout-hr">
-                                        <div class="admin-layout-field-input-wrapper">
-                                            <?php
-                                            // Renderiza o componente do filho
-                                            switch ($child_field['type']) {
-                                                case 'text':
-                                                case 'password':
-                                                case 'number':
-                                                    ?>
-                                                    <input
-                                                        type="<?php echo esc_attr($child_field['type']); ?>"
-                                                        name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        value="<?php echo esc_attr(get_option($child_field['id'] ? $child_field['id'] : $child_key)); ?>"
-                                                        class="admin-layout-input"
-                                                        <?php
-                                                        if (isset($child_field['custom_attributes']) && is_array($child_field['custom_attributes'])) {
-                                                            foreach ($child_field['custom_attributes'] as $attr => $val) {
-                                                                echo esc_attr($attr) . '="' . esc_attr($val) . '" ';
-                                                            }
-                                                        }
-                                                        ?>
-                                                    />
-                                                    <?php
-                                                    break;
-                                                case 'color':
-                                                    ?>
-                                                    <input
-                                                        type="color"
-                                                        name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        value="<?php echo esc_attr(get_option($child_field['id'] ? $child_field['id'] : $child_key)); ?>"
-                                                        class="admin-layout-input"
-                                                    />
-                                                    <?php
-                                                    break;
-                                                case 'url':
-                                                    $url = !empty($child_field['default']) ? $child_field['default'] : 'www.customlink.com';
-                                                    $label = !empty($child_field['label']) ? $child_field['label'] : 'Link URL';
-                                                    echo '<a href="' . esc_url($url) . '" target="_blank">' . esc_html($label) . '</a>';
-                                                    break;
-                                                case 'button':
-                                                    $button_class = 'admin-layout-button';
-                                                    if (empty($child_field['class'])) {
-                                                        $button_class .= ' button button-primary';
-                                                    } else {
-                                                        $button_class .= ' ' . esc_attr($child_field['class']);
-                                                    }
-                                                    ?>
-                                                    <button
-                                                        type="button"
-                                                        id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        class="<?php echo esc_attr($button_class); ?>"
-                                                        <?php
-                                                        if (isset($child_field['custom_attributes']) && is_array($child_field['custom_attributes'])) {
-                                                            foreach ($child_field['custom_attributes'] as $attr => $val) {
-                                                                echo esc_attr($attr) . '="' . esc_attr($val) . '" ';
-                                                            }
-                                                        }
-                                                        ?>
-                                                    ><?php echo !empty($child_field['label']) ? esc_html($child_field['label']) : esc_html($child_field['title']); ?></button>
-                                                    <?php
-                                                    break;
-                                                case 'textarea':
-                                                    ?>
-                                                    <textarea
-                                                        name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        class="admin-layout-textarea"
-                                                    ><?php echo esc_textarea(get_option($child_field['id'] ? $child_field['id'] : $child_key)); ?></textarea>
-                                                    <?php
-                                                    break;
-                                                case 'checkbox':
-                                                    ?>
-                                                    <div class="admin-layout-checkbox-wrapper">
-                                                        <label class="admin-layout-checkbox-label">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                                id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                                class="admin-layout-checkbox"
-                                                                <?php checked(get_option($child_field['id'] ?: $child_key, $child_field['default'] ?? '') === 'yes'); ?>
-                                                            />
-                                                            <?php if (!empty($child_field['label'])): ?>
-                                                                <span class="admin-layout-checkbox-label-text">
-                                                                    <?php echo wp_kses_post($child_field['label']); ?>
-                                                                </span>
-                                                            <?php endif; ?>
-                                                        </label>
-                                                    </div>
-                                                    <?php
-                                                    break;
-                                                case 'radio':
-                                                    if (!empty($child_field['options']) && is_array($child_field['options'])) {
-                                                        foreach ($child_field['options'] as $option_value => $option_label) {
-                                                            ?>
-                                                            <label class="admin-layout-radio-label">
-                                                                <input
-                                                                    type="radio"
-                                                                    name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                                    <?php checked((string) get_option($child_field['id'] ?: $child_key, $child_field['default'] ?? ''), (string) $option_value); ?>
-                                                                    id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                                    class="<?php echo !empty($child_field['class']) ? esc_attr($child_field['class']) : 'admin-layout-radio'; ?>"
-                                                                    <?php
-                                                                    if (isset($child_field['custom_attributes']) && is_array($child_field['custom_attributes'])) {
-                                                                        foreach ($child_field['custom_attributes'] as $attr => $val) {
-                                                                            echo esc_attr($attr) . '="' . esc_attr($val) . '" ';
-                                                                        }
-                                                                    }
-                                                                    ?>
-                                                                />
-                                                                <span class="admin-layout-radio-label-text">
-                                                                    <?php echo esc_html($option_label); ?>
-                                                                </span>
-                                                            </label>
-                                                            <?php
-                                                        }
-                                                    }
-                                                    break;
-                                                case 'multicheck':
-                                                    if (!empty($child_field['options']) && is_array($child_field['options'])) {
-                                                        foreach ($child_field['options'] as $option_key => $option_label) {
-                                                            $option_id      = ($child_field['id'] ?: $child_key) . '_' . $option_key;
-                                                            $option_default = $child_field['options_checked'][ $option_key ] ?? $child_field['default'] ?? '';
-                                                            $option_desc    = $child_field['options_input_description'][ $option_key ] ?? '';
-                                                            ?>
-                                                            <div class="admin-layout-checkbox-wrapper">
-                                                                <label class="admin-layout-checkbox-label">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        name="<?php echo esc_attr($option_id); ?>"
-                                                                        id="<?php echo esc_attr($option_id); ?>"
-                                                                        class="admin-layout-checkbox"
-                                                                        <?php checked(get_option($option_id, $option_default) === 'yes'); ?>
-                                                                    />
-                                                                    <span class="admin-layout-checkbox-label-text">
-                                                                        <?php echo wp_kses_post($option_label); ?>
-                                                                    </span>
-                                                                </label>
-                                                                <?php if (!empty($option_desc)): ?>
-                                                                    <div class="admin-layout-input-description">
-                                                                        <?php echo esc_html($option_desc); ?>
-                                                                    </div>
-                                                                <?php endif; ?>
-                                                            </div>
-                                                            <?php
-                                                        }
-                                                    }
-                                                    break;
-                                                case 'select':
-                                                    ?>
-                                                    <div class="admin-layout-select-row">
-                                                        <select
-                                                            name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                            id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                            class="admin-layout-select"
-                                                        >
-                                                            <?php foreach ($child_field['options'] as $option_key => $option_label): ?>
-                                                                <option value="<?php echo esc_attr($option_key); ?>" <?php selected((string) get_option($child_field['id'] ?: $child_key, $child_field['default'] ?? ''), (string) $option_key); ?>>
-                                                                    <?php echo esc_html($option_label); ?>
-                                                                </option>
-                                                            <?php endforeach; ?>
-                                                        </select>
-                                                    </div>
-                                                    <?php
-                                                    break;
-                                                case 'file':
-                                                    ?>
-                                                    <input
-                                                        type="file"
-                                                        name="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        id="<?php echo esc_attr($child_field['id'] ? $child_field['id'] : $child_key); ?>"
-                                                        class="admin-layout-file"
-                                                    />
-                                                    <?php
-                                                    // Mostra apenas a mensagem e o nome do último arquivo salvo
-                                                    $file_path = get_option($child_field['id'] ? $child_field['id'] : $child_key);
-                                                    if (!empty($file_path)) {
-                                                        $file_name = basename($file_path);
-                                                        ?>
-                                                        <div class="admin-layout-file-current">
-                                                            <span>
-                                                                <?php esc_html_e('Last file uploaded:', 'woo-force-authentification-before-checkout'); ?>
-                                                                <strong><?php echo esc_html($file_name); ?></strong>
-                                                            </span>
-                                                        </div>
-                                                        <?php
-                                                    }
-                                                    break;
-                                            }
-                                            if (!empty($child_field['input_description'])): ?>
-                                                <div class="admin-layout-input-description">
-                                                    <?php echo esc_html($child_field['input_description']); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                            <?php if (!empty($child_field['input_tab_link'])): ?>
-                                                <div class="admin-layout-input-tab-link">
-                                                    <?php echo wp_kses($child_field['input_tab_link'], array('a' => array('href' => array(), 'data-goto-tab' => array()))); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                            <?php if (!empty($child_field['input_warning'])): ?>
-                                                <div class="admin-layout-input-warning">
-                                                    <?php echo wp_kses($child_field['input_warning'], array('strong' => array(), 'a' => array('href' => array(), 'target' => array()), 'br' => array())); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                    <?php if ($wrap_provider_group): ?></div><?php endif; ?>
-                                <?php endforeach; ?>
                             </div>
                         </div>
                         <?php endforeach; ?>
                     </div>
                 <?php endforeach; ?>
+                <?php if (!empty($wcfa_save_notice)) : ?>
+                    <div class="admin-layout-save-notice" role="note">
+                        <span class="admin-layout-save-notice-icon dashicons dashicons-email" aria-hidden="true"></span>
+                        <div class="admin-layout-save-notice-content">
+                            <?php if (!empty($wcfa_save_notice['title'])) : ?>
+                                <p class="admin-layout-save-notice-title"><?php echo esc_html($wcfa_save_notice['title']); ?></p>
+                            <?php endif; ?>
+                            <?php foreach (($wcfa_save_notice['texts'] ?? array()) as $wcfa_notice_text) : ?>
+                                <p class="admin-layout-save-notice-text"><?php echo esc_html($wcfa_notice_text); ?></p>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if (!empty($wcfa_has_editor)) : ?>
+                    <div class="wcfa-preview-modal" hidden aria-hidden="true">
+                        <div class="wcfa-preview-modal__overlay" data-wcfa-preview-close></div>
+                        <div class="wcfa-preview-modal__dialog" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e('Preview', 'woo-force-authentification-before-checkout'); ?>">
+                            <div class="wcfa-preview-modal__header">
+                                <h3 class="wcfa-preview-modal__title"><?php esc_html_e('Preview', 'woo-force-authentification-before-checkout'); ?></h3>
+                                <button type="button" class="wcfa-preview-modal__close" data-wcfa-preview-close aria-label="<?php esc_attr_e('Close', 'woo-force-authentification-before-checkout'); ?>">&times;</button>
+                            </div>
+                            <div class="wcfa-preview-modal__body"></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
                 <div class="admin-layout-submit-wrapper">
                     <button type="submit" class="button button-primary">
                         <?php esc_html_e('Save changes', 'woo-force-authentification-before-checkout'); ?>

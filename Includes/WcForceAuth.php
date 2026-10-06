@@ -73,7 +73,10 @@ class WcForceAuth {
 		$settings = new WcForceAuthSettings( $this->plugin_name, $this->version );
 		$this->loader->add_action( 'wp_ajax_' . WcForceAuthSettings::AJAX_ACTION, $settings, 'ajax_save_settings' );
 
-		$menu = new WcForceAuthMenu( $force_settings, $settings );
+		$redirect_settings = new WcForceAuthRedirectSettings( $this->plugin_name, $this->version );
+		$this->loader->add_action( 'wp_ajax_' . WcForceAuthRedirectSettings::AJAX_ACTION, $redirect_settings, 'ajax_save_settings' );
+
+		$menu = new WcForceAuthMenu( $force_settings, $settings, $redirect_settings );
 		$this->loader->add_action( 'admin_menu', $menu, 'register' );
 
 		$this->loader->add_filter( 'plugin_action_links_' . WC_FORCE_AUTH_BASENAME, $this, 'add_settings_link' );
@@ -85,6 +88,7 @@ class WcForceAuth {
 	private function define_public_hooks() {
 		// Force authentication before checkout (original behaviour, kept intact).
 		$checkout = new WcForceAuthCheckout( $this->plugin_name, $this->version );
+		$this->loader->add_action( 'template_redirect', $checkout, 'capture_return_url' );
 		$this->loader->add_action( 'template_redirect', $checkout, 'redirect_to_account_page' );
 		$this->loader->add_action( 'wp_head', $checkout, 'add_wc_notice' );
 		$this->loader->add_filter( 'woocommerce_registration_redirect', $checkout, 'redirect_to_checkout', 100 );
@@ -94,6 +98,11 @@ class WcForceAuth {
 		// Email OTP authentication.
 		$otp = new WcForceAuthOtp( $this->plugin_name, $this->version );
 		$this->loader->add_action( 'rest_api_init', $otp, 'register_endpoints' );
+
+		// Register the OTP email as a real WooCommerce email so it shows up in
+		// the WooCommerce email listings/preview and reuses the store template.
+		$this->loader->add_filter( 'woocommerce_email_classes', $this, 'register_otp_email' );
+		$this->loader->add_filter( 'woocommerce_transactional_emails_for_block_editor', $this, 'register_otp_email_for_block_editor' );
 
 		// Public assets (OTP styles/scripts on the account page).
 		$plugin_public = new WcForceAuthPublic( $otp );
@@ -108,6 +117,37 @@ class WcForceAuth {
 		// Safety net: keep WooCommerce's native registration blocked when the
 		// passwordless (register and login) mode owns the account creation.
 		$this->loader->add_filter( 'woocommerce_process_registration_errors', $otp, 'block_registration', 10, 4 );
+	}
+
+	/**
+	 * Register the OTP email class with WooCommerce.
+	 *
+	 * @param array $emails Registered email instances, keyed by class name.
+	 * @return array
+	 */
+	public function register_otp_email( $emails ) {
+		if ( class_exists( WcForceAuthOtpEmail::class ) ) {
+			$emails['WcForceAuthOtpEmail'] = new WcForceAuthOtpEmail();
+		}
+
+		return $emails;
+	}
+
+	/**
+	 * Opt the OTP email into the WooCommerce block email editor.
+	 *
+	 * Adds it to the transactional email list so it can be previewed (and edited)
+	 * from WooCommerce → Settings → Emails when the block email editor is active.
+	 *
+	 * @param array $emails Transactional email ids.
+	 * @return array
+	 */
+	public function register_otp_email_for_block_editor( $emails ) {
+		if ( ! in_array( 'wc_force_auth_otp', $emails, true ) ) {
+			$emails[] = 'wc_force_auth_otp';
+		}
+
+		return $emails;
 	}
 
 	/**

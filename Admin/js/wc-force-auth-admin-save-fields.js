@@ -97,4 +97,47 @@
 			e.preventDefault();
 		}
 	});
+
+	// Joined fields controlled by a parent field:
+	//  - data-wcfa-show-when="custom": show the child only when the parent value
+	//    matches (used by the URL fields hidden behind a "Custom" mode).
+	//  - data-wcfa-dim-when="no": dim the child when the parent value matches
+	//    (used by the "Display" Show/Hide toggles). The input is NOT actually
+	//    disabled — a real `disabled` would drop its value from the POST.
+	$(function () {
+		$('[data-wcfa-controlled-by]').each(function () {
+			var $child = $(this);
+			var name = $child.attr('data-wcfa-controlled-by');
+			var $parent = $('[name="' + name + '"]');
+
+			if (!$parent.length || !name) {
+				return;
+			}
+
+			var showWhen = $child.attr('data-wcfa-show-when');
+			var dimWhen = $child.attr('data-wcfa-dim-when');
+
+			function currentValue() {
+				var $checked = $parent.filter(':checked');
+				if ($checked.length) {
+					return $checked.val();
+				}
+				return $parent.val();
+			}
+
+			function apply() {
+				var value = currentValue();
+
+				if (typeof showWhen !== 'undefined') {
+					$child.toggle(value === showWhen);
+				}
+				if (typeof dimWhen !== 'undefined') {
+					$child.toggleClass('wcfa-child--disabled', value === dimWhen);
+				}
+			}
+
+			$parent.on('change', apply);
+			apply();
+		});
+	});
 })(jQuery);
