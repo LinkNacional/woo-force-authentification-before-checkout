@@ -3,6 +3,7 @@
 namespace WcfaTests\Cases;
 
 use Lkn\WcForceAuth\Includes\WcForceAuthCheckout;
+use Lkn\WcForceAuth\Includes\WcForceAuthRedirectSettings;
 use WcfaTests\Lib\Wp;
 use WcfaTests\Lib\WpTestCase;
 
@@ -40,28 +41,47 @@ class ForceCheckoutTest extends WpTestCase {
 		$this->assertTrue( $this->call( $checkout, 'is_enabled' ), 'enabled' );
 	}
 
-	public function test_login_url_defaults_to_account_page_and_can_be_overridden(): void {
+	public function test_login_url_mode_account_is_default(): void {
 		$checkout = $this->checkout();
 
-		Wp::setForceConfig( array( 'login_url' => '' ) );
+		Wp::setForceConfig( array( 'login_url_mode' => 'account', 'login_url' => 'https://x.test/ignored/' ) );
 		$this->assertSame(
 			get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ),
 			$this->call( $checkout, 'get_login_page_url' ),
-			'default login url'
+			'account mode uses the account page'
 		);
-
-		Wp::setForceConfig( array( 'login_url' => 'https://x.test/custom-login/' ) );
-		$this->assertSame( 'https://x.test/custom-login/', $this->call( $checkout, 'get_login_page_url' ), 'overridden login url' );
 	}
 
-	public function test_checkout_url_defaults_and_override(): void {
+	public function test_login_url_mode_custom_uses_the_url(): void {
 		$checkout = $this->checkout();
 
-		Wp::setForceConfig( array( 'checkout_url' => '' ) );
-		$this->assertSame( wc_get_checkout_url(), $this->call( $checkout, 'get_checkout_page_url' ), 'default checkout url' );
+		Wp::setForceConfig( array( 'login_url_mode' => 'custom', 'login_url' => 'https://x.test/custom-login/' ) );
+		$this->assertSame( 'https://x.test/custom-login/', $this->call( $checkout, 'get_login_page_url' ), 'custom login url' );
 
-		Wp::setForceConfig( array( 'checkout_url' => 'https://x.test/custom-checkout/' ) );
-		$this->assertSame( 'https://x.test/custom-checkout/', $this->call( $checkout, 'get_checkout_page_url' ), 'overridden checkout url' );
+		// Custom mode with an empty URL falls back to the account page.
+		Wp::setForceConfig( array( 'login_url_mode' => 'custom', 'login_url' => '' ) );
+		$this->assertSame(
+			get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ),
+			$this->call( $checkout, 'get_login_page_url' ),
+			'custom mode empty -> account page'
+		);
+	}
+
+	public function test_checkout_url_mode_auto_is_default(): void {
+		$checkout = $this->checkout();
+
+		Wp::setForceConfig( array( 'checkout_url_mode' => 'auto', 'checkout_url' => 'https://x.test/ignored/' ) );
+		$this->assertSame( wc_get_checkout_url(), $this->call( $checkout, 'get_checkout_page_url' ), 'auto mode uses wc_get_checkout_url()' );
+	}
+
+	public function test_checkout_url_mode_custom_uses_the_url(): void {
+		$checkout = $this->checkout();
+
+		Wp::setForceConfig( array( 'checkout_url_mode' => 'custom', 'checkout_url' => 'https://x.test/custom-checkout/' ) );
+		$this->assertSame( 'https://x.test/custom-checkout/', $this->call( $checkout, 'get_checkout_page_url' ), 'custom checkout url' );
+
+		Wp::setForceConfig( array( 'checkout_url_mode' => 'custom', 'checkout_url' => '' ) );
+		$this->assertSame( wc_get_checkout_url(), $this->call( $checkout, 'get_checkout_page_url' ), 'custom mode empty -> wc_get_checkout_url()' );
 	}
 
 	public function test_after_login_destination(): void {
@@ -69,14 +89,53 @@ class ForceCheckoutTest extends WpTestCase {
 
 		Wp::setForceConfig(
 			array(
-				'checkout_url'   => 'https://x.test/custom-checkout/',
-				'redirect_after' => 'checkout',
+				'checkout_url_mode' => 'custom',
+				'checkout_url'      => 'https://x.test/custom-checkout/',
+				'redirect_after'    => 'checkout',
 			)
 		);
 		$this->assertSame( 'https://x.test/custom-checkout/', $this->call( $checkout, 'get_after_login_url' ), 'back to checkout' );
 
 		Wp::setForceConfig( array( 'redirect_after' => 'account' ) );
 		$this->assertSame( wc_get_account_endpoint_url( 'dashboard' ), $this->call( $checkout, 'get_after_login_url' ), 'account dashboard' );
+
+		Wp::setForceConfig( array( 'redirect_after' => 'custom', 'redirect_custom' => 'https://x.test/thank-you/' ) );
+		$this->assertSame( 'https://x.test/thank-you/', $this->call( $checkout, 'get_after_login_url' ), 'custom destination' );
+
+		Wp::setForceConfig( array( 'redirect_after' => 'custom', 'redirect_custom' => '' ) );
+		$this->assertSame( wc_get_account_endpoint_url( 'dashboard' ), $this->call( $checkout, 'get_after_login_url' ), 'custom empty -> account' );
+	}
+
+	public function test_after_login_previous_page_uses_the_stored_url(): void {
+		$checkout = $this->checkout();
+
+		Wp::setForceConfig( array( 'redirect_after' => 'previous' ) );
+
+		// No stored page yet -> falls back to the account dashboard.
+		unset( $_COOKIE[ WcForceAuthRedirectSettings::RETURN_COOKIE ] );
+		$this->assertSame(
+			wc_get_account_endpoint_url( 'dashboard' ),
+			$this->call( $checkout, 'get_after_login_url' ),
+			'previous with nothing stored -> account dashboard'
+		);
+
+		// A same-site stored page is used as the destination.
+		$_COOKIE[ WcForceAuthRedirectSettings::RETURN_COOKIE ] = home_url( '/produto/camisa/' );
+		$this->assertSame(
+			home_url( '/produto/camisa/' ),
+			$this->call( $checkout, 'get_after_login_url' ),
+			'previous returns the stored page'
+		);
+
+		// A foreign-host value is rejected (no open redirect).
+		$_COOKIE[ WcForceAuthRedirectSettings::RETURN_COOKIE ] = 'https://evil.example.com/steal';
+		$this->assertSame(
+			wc_get_account_endpoint_url( 'dashboard' ),
+			$this->call( $checkout, 'get_after_login_url' ),
+			'foreign host is rejected -> account dashboard'
+		);
+
+		unset( $_COOKIE[ WcForceAuthRedirectSettings::RETURN_COOKIE ] );
 	}
 
 	public function test_alert_message_default_and_override(): void {
@@ -104,8 +163,9 @@ class ForceCheckoutTest extends WpTestCase {
 
 		Wp::setForceConfig(
 			array(
-				'checkout_url'   => 'https://x.test/checkout/',
-				'redirect_after' => 'checkout',
+				'checkout_url_mode' => 'custom',
+				'checkout_url'      => 'https://x.test/checkout/',
+				'redirect_after'    => 'checkout',
 			)
 		);
 

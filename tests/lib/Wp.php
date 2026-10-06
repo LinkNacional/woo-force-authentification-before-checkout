@@ -4,6 +4,7 @@ namespace WcfaTests\Lib;
 
 use Lkn\WcForceAuth\Includes\WcForceAuthCheckoutSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthOtp;
+use Lkn\WcForceAuth\Includes\WcForceAuthRedirectSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthSettings;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.NamingConventions.PrefixAllGlobals -- CLI test helper; not shipped in the plugin release.
@@ -36,6 +37,10 @@ class Wp {
 
 		foreach ( array_keys( WcForceAuthCheckoutSettings::defaults() ) as $key ) {
 			$names[] = WcForceAuthCheckoutSettings::OPTION_PREFIX . $key;
+		}
+
+		foreach ( array_keys( WcForceAuthRedirectSettings::defaults() ) as $key ) {
+			$names[] = WcForceAuthRedirectSettings::OPTION_PREFIX . $key;
 		}
 
 		return $names;
@@ -90,7 +95,11 @@ class Wp {
 	 * @param array<string,string> $overrides Key => value.
 	 */
 	public static function setForceConfig( array $overrides ): void {
-		$config = array_merge( WcForceAuthCheckoutSettings::defaults(), $overrides );
+		$config = array_merge(
+			WcForceAuthCheckoutSettings::defaults(),
+			WcForceAuthRedirectSettings::defaults(),
+			$overrides
+		);
 
 		foreach ( $config as $key => $value ) {
 			update_option( WcForceAuthCheckoutSettings::OPTION_PREFIX . $key, (string) $value, false );
