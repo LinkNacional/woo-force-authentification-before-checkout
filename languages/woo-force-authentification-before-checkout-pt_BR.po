@@ -6,7 +6,7 @@ msgstr ""
 "1.6.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/woo-force-"
 "authentification-before-checkout\n"
-"POT-Creation-Date: 2026-10-02T19:55:45+00:00\n"
+"POT-Creation-Date: 2026-10-06T17:17:57+00:00\n"
 "PO-Revision-Date: 2026-10-02T19:55:45+00:00\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -62,78 +62,103 @@ msgstr ""
 "href=\"%s\">Ative-o</a> para que os clientes possam criar uma conta antes da "
 "finalização."
 
-#: Admin/WcForceAuthMenu.php:59 Admin/WcForceAuthMenu.php:77
-#: Admin/WcForceAuthMenu.php:78 Includes/WcForceAuthCheckoutSettings.php:75
+#: Admin/WcForceAuthMenu.php:70
+msgid "Authentification"
+msgstr "Autenticação"
+
+#: Admin/WcForceAuthMenu.php:90 Includes/WcForceAuthCheckoutSettings.php:75
 msgid "Force Authentification"
 msgstr "Forçar autenticação"
 
-#: Admin/WcForceAuthMenu.php:87 Includes/WcForceAuthSettings.php:81
+#: Admin/WcForceAuthMenu.php:91
+msgid "Force"
+msgstr "Forçar"
+
+#: Admin/WcForceAuthMenu.php:101 Admin/WcForceAuthMenu.php:102
+#: Includes/WcForceAuth.php:165 Includes/WcForceAuthRedirectSettings.php:77
+msgid "Settings"
+msgstr "Configurações"
+
+#: Admin/WcForceAuthMenu.php:111 Includes/WcForceAuthSettings.php:81
 msgid "Email OTP"
 msgstr "OTP por e-mail"
 
-#: Admin/WcForceAuthMenu.php:88
+#: Admin/WcForceAuthMenu.php:112
 msgid "OTP"
 msgstr "OTP"
 
-#: Includes/templates/myaccount/form-login.php:43
-#: Includes/templates/myaccount/form-login.php:80
-msgid "Register"
-msgstr "Cadastre-se"
-
-#: Includes/templates/myaccount/form-login.php:52
-msgid "Username"
-msgstr "Nome de usuário"
-
-#: Includes/templates/myaccount/form-login.php:52
-#: Includes/templates/myaccount/form-login.php:59
-#: Includes/templates/myaccount/form-login.php:66
-msgid "Required"
-msgstr "Obrigatório"
-
-#: Includes/templates/myaccount/form-login.php:59
-msgid "Email address"
-msgstr "Endereço de e-mail"
-
-#: Includes/templates/myaccount/form-login.php:66
-msgid "Password"
-msgstr "Senha"
-
-#: Includes/templates/myaccount/form-login.php:72
-msgid "A link to set a new password will be sent to your email address."
-msgstr ""
-"Um link para definir uma nova senha será enviado para o seu endereço de e-"
-"mail."
-
-#: Includes/templates/otp-email-template.php:43 Includes/WcForceAuthOtp.php:116
-#: Includes/WcForceAuthOtp.php:809 Includes/WcForceAuthSettings.php:321
-msgid "Your access code"
-msgstr "Seu código de acesso"
-
-#: Includes/templates/otp-email-template.php:47
-msgid "Use the code below to access your account:"
-msgstr "Use o código abaixo para acessar sua conta:"
-
-#: Includes/templates/otp-email-template.php:59
+#: Includes/templates/emails/block/wc-force-auth-otp.php:34
+#: Includes/templates/emails/wc-force-auth-otp.php:58
+#: Includes/templates/otp-email-template.php:76
 msgid "Tip: tap or click the code once to select all of it, then copy."
 msgstr ""
 "Dica: toque ou clique uma vez sobre o código para selecioná-lo por completo "
 "e depois copie."
 
-#: Includes/templates/otp-email-template.php:64
+#: Includes/templates/emails/block/wc-force-auth-otp.php:38
+#: Includes/templates/emails/wc-force-auth-otp.php:62
+#: Includes/templates/otp-email-template.php:81
 msgid "Instructions:"
 msgstr "Instruções:"
 
 #. translators: %d: number of minutes before the code expires.
-#: Includes/templates/otp-email-template.php:68
+#: Includes/templates/emails/block/wc-force-auth-otp.php:42
+#: Includes/templates/emails/wc-force-auth-otp.php:66
+#: Includes/templates/otp-email-template.php:85
 #, php-format
 msgid "This code expires in %d minute(s)."
 msgstr "Este código expira em %d minuto(s)."
 
-#: Includes/templates/otp-email-template.php:72
+#: Includes/templates/emails/block/wc-force-auth-otp.php:46
+#: Includes/templates/emails/wc-force-auth-otp.php:70
+#: Includes/templates/otp-email-template.php:89
 msgid "Do not share this code with anyone."
 msgstr "Não compartilhe este código com ninguém."
 
-#: Includes/templates/otp-email-template.php:77
+#. translators: %d: number of minutes before the code expires.
+#: Includes/templates/emails/plain/wc-force-auth-otp.php:25
+#, php-format
+msgid "This code expires in %d minute(s). Do not share it with anyone."
+msgstr "Este código expira em %d minuto(s). Não compartilhe com ninguém."
+
+#: Includes/templates/myaccount/form-login.php:35
+#: Includes/WcForceAuthOtp.php:119 Includes/WcForceAuthOtp.php:127
+#: Includes/WcForceAuthOtp.php:175
+msgid "Register"
+msgstr "Cadastre-se"
+
+#: Includes/templates/myaccount/form-login.php:36
+#: Includes/WcForceAuthOtp.php:120
+msgid "Create your account with your email and a password."
+msgstr "Crie sua conta com seu e-mail e uma senha."
+
+#: Includes/templates/myaccount/form-login.php:69
+#: Includes/templates/myaccount/form-login.php:85
+#: Includes/templates/myaccount/form-login.php:101
+msgid "Required"
+msgstr "Obrigatório"
+
+#: Includes/templates/myaccount/form-login.php:113
+#: Includes/templates/WcForceAuthTextEditor.php:253
+msgid "A link to set a new password will be sent to your email address."
+msgstr ""
+"Um link para definir uma nova senha será enviado para o seu endereço de e-"
+"mail."
+
+#: Includes/templates/otp-email-template.php:33 Includes/WcForceAuthOtp.php:137
+#: Includes/WcForceAuthOtp.php:138 Includes/WcForceAuthOtp.php:993
+#: Includes/WcForceAuthOtp.php:1005 Includes/WcForceAuthOtpEmail.php:127
+#: Includes/WcForceAuthOtpEmail.php:136
+msgid "Your access code"
+msgstr "Seu código de acesso"
+
+#: Includes/templates/otp-email-template.php:36 Includes/WcForceAuthOtp.php:139
+#: Includes/WcForceAuthOtp.php:1009 Includes/WcForceAuthOtpEmail.php:209
+msgid "Use the code below to access your account:"
+msgstr "Use o código abaixo para acessar sua conta:"
+
+#: Includes/templates/otp-email-template.php:39 Includes/WcForceAuthOtp.php:140
+#: Includes/WcForceAuthOtp.php:1013 Includes/WcForceAuthOtpEmail.php:210
 msgid "If you did not request this code, you can safely ignore this email."
 msgstr ""
 "Se você não solicitou este código, pode ignorar este e-mail com segurança."
@@ -166,34 +191,48 @@ msgstr "WhatsApp"
 msgid "Telegram"
 msgstr "Telegram"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:39
-msgid "Previous"
-msgstr "Anterior"
-
-#: Includes/templates/WcForceAuthSettingsLayout.php:49
-msgid "Next"
-msgstr "Próximo"
-
-#: Includes/templates/WcForceAuthSettingsLayout.php:280
-#: Includes/templates/WcForceAuthSettingsLayout.php:516
+#: Includes/templates/WcForceAuthSettingsJoined.php:164
+#: Includes/templates/WcForceAuthSettingsLayout.php:309
 msgid "Last file uploaded:"
 msgstr "Último arquivo enviado:"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:551
+#: Includes/templates/WcForceAuthSettingsJoined.php:175
+#: Includes/templates/WcForceAuthSettingsLayout.php:322
+msgid "Visualizar"
+msgstr "Visualizar"
+
+#: Includes/templates/WcForceAuthSettingsLayout.php:49
+msgid "Previous"
+msgstr "Anterior"
+
+#: Includes/templates/WcForceAuthSettingsLayout.php:59
+msgid "Next"
+msgstr "Próximo"
+
+#: Includes/templates/WcForceAuthSettingsLayout.php:369
+#: Includes/templates/WcForceAuthSettingsLayout.php:371
+msgid "Preview"
+msgstr "Prévia"
+
+#: Includes/templates/WcForceAuthSettingsLayout.php:372
+msgid "Close"
+msgstr "Fechar"
+
+#: Includes/templates/WcForceAuthSettingsLayout.php:380
 msgid "Save changes"
 msgstr "Salvar alterações"
 
 #. translators: 1: plugin name and version, 2: WooCommerce version.
-#: Includes/templates/WcForceAuthSettingsLayout.php:568
+#: Includes/templates/WcForceAuthSettingsLayout.php:397
 #, php-format
 msgid "%1$s | WooCommerce v%2$s"
 msgstr "%1$s | WooCommerce v%2$s"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:579
+#: Includes/templates/WcForceAuthSettingsLayout.php:408
 msgid "NEW: Email OTP Authentication"
 msgstr "NOVO: Autenticação OTP por e-mail"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:582
+#: Includes/templates/WcForceAuthSettingsLayout.php:411
 msgid ""
 "Let customers sign in and register with a one-time password sent to their "
 "email — no password required."
@@ -201,11 +240,11 @@ msgstr ""
 "Permita que os clientes façam login e se cadastrem com uma senha de uso "
 "único enviada por e-mail — sem precisar de senha."
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:589
+#: Includes/templates/WcForceAuthSettingsLayout.php:418
 msgid "NEW: Modern Settings Interface"
 msgstr "NOVO: Interface de configurações moderna"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:592
+#: Includes/templates/WcForceAuthSettingsLayout.php:421
 msgid ""
 "A brand-new, clean and organized settings screen, built for a faster and "
 "simpler configuration."
@@ -213,11 +252,11 @@ msgstr ""
 "Uma tela de configurações totalmente nova, limpa e organizada, feita para "
 "uma configuração mais rápida e simples."
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:600
+#: Includes/templates/WcForceAuthSettingsLayout.php:429
 msgid "Plugin: Invoice Payment Link for WooCommerce"
 msgstr "Plugin: Invoice Payment Link for WooCommerce"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:603
+#: Includes/templates/WcForceAuthSettingsLayout.php:432
 msgid ""
 "The Invoice Payment Plugin is the complete solution for your business. With "
 "it, you can generate payment links, split purchases across multiple cards, "
@@ -229,40 +268,159 @@ msgstr ""
 "configurar cobranças recorrentes, aplicar descontos e taxas e criar "
 "orçamentos detalhados."
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:607
+#: Includes/templates/WcForceAuthSettingsLayout.php:436
 msgid "Learn more"
 msgstr "Saiba mais"
 
-#: Includes/templates/WcForceAuthSettingsLayout.php:613
+#: Includes/templates/WcForceAuthSettingsLayout.php:442
 msgid "Install"
 msgstr "Instalar"
 
-#: Includes/WcForceAuth.php:125
-msgid "Settings"
-msgstr "Configurações"
+#. translators: %s: the field name being edited.
+#: Includes/templates/WcForceAuthTextEditor.php:67
+#, php-format
+msgid "Edit: %s"
+msgstr "Editar: %s"
 
-#: Includes/WcForceAuthCheckout.php:194
+#: Includes/templates/WcForceAuthTextEditor.php:160
+#: Includes/templates/WcForceAuthTextEditor.php:192
+#: Includes/templates/WcForceAuthTextEditor.php:217
+#: Includes/templates/WcForceAuthTextEditor.php:275
+#: Includes/WcForceAuthOtp.php:155 Includes/WcForceAuthOtp.php:166
+#: Includes/WcForceAuthOtp.php:177 Includes/WcForceAuthOtp.php:192
+msgid "Heading"
+msgstr "Título"
+
+#: Includes/templates/WcForceAuthTextEditor.php:161
+#: Includes/templates/WcForceAuthTextEditor.php:193
+#: Includes/templates/WcForceAuthTextEditor.php:218
+#: Includes/WcForceAuthOtp.php:156 Includes/WcForceAuthOtp.php:167
+#: Includes/WcForceAuthOtp.php:178
+msgid "Subheading"
+msgstr "Subtítulo"
+
+#: Includes/templates/WcForceAuthTextEditor.php:164
+#: Includes/templates/WcForceAuthTextEditor.php:234
+#: Includes/WcForceAuthOtp.php:157 Includes/WcForceAuthOtp.php:181
+msgid "Email label"
+msgstr "Rótulo do e-mail"
+
+#: Includes/templates/WcForceAuthTextEditor.php:169
+#: Includes/templates/WcForceAuthTextEditor.php:239
+#: Includes/WcForceAuthOtp.php:158 Includes/WcForceAuthOtp.php:182
+msgid "Email placeholder"
+msgstr "Espaço reservado do e-mail"
+
+#: Includes/templates/WcForceAuthTextEditor.php:171
+#: Includes/templates/WcForceAuthTextEditor.php:258
+#: Includes/WcForceAuthOtp.php:159 Includes/WcForceAuthOtp.php:185
+msgid "Button"
+msgstr "Botão"
+
+#: Includes/templates/WcForceAuthTextEditor.php:175
+#: Includes/WcForceAuthOtp.php:160
+msgid "Legal text"
+msgstr "Texto legal"
+
+#: Includes/templates/WcForceAuthTextEditor.php:196
+#: Includes/WcForceAuthOtp.php:168
+msgid "Code label"
+msgstr "Rótulo do código"
+
+#: Includes/templates/WcForceAuthTextEditor.php:197
+#: Includes/WcForceAuthOtp.php:169
+msgid "Verify button"
+msgstr "Botão de verificação"
+
+#: Includes/templates/WcForceAuthTextEditor.php:199
+#: Includes/WcForceAuthOtp.php:170
+msgid "Resend button"
+msgstr "Botão de reenvio"
+
+#: Includes/templates/WcForceAuthTextEditor.php:201
+#: Includes/WcForceAuthOtp.php:171
+msgid "Back button"
+msgstr "Botão de voltar"
+
+#: Includes/templates/WcForceAuthTextEditor.php:212
+msgid ""
+"Registration is disabled in WooCommerce (Settings → Accounts and Privacy). "
+"Enable \"Allow customers to create an account on the My Account page\" to "
+"use the register texts."
+msgstr ""
+"O cadastro está desativado no WooCommerce (Configurações → Contas e "
+"privacidade). Ative \"Permitir que os clientes criem uma conta na página "
+"Minha conta\" para usar os textos de cadastro."
+
+#: Includes/templates/WcForceAuthTextEditor.php:224
+#: Includes/WcForceAuthOtp.php:179
+msgid "Username label"
+msgstr "Rótulo do nome de usuário"
+
+#: Includes/templates/WcForceAuthTextEditor.php:229
+#: Includes/WcForceAuthOtp.php:180
+msgid "Username placeholder"
+msgstr "Espaço reservado do nome de usuário"
+
+#: Includes/templates/WcForceAuthTextEditor.php:244
+#: Includes/WcForceAuthOtp.php:183
+msgid "Password label"
+msgstr "Rótulo da senha"
+
+#: Includes/templates/WcForceAuthTextEditor.php:249
+#: Includes/WcForceAuthOtp.php:184
+msgid "Password placeholder"
+msgstr "Espaço reservado da senha"
+
+#: Includes/templates/WcForceAuthTextEditor.php:269
+msgid "Subject:"
+msgstr "Assunto:"
+
+#: Includes/templates/WcForceAuthTextEditor.php:270
+#: Includes/WcForceAuthOtp.php:191
+msgid "Subject"
+msgstr "Assunto"
+
+#: Includes/templates/WcForceAuthTextEditor.php:276
+#: Includes/WcForceAuthOtp.php:193 Includes/WcForceAuthOtp.php:1835
+msgid "Message"
+msgstr "Mensagem"
+
+#: Includes/templates/WcForceAuthTextEditor.php:278
+#: Includes/WcForceAuthOtp.php:194
+msgid "Footer note"
+msgstr "Nota do rodapé"
+
+#: Includes/templates/WcForceAuthTextEditor.php:285
+msgid ""
+"Click the pencil next to any text to edit it. The value is saved together "
+"with the other settings."
+msgstr ""
+"Clique no lápis ao lado de qualquer texto para editá-lo. O valor é salvo "
+"junto com as demais configurações."
+
+#: Includes/WcForceAuthCheckout.php:227
 #: Includes/WcForceAuthCheckoutSettings.php:86
-#: Includes/WcForceAuthCheckoutSettings.php:132
+#: Includes/WcForceAuthCheckoutSettings.php:129
 msgid "Please log in or register to complete your purchase."
 msgstr "Faça login ou cadastre-se para concluir sua compra."
 
-#: Includes/WcForceAuthCheckoutSettings.php:112
-#: Includes/WcForceAuthSettings.php:94
+#: Includes/WcForceAuthCheckoutSettings.php:109
+#: Includes/WcForceAuthSettings.php:110
 msgid "General"
 msgstr "Geral"
 
-#: Includes/WcForceAuthCheckoutSettings.php:118
-#: Includes/WcForceAuthCheckoutSettings.php:124
+#: Includes/WcForceAuthCheckoutSettings.php:115
+#: Includes/WcForceAuthCheckoutSettings.php:121
 msgid "Force authentication"
 msgstr "Forçar autenticação"
 
-#: Includes/WcForceAuthCheckoutSettings.php:122
+#: Includes/WcForceAuthCheckoutSettings.php:119
 msgid "Require customers to log in or register before checkout."
 msgstr ""
 "Exigir que os clientes façam login ou se cadastrem antes da finalização."
 
-#: Includes/WcForceAuthCheckoutSettings.php:123
+#: Includes/WcForceAuthCheckoutSettings.php:120
 msgid ""
 "When enabled, guests who reach the checkout are redirected to the account "
 "page to authenticate first."
@@ -270,11 +428,11 @@ msgstr ""
 "Quando ativado, visitantes que chegam à finalização são redirecionados para "
 "a página de conta para se autenticarem primeiro."
 
-#: Includes/WcForceAuthCheckoutSettings.php:125
+#: Includes/WcForceAuthCheckoutSettings.php:122
 msgid "Turns the \"login before checkout\" requirement on or off."
 msgstr "Ativa ou desativa a exigência de \"login antes da finalização\"."
 
-#: Includes/WcForceAuthCheckoutSettings.php:126
+#: Includes/WcForceAuthCheckoutSettings.php:123
 msgid ""
 "Uncheck to let guests buy without an account. When checked, guests are sent "
 "to the account page before they can complete the purchase."
@@ -282,12 +440,12 @@ msgstr ""
 "Desmarque para permitir que visitantes comprem sem conta. Quando marcado, os "
 "visitantes são enviados à página de conta antes de concluir a compra."
 
-#: Includes/WcForceAuthCheckoutSettings.php:129
-#: Includes/WcForceAuthCheckoutSettings.php:134
+#: Includes/WcForceAuthCheckoutSettings.php:126
+#: Includes/WcForceAuthCheckoutSettings.php:131
 msgid "Notice message"
 msgstr "Mensagem de aviso"
 
-#: Includes/WcForceAuthCheckoutSettings.php:133
+#: Includes/WcForceAuthCheckoutSettings.php:130
 msgid ""
 "Message shown on the account page when a guest is redirected from the "
 "checkout."
@@ -295,11 +453,11 @@ msgstr ""
 "Mensagem exibida na página de conta quando um visitante é redirecionado da "
 "finalização."
 
-#: Includes/WcForceAuthCheckoutSettings.php:135
+#: Includes/WcForceAuthCheckoutSettings.php:132
 msgid "Text displayed to the redirected customer."
 msgstr "Texto exibido ao cliente redirecionado."
 
-#: Includes/WcForceAuthCheckoutSettings.php:136
+#: Includes/WcForceAuthCheckoutSettings.php:133
 msgid ""
 "Shown as a WooCommerce notice on the account page. If left empty, the "
 "default message is used."
@@ -307,112 +465,72 @@ msgstr ""
 "Exibida como um aviso do WooCommerce na página de conta. Se deixada em "
 "branco, a mensagem padrão é usada."
 
-#: Includes/WcForceAuthCheckoutSettings.php:140
-msgid "Pages"
-msgstr "Páginas"
-
-#: Includes/WcForceAuthCheckoutSettings.php:146
-#: Includes/WcForceAuthCheckoutSettings.php:151
-msgid "Login page URL"
-msgstr "URL da página de login"
-
-#: Includes/WcForceAuthCheckoutSettings.php:150
-msgid "Page customers are sent to in order to authenticate."
-msgstr "Página para onde os clientes são enviados para se autenticarem."
-
-#: Includes/WcForceAuthCheckoutSettings.php:152
-msgid "Where the guest is redirected to log in."
-msgstr "Para onde o visitante é redirecionado para fazer login."
-
-#: Includes/WcForceAuthCheckoutSettings.php:153
-msgid ""
-"Leave empty to use the WooCommerce \"My account\" page. Useful when you use "
-"a custom login page."
-msgstr ""
-"Deixe em branco para usar a página \"Minha conta\" do WooCommerce. Útil "
-"quando você usa uma página de login personalizada."
-
-#: Includes/WcForceAuthCheckoutSettings.php:156
-#: Includes/WcForceAuthCheckoutSettings.php:161
-msgid "Checkout page URL"
-msgstr "URL da página de finalização"
-
-#: Includes/WcForceAuthCheckoutSettings.php:160
-msgid "Page the customer is sent back to after authenticating."
-msgstr "Página para onde o cliente é enviado de volta após se autenticar."
-
-#: Includes/WcForceAuthCheckoutSettings.php:162
-msgid "Where the logged-in customer returns to."
-msgstr "Para onde o cliente autenticado retorna."
-
-#: Includes/WcForceAuthCheckoutSettings.php:163
-msgid ""
-"Leave empty to use the WooCommerce checkout page. Useful when you use a "
-"custom checkout page."
-msgstr ""
-"Deixe em branco para usar a página de finalização do WooCommerce. Útil "
-"quando você usa uma página de finalização personalizada."
-
-#: Includes/WcForceAuthCheckoutSettings.php:167
-msgid "After login"
-msgstr "Após o login"
-
-#: Includes/WcForceAuthCheckoutSettings.php:173
-#: Includes/WcForceAuthCheckoutSettings.php:182
-msgid "Destination after login"
-msgstr "Destino após o login"
-
-#: Includes/WcForceAuthCheckoutSettings.php:177
-msgid "Back to the checkout"
-msgstr "Voltar para a finalização"
-
-#: Includes/WcForceAuthCheckoutSettings.php:178
-msgid "My account dashboard"
-msgstr "Painel da minha conta"
-
-#: Includes/WcForceAuthCheckoutSettings.php:181
-msgid "Where the customer lands right after authenticating."
-msgstr "Onde o cliente chega logo após se autenticar."
-
-#: Includes/WcForceAuthCheckoutSettings.php:183
-msgid "Landing page once the customer is authenticated."
-msgstr "Página de destino depois que o cliente se autentica."
-
-#: Includes/WcForceAuthCheckoutSettings.php:184
-msgid ""
-"\"Back to the checkout\" sends the customer to the checkout to finish the "
-"purchase. \"My account dashboard\" sends them to their account area instead."
-msgstr ""
-"\"Voltar para a finalização\" envia o cliente para a finalização para "
-"concluir a compra. \"Painel da minha conta\" o envia para a área da conta."
-
-#: Includes/WcForceAuthOtp.php:109 Includes/WcForceAuthOtp.php:1104
-#: Includes/WcForceAuthSettings.php:254
+#: Includes/WcForceAuthOtp.php:114
 msgid "Welcome back"
 msgstr "Bem-vindo de volta"
 
-#: Includes/WcForceAuthOtp.php:110 Includes/WcForceAuthOtp.php:1105
-#: Includes/WcForceAuthSettings.php:264
+#: Includes/WcForceAuthOtp.php:115
 msgid "Enter your email to sign up or access your account"
 msgstr "Digite seu e-mail para se cadastrar ou acessar sua conta"
 
-#: Includes/WcForceAuthOtp.php:111 Includes/WcForceAuthOtp.php:1106
-#: Includes/WcForceAuthSettings.php:274
+#: Includes/WcForceAuthOtp.php:116 Includes/WcForceAuthOtp.php:122
+msgid "Email address"
+msgstr "Endereço de e-mail"
+
+#: Includes/WcForceAuthOtp.php:117 Includes/WcForceAuthOtp.php:125
+msgid "Enter your email"
+msgstr "Digite seu e-mail"
+
+#: Includes/WcForceAuthOtp.php:118 Includes/WcForceAuthOtp.php:153
+msgid "Login"
+msgstr "Login"
+
+#: Includes/WcForceAuthOtp.php:121
+msgid "Username"
+msgstr "Nome de usuário"
+
+#: Includes/WcForceAuthOtp.php:123
+msgid "Password"
+msgstr "Senha"
+
+#: Includes/WcForceAuthOtp.php:124
+msgid "Enter a username"
+msgstr "Digite um nome de usuário"
+
+#: Includes/WcForceAuthOtp.php:126
+msgid "Enter your password"
+msgstr "Digite sua senha"
+
+#: Includes/WcForceAuthOtp.php:128
 msgid "Verify your account"
 msgstr "Verifique sua conta"
 
-#: Includes/WcForceAuthOtp.php:112 Includes/WcForceAuthOtp.php:1107
-#: Includes/WcForceAuthSettings.php:284
+#: Includes/WcForceAuthOtp.php:129
 msgid "Enter the verification code sent to your email"
 msgstr "Digite o código de verificação enviado para o seu e-mail"
 
-#: Includes/WcForceAuthOtp.php:113 Includes/WcForceAuthOtp.php:1108
-#: Includes/WcForceAuthSettings.php:294
+#: Includes/WcForceAuthOtp.php:130
+msgid "Verification Code"
+msgstr "Código de verificação"
+
+#: Includes/WcForceAuthOtp.php:131
+msgid "Verify & Continue"
+msgstr "Verificar e continuar"
+
+#: Includes/WcForceAuthOtp.php:132
+msgid "Resend code"
+msgstr "Reenviar código"
+
+#: Includes/WcForceAuthOtp.php:133
+msgid "Use another email"
+msgstr "Usar outro e-mail"
+
+#: Includes/WcForceAuthOtp.php:134
 msgid ""
 "A one-time password (OTP) has been sent to your registered email address."
 msgstr "Uma senha de uso único (OTP) foi enviada para o seu e-mail cadastrado."
 
-#: Includes/WcForceAuthOtp.php:114 Includes/WcForceAuthSettings.php:304
+#: Includes/WcForceAuthOtp.php:135
 msgid ""
 "By clicking on \"Login\" you agree to our Privacy Policy and Terms of "
 "Service."
@@ -420,21 +538,33 @@ msgstr ""
 "Ao clicar em \"Login\", você concorda com nossa Política de Privacidade e "
 "Termos de Serviço."
 
-#: Includes/WcForceAuthOtp.php:402 Includes/WcForceAuthOtp.php:552
+#: Includes/WcForceAuthOtp.php:164
+msgid "Verification"
+msgstr "Verificação"
+
+#: Includes/WcForceAuthOtp.php:189
+msgid "Email"
+msgstr "E-mail"
+
+#: Includes/WcForceAuthOtp.php:250 Includes/WcForceAuthOtp.php:288
+msgid "Enter your email to access your account"
+msgstr "Digite seu e-mail para acessar sua conta"
+
+#: Includes/WcForceAuthOtp.php:576 Includes/WcForceAuthOtp.php:726
 msgid "Too many requests. Please try again later."
 msgstr "Muitas solicitações. Tente novamente mais tarde."
 
-#: Includes/WcForceAuthOtp.php:418 Includes/WcForceAuthOtp.php:468
+#: Includes/WcForceAuthOtp.php:592 Includes/WcForceAuthOtp.php:642
 msgid "Could not send the report. Please try again later."
 msgstr "Não foi possível enviar o relatório. Tente novamente mais tarde."
 
 #. translators: %s: site name.
-#: Includes/WcForceAuthOtp.php:426
+#: Includes/WcForceAuthOtp.php:600
 #, php-format
 msgid "[%s] A customer did not receive the OTP code"
 msgstr "[%s] Um cliente não recebeu o código OTP"
 
-#: Includes/WcForceAuthOtp.php:433
+#: Includes/WcForceAuthOtp.php:607
 msgid ""
 "A customer reported that they did not receive the one-time password (OTP) "
 "code."
@@ -442,229 +572,408 @@ msgstr ""
 "Um cliente relatou que não recebeu o código de senha de uso único (OTP)."
 
 #. translators: %s: customer email.
-#: Includes/WcForceAuthOtp.php:437
+#: Includes/WcForceAuthOtp.php:611
 #, php-format
 msgid "Customer email: %s"
 msgstr "E-mail do cliente: %s"
 
 #. translators: %s: contact provided by the customer.
-#: Includes/WcForceAuthOtp.php:442
+#: Includes/WcForceAuthOtp.php:616
 #, php-format
 msgid "Contact: %s"
 msgstr "Contato: %s"
 
-#: Includes/WcForceAuthOtp.php:446
+#: Includes/WcForceAuthOtp.php:620
 msgid "Message:"
 msgstr "Mensagem:"
 
 #. translators: %s: site URL.
-#: Includes/WcForceAuthOtp.php:451
+#: Includes/WcForceAuthOtp.php:625
 #, php-format
 msgid "Sent from: %s"
 msgstr "Enviado de: %s"
 
-#: Includes/WcForceAuthOtp.php:477
+#: Includes/WcForceAuthOtp.php:651
 msgid "Thank you! Your report was sent and our team will look into it."
 msgstr "Obrigado! Seu relatório foi enviado e nossa equipe vai analisá-lo."
 
-#: Includes/WcForceAuthOtp.php:526
+#: Includes/WcForceAuthOtp.php:700
 msgid "OTP authentication is not enabled."
 msgstr "A autenticação OTP não está ativada."
 
-#: Includes/WcForceAuthOtp.php:532 Includes/WcForceAuthSettingsPage.php:213
+#: Includes/WcForceAuthOtp.php:706 Includes/WcForceAuthSettingsPage.php:282
 msgid "Security check failed. Please reload the page."
 msgstr "Falha na verificação de segurança. Recarregue a página."
 
-#: Includes/WcForceAuthOtp.php:564
+#: Includes/WcForceAuthOtp.php:738
 msgid "Email not registered."
 msgstr "E-mail não cadastrado."
 
 #. translators: %d: seconds to wait before requesting a new code.
-#: Includes/WcForceAuthOtp.php:583
+#: Includes/WcForceAuthOtp.php:757
 #, php-format
 msgid "Please wait %d seconds before requesting a new code."
 msgstr "Aguarde %d segundos antes de solicitar um novo código."
 
-#: Includes/WcForceAuthOtp.php:603
+#: Includes/WcForceAuthOtp.php:777
 msgid "Could not send the code. Please try again."
 msgstr "Não foi possível enviar o código. Tente novamente."
 
-#: Includes/WcForceAuthOtp.php:614
+#: Includes/WcForceAuthOtp.php:788
 msgid "A one-time password (OTP) has been sent to your email."
 msgstr "Uma senha de uso único (OTP) foi enviada para o seu e-mail."
 
-#: Includes/WcForceAuthOtp.php:893
+#: Includes/WcForceAuthOtp.php:1123
 msgid "Invalid or expired code."
 msgstr "Código inválido ou expirado."
 
-#: Includes/WcForceAuthOtp.php:903
+#: Includes/WcForceAuthOtp.php:1133
 msgid "User not found."
 msgstr "Usuário não encontrado."
 
-#: Includes/WcForceAuthOtp.php:912
+#: Includes/WcForceAuthOtp.php:1142
 msgid "Could not create the account."
 msgstr "Não foi possível criar a conta."
 
-#: Includes/WcForceAuthOtp.php:920
+#: Includes/WcForceAuthOtp.php:1150
 msgid "Could not log you in."
 msgstr "Não foi possível fazer seu login."
 
-#: Includes/WcForceAuthOtp.php:926
+#: Includes/WcForceAuthOtp.php:1156
 msgid "Login successful!"
 msgstr "Login realizado com sucesso!"
 
-#: Includes/WcForceAuthOtp.php:1137 Includes/WcForceAuthSettings.php:312
-msgid "Email"
-msgstr "E-mail"
-
-#: Includes/WcForceAuthOtp.php:1149
-msgid "Enter your email"
-msgstr "Digite seu e-mail"
-
-#: Includes/WcForceAuthOtp.php:1157
-msgid "Login"
-msgstr "Login"
-
-#: Includes/WcForceAuthOtp.php:1187
-msgid "Verification Code"
-msgstr "Código de verificação"
-
-#: Includes/WcForceAuthOtp.php:1194
+#: Includes/WcForceAuthOtp.php:1430
 msgid "Verification code"
 msgstr "Código de verificação"
 
 #. translators: %d: digit position.
-#: Includes/WcForceAuthOtp.php:1215
+#: Includes/WcForceAuthOtp.php:1451
 #, php-format
 msgid "Digit %d"
 msgstr "Dígito %d"
 
-#: Includes/WcForceAuthOtp.php:1249
-msgid "Verify & Continue"
-msgstr "Verificar e continuar"
-
-#: Includes/WcForceAuthOtp.php:1254 Includes/WcForceAuthOtp.php:1426
-msgid "Resend code"
-msgstr "Reenviar código"
-
-#: Includes/WcForceAuthOtp.php:1259 Includes/WcForceAuthOtp.php:1428
-msgid "Use another email"
-msgstr "Usar outro e-mail"
-
-#: Includes/WcForceAuthOtp.php:1267
+#: Includes/WcForceAuthOtp.php:1503
 msgid "Didn't receive the code?"
 msgstr "Não recebeu o código?"
 
-#: Includes/WcForceAuthOtp.php:1418
+#: Includes/WcForceAuthOtp.php:1817
 msgid "Sending code..."
 msgstr "Enviando código..."
 
-#: Includes/WcForceAuthOtp.php:1419
+#: Includes/WcForceAuthOtp.php:1818
 msgid "Verifying code..."
 msgstr "Verificando código..."
 
-#: Includes/WcForceAuthOtp.php:1420
+#: Includes/WcForceAuthOtp.php:1819
 msgid "Connection error. Please try again."
 msgstr "Erro de conexão. Tente novamente."
 
-#: Includes/WcForceAuthOtp.php:1421
+#: Includes/WcForceAuthOtp.php:1820
 msgid "Please enter a valid email address."
 msgstr "Digite um endereço de e-mail válido."
 
 #. translators: %d: number of seconds until the resend button is enabled.
-#: Includes/WcForceAuthOtp.php:1423
+#: Includes/WcForceAuthOtp.php:1822
 #, php-format
 msgid "You can resend in %ds"
 msgstr "Você pode reenviar em %ds"
 
 #. translators: %s: time when the code expires.
-#: Includes/WcForceAuthOtp.php:1425
+#: Includes/WcForceAuthOtp.php:1824
 #, php-format
 msgid "Code expires at %s"
 msgstr "O código expira às %s"
 
-#: Includes/WcForceAuthOtp.php:1427
+#: Includes/WcForceAuthOtp.php:1826
 msgid "Go back and change the email?"
 msgstr "Voltar e alterar o e-mail?"
 
-#: Includes/WcForceAuthOtp.php:1429
+#: Includes/WcForceAuthOtp.php:1828
 msgid "Something went wrong"
 msgstr "Algo deu errado"
 
-#: Includes/WcForceAuthOtp.php:1430
+#: Includes/WcForceAuthOtp.php:1829
 msgid "Code detected"
 msgstr "Código detectado"
 
-#: Includes/WcForceAuthOtp.php:1431
+#: Includes/WcForceAuthOtp.php:1830
 msgid "We found your access code in the clipboard."
 msgstr "Encontramos seu código de acesso na área de transferência."
 
-#: Includes/WcForceAuthOtp.php:1432
+#: Includes/WcForceAuthOtp.php:1831
 msgid "Use code"
 msgstr "Usar código"
 
-#: Includes/WcForceAuthOtp.php:1433
+#: Includes/WcForceAuthOtp.php:1832
 msgid "Report a problem"
 msgstr "Relatar um problema"
 
-#: Includes/WcForceAuthOtp.php:1434
+#: Includes/WcForceAuthOtp.php:1833
 msgid "Your email"
 msgstr "Seu e-mail"
 
-#: Includes/WcForceAuthOtp.php:1435
+#: Includes/WcForceAuthOtp.php:1834
 msgid "Contact (optional)"
 msgstr "Contato (opcional)"
 
-#: Includes/WcForceAuthOtp.php:1436
-msgid "Message"
-msgstr "Mensagem"
-
-#: Includes/WcForceAuthOtp.php:1437
+#: Includes/WcForceAuthOtp.php:1836
 msgid "Send"
 msgstr "Enviar"
 
-#: Includes/WcForceAuthOtp.php:1438
+#: Includes/WcForceAuthOtp.php:1837
 msgid "I did not receive the verification code for {{email}}."
 msgstr "Não recebi o código de verificação para {{email}}."
 
-#: Includes/WcForceAuthOtp.php:1439
+#: Includes/WcForceAuthOtp.php:1838 Includes/WcForceAuthSettingsPage.php:317
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: Includes/WcForceAuthOtp.php:1458
+#: Includes/WcForceAuthOtp.php:1857
 msgid ""
 "Traditional registration is disabled. Please use the email code to continue."
 msgstr ""
 "O cadastro tradicional está desativado. Use o código por e-mail para "
 "continuar."
 
-#: Includes/WcForceAuthSettings.php:100 Includes/WcForceAuthSettings.php:110
+#: Includes/WcForceAuthOtpEmail.php:42
+msgid "OTP access code"
+msgstr "Código de acesso OTP"
+
+#: Includes/WcForceAuthOtpEmail.php:43
+msgid ""
+"One-time password (OTP) code sent to customers so they can sign in to their "
+"account."
+msgstr ""
+"Código de senha de uso único (OTP) enviado aos clientes para que possam "
+"acessar a própria conta."
+
+#: Includes/WcForceAuthRedirectSettings.php:115
+msgid "Pages"
+msgstr "Páginas"
+
+#: Includes/WcForceAuthRedirectSettings.php:121
+#: Includes/WcForceAuthRedirectSettings.php:130
+msgid "Login page"
+msgstr "Página de login"
+
+#: Includes/WcForceAuthRedirectSettings.php:125
+msgid "WooCommerce My Account (automatic)"
+msgstr "WooCommerce Minha conta (automático)"
+
+#: Includes/WcForceAuthRedirectSettings.php:126
+#: Includes/WcForceAuthRedirectSettings.php:151
+#: Includes/WcForceAuthRedirectSettings.php:185
+msgid "Custom URL"
+msgstr "URL personalizada"
+
+#: Includes/WcForceAuthRedirectSettings.php:129
+msgid "Page customers are sent to in order to authenticate."
+msgstr "Página para onde os clientes são enviados para se autenticarem."
+
+#: Includes/WcForceAuthRedirectSettings.php:131
+msgid "Where the guest is redirected to log in."
+msgstr "Para onde o visitante é redirecionado para fazer login."
+
+#: Includes/WcForceAuthRedirectSettings.php:132
+msgid ""
+"Choose \"WooCommerce My Account\" to use the account page set in "
+"WooCommerce, or \"Custom URL\" to point to your own login page."
+msgstr ""
+"Escolha \"WooCommerce Minha conta\" para usar a página de conta definida no "
+"WooCommerce, ou \"URL personalizada\" para apontar para a sua própria página "
+"de login."
+
+#: Includes/WcForceAuthRedirectSettings.php:135
+msgid "Login page URL"
+msgstr "URL da página de login"
+
+#: Includes/WcForceAuthRedirectSettings.php:141
+msgid "Custom login URL"
+msgstr "URL de login personalizada"
+
+#: Includes/WcForceAuthRedirectSettings.php:142
+#: Includes/WcForceAuthRedirectSettings.php:167
+#: Includes/WcForceAuthRedirectSettings.php:201
+msgid "Used only when \"Custom URL\" is selected above."
+msgstr "Usada apenas quando \"URL personalizada\" é selecionada acima."
+
+#: Includes/WcForceAuthRedirectSettings.php:143
+msgid ""
+"Full URL of your custom login page. Leave empty to fall back to the "
+"WooCommerce My Account page."
+msgstr ""
+"URL completa da sua página de login personalizada. Deixe em branco para usar "
+"a página Minha conta do WooCommerce."
+
+#: Includes/WcForceAuthRedirectSettings.php:146
+#: Includes/WcForceAuthRedirectSettings.php:155
+msgid "Checkout page"
+msgstr "Página de finalização"
+
+#: Includes/WcForceAuthRedirectSettings.php:150
+msgid "All checkout pages (automatic)"
+msgstr "Todas as páginas de finalização (automático)"
+
+#: Includes/WcForceAuthRedirectSettings.php:154
+msgid "Page the customer is sent back to after authenticating."
+msgstr "Página para onde o cliente é enviado de volta após se autenticar."
+
+#: Includes/WcForceAuthRedirectSettings.php:156
+msgid "Where the logged-in customer returns to."
+msgstr "Para onde o cliente autenticado retorna."
+
+#: Includes/WcForceAuthRedirectSettings.php:157
+msgid ""
+"Choose \"All checkout pages\" to use the WooCommerce checkout page (works "
+"with the block and the shortcode checkout), or \"Custom URL\" for a specific "
+"page."
+msgstr ""
+"Escolha \"Todas as páginas de finalização\" para usar a página de "
+"finalização do WooCommerce (funciona com a finalização em bloco e a de "
+"shortcode), ou \"URL personalizada\" para uma página específica."
+
+#: Includes/WcForceAuthRedirectSettings.php:160
+msgid "Checkout page URL"
+msgstr "URL da página de finalização"
+
+#: Includes/WcForceAuthRedirectSettings.php:166
+msgid "Custom checkout URL"
+msgstr "URL de finalização personalizada"
+
+#: Includes/WcForceAuthRedirectSettings.php:168
+msgid ""
+"Full URL of your custom checkout page. Leave empty to fall back to the "
+"WooCommerce checkout page."
+msgstr ""
+"URL completa da sua página de finalização personalizada. Deixe em branco "
+"para usar a página de finalização do WooCommerce."
+
+#: Includes/WcForceAuthRedirectSettings.php:172
+msgid "After login"
+msgstr "Após o login"
+
+#: Includes/WcForceAuthRedirectSettings.php:178
+#: Includes/WcForceAuthRedirectSettings.php:189
+msgid "Destination after login"
+msgstr "Destino após o login"
+
+#: Includes/WcForceAuthRedirectSettings.php:182
+msgid "Back to the checkout"
+msgstr "Voltar para a finalização"
+
+#: Includes/WcForceAuthRedirectSettings.php:183
+msgid "My account dashboard"
+msgstr "Painel da minha conta"
+
+#: Includes/WcForceAuthRedirectSettings.php:184
+msgid "Previous page (where the customer came from)"
+msgstr "Página anterior (de onde o cliente veio)"
+
+#: Includes/WcForceAuthRedirectSettings.php:188
+msgid ""
+"Where the customer lands right after authenticating (both the force-"
+"authentication and the OTP flows use this)."
+msgstr ""
+"Para onde o cliente vai logo após se autenticar (tanto o fluxo de forçar "
+"autenticação quanto o de OTP usam esta opção)."
+
+#: Includes/WcForceAuthRedirectSettings.php:190
+msgid "Landing page once the customer is authenticated."
+msgstr "Página de destino depois que o cliente se autentica."
+
+#: Includes/WcForceAuthRedirectSettings.php:191
+msgid ""
+"\"Back to the checkout\" sends the customer to the checkout, \"My account "
+"dashboard\" to their account area, \"Previous page\" back to the page they "
+"were on before logging in (e.g. the product they were viewing), and \"Custom "
+"URL\" to a page you choose below."
+msgstr ""
+"\"Voltar para a finalização\" envia o cliente para a finalização, \"Painel "
+"da minha conta\" para a área da conta, \"Página anterior\" de volta à página "
+"em que ele estava antes de fazer login (por exemplo, o produto que estava "
+"vendo) e \"URL personalizada\" para uma página que você escolher abaixo."
+
+#: Includes/WcForceAuthRedirectSettings.php:194
+#: Includes/WcForceAuthRedirectSettings.php:200
+msgid "Custom destination URL"
+msgstr "URL de destino personalizada"
+
+#: Includes/WcForceAuthRedirectSettings.php:202
+msgid ""
+"Full URL the customer is sent to after login. Leave empty to fall back to "
+"the account dashboard."
+msgstr ""
+"URL completa para onde o cliente é enviado após o login. Deixe em branco "
+"para usar o painel da conta."
+
+#: Includes/WcForceAuthSettings.php:91
+msgid "Email delivery"
+msgstr "Entrega de e-mail"
+
+#: Includes/WcForceAuthSettings.php:93
+msgid ""
+"The one-time passwords are sent by email through your store's email system "
+"(WooCommerce). Make sure the store email address is correctly configured in "
+"WooCommerce → Settings → Emails."
+msgstr ""
+"As senhas de uso único são enviadas por e-mail pelo sistema de e-mail da sua "
+"loja (WooCommerce). Certifique-se de que o endereço de e-mail da loja está "
+"configurado corretamente em WooCommerce → Configurações → E-mails."
+
+#: Includes/WcForceAuthSettings.php:94
+msgid ""
+"If your customers are not receiving the codes — or if your store is not "
+"sending emails at all — it usually is a mail delivery problem, not a plugin "
+"issue."
+msgstr ""
+"Se os seus clientes não estão recebendo os códigos — ou se a sua loja não "
+"está enviando e-mails de forma alguma — geralmente é um problema de entrega "
+"de e-mail, não do plugin."
+
+#: Includes/WcForceAuthSettings.php:95
+msgid ""
+"In that case, install and configure an SMTP plugin (such as \"WP Mail "
+"SMTP\", \"Fluent SMTP\" or \"Post SMTP\") so WordPress can deliver emails "
+"reliably."
+msgstr ""
+"Nesse caso, instale e configure um plugin de SMTP (como \"WP Mail SMTP\", "
+"\"Fluent SMTP\" ou \"Post SMTP\") para que o WordPress entregue os e-mails "
+"com confiabilidade."
+
+#: Includes/WcForceAuthSettings.php:116 Includes/WcForceAuthSettings.php:130
 msgid "Authentication mode"
 msgstr "Modo de autenticação"
 
-#: Includes/WcForceAuthSettings.php:104
+#: Includes/WcForceAuthSettings.php:120
 msgid "Disabled"
-msgstr "Desabilitado"
+msgstr "Desativado"
 
-#: Includes/WcForceAuthSettings.php:105
+#: Includes/WcForceAuthSettings.php:121
 msgid "Login only"
 msgstr "Apenas login"
 
-#: Includes/WcForceAuthSettings.php:106
+#: Includes/WcForceAuthSettings.php:123
 msgid "Register and login"
-msgstr "Registro e login"
+msgstr "Cadastro e login"
 
-#: Includes/WcForceAuthSettings.php:109
+#. translators: %s: the WooCommerce setting name.
+#: Includes/WcForceAuthSettings.php:125
+#, php-format
+msgid "Register and login (unavailable: enable “%s” in WooCommerce first)"
+msgstr "Cadastro e login (indisponível: ative “%s” no WooCommerce primeiro)"
+
+#: Includes/WcForceAuthSettings.php:129
 msgid ""
 "Turns email OTP (one-time password) authentication on and chooses how it "
 "behaves. While disabled, the default WooCommerce login and registration "
 "forms are used."
 msgstr ""
 "Ativa a autenticação por OTP (senha de uso único) por e-mail e escolhe como "
-"ela se comporta. Enquanto desabilitada, os formulários padrão de login e "
+"ela se comporta. Enquanto desativada, os formulários padrão de login e "
 "cadastro do WooCommerce são usados."
 
-#: Includes/WcForceAuthSettings.php:111
+#: Includes/WcForceAuthSettings.php:131
 msgid ""
 "Defines whether customers sign in with an emailed code and whether new "
 "accounts can be created."
@@ -672,7 +981,7 @@ msgstr ""
 "Define se os clientes fazem login com um código enviado por e-mail e se "
 "novas contas podem ser criadas."
 
-#: Includes/WcForceAuthSettings.php:112
+#: Includes/WcForceAuthSettings.php:132
 msgid ""
 "\"Disabled\": keeps the standard WooCommerce login/registration. \"Login "
 "only\": only customers that already have an account can sign in with a code "
@@ -681,29 +990,29 @@ msgid ""
 "them in if the account exists or create a passwordless account with the same "
 "code if it does not."
 msgstr ""
-"\"Desabilitado\": mantém o login/cadastro padrão do WooCommerce. \"Apenas "
+"\"Desativado\": mantém o login/cadastro padrão do WooCommerce. \"Apenas "
 "login\": somente clientes que já possuem conta podem fazer login com um "
 "código (o formulário de cadastro nativo continua disponível para novos "
-"clientes). \"Registro e login\": o fluxo 2 em 1 — o cliente digita o e-mail "
-"e nós o conectamos se a conta existir, ou criamos uma conta sem senha com o "
+"clientes). \"Cadastro e login\": o fluxo 2 em 1 — o cliente digita o e-mail "
+"e fazemos o login se a conta existir, ou criamos uma conta sem senha com o "
 "mesmo código se ela não existir."
 
-#: Includes/WcForceAuthSettings.php:115 Includes/WcForceAuthSettings.php:120
-msgid "Code expiration"
-msgstr "Expiração do código"
+#: Includes/WcForceAuthSettings.php:135 Includes/WcForceAuthSettings.php:140
+msgid "Code expiration in Minutes"
+msgstr "Expiração do código em minutos"
 
-#: Includes/WcForceAuthSettings.php:119
+#: Includes/WcForceAuthSettings.php:139
 msgid ""
 "How long, in minutes, a code stays valid after it is sent to the customer."
 msgstr ""
 "Por quanto tempo, em minutos, um código permanece válido após ser enviado ao "
 "cliente."
 
-#: Includes/WcForceAuthSettings.php:121
+#: Includes/WcForceAuthSettings.php:141
 msgid "Lifetime of each verification code."
 msgstr "Tempo de vida de cada código de verificação."
 
-#: Includes/WcForceAuthSettings.php:122
+#: Includes/WcForceAuthSettings.php:142
 msgid ""
 "Accepts 1 to 60 minutes. If left empty, 10 minutes is used. After this time "
 "the code stops working and the customer must request a new one."
@@ -711,22 +1020,22 @@ msgstr ""
 "Aceita de 1 a 60 minutos. Se deixado em branco, 10 minutos é usado. Após "
 "esse tempo o código para de funcionar e o cliente deve solicitar um novo."
 
-#: Includes/WcForceAuthSettings.php:130 Includes/WcForceAuthSettings.php:135
+#: Includes/WcForceAuthSettings.php:150 Includes/WcForceAuthSettings.php:155
 msgid "Resend interval"
 msgstr "Intervalo de reenvio"
 
-#: Includes/WcForceAuthSettings.php:134
+#: Includes/WcForceAuthSettings.php:154
 msgid ""
 "How long, in seconds, the customer must wait before requesting a new code."
 msgstr ""
 "Por quanto tempo, em segundos, o cliente deve aguardar antes de solicitar um "
 "novo código."
 
-#: Includes/WcForceAuthSettings.php:136
+#: Includes/WcForceAuthSettings.php:156
 msgid "Countdown shown until the \"Resend\" button is enabled."
 msgstr "Contagem regressiva exibida até o botão \"Reenviar\" ser habilitado."
 
-#: Includes/WcForceAuthSettings.php:137
+#: Includes/WcForceAuthSettings.php:157
 msgid ""
 "Accepts 0 to 600 seconds. If left empty, 30 seconds is used. This value also "
 "drives the countdown timer on the verification screen and prevents rapid "
@@ -736,31 +1045,31 @@ msgstr ""
 "valor também controla o cronômetro na tela de verificação e evita "
 "solicitações repetidas rapidamente."
 
-#: Includes/WcForceAuthSettings.php:145 Includes/WcForceAuthSettings.php:155
+#: Includes/WcForceAuthSettings.php:165 Includes/WcForceAuthSettings.php:175
 msgid "Code length"
 msgstr "Tamanho do código"
 
-#: Includes/WcForceAuthSettings.php:149
+#: Includes/WcForceAuthSettings.php:169
 msgid "4 digits"
 msgstr "4 dígitos"
 
-#: Includes/WcForceAuthSettings.php:150
+#: Includes/WcForceAuthSettings.php:170
 msgid "6 digits"
 msgstr "6 dígitos"
 
-#: Includes/WcForceAuthSettings.php:151
+#: Includes/WcForceAuthSettings.php:171
 msgid "8 digits"
 msgstr "8 dígitos"
 
-#: Includes/WcForceAuthSettings.php:154
+#: Includes/WcForceAuthSettings.php:174
 msgid "How many digits the generated one-time password contains."
 msgstr "Quantos dígitos a senha de uso único gerada contém."
 
-#: Includes/WcForceAuthSettings.php:156
+#: Includes/WcForceAuthSettings.php:176
 msgid "Number of digits in the emailed code."
 msgstr "Número de dígitos no código enviado por e-mail."
 
-#: Includes/WcForceAuthSettings.php:157
+#: Includes/WcForceAuthSettings.php:177
 msgid ""
 "Choose 4, 6 or 8 digits. More digits are more secure but take longer to "
 "type. Default: 6."
@@ -768,35 +1077,35 @@ msgstr ""
 "Escolha 4, 6 ou 8 dígitos. Mais dígitos são mais seguros, mas levam mais "
 "tempo para digitar. Padrão: 6."
 
-#: Includes/WcForceAuthSettings.php:160 Includes/WcForceAuthSettings.php:171
+#: Includes/WcForceAuthSettings.php:180 Includes/WcForceAuthSettings.php:191
 msgid "Code format"
 msgstr "Formato do código"
 
-#: Includes/WcForceAuthSettings.php:164
+#: Includes/WcForceAuthSettings.php:184
 msgid "Plain (123456)"
 msgstr "Simples (123456)"
 
-#: Includes/WcForceAuthSettings.php:165
+#: Includes/WcForceAuthSettings.php:185
 msgid "Groups with space (123 456)"
 msgstr "Grupos com espaço (123 456)"
 
-#: Includes/WcForceAuthSettings.php:166
+#: Includes/WcForceAuthSettings.php:186
 msgid "Groups with dash (123-456)"
 msgstr "Grupos com hífen (123-456)"
 
-#: Includes/WcForceAuthSettings.php:167
+#: Includes/WcForceAuthSettings.php:187
 msgid "Pairs (12 34 56)"
 msgstr "Pares (12 34 56)"
 
-#: Includes/WcForceAuthSettings.php:170
+#: Includes/WcForceAuthSettings.php:190
 msgid "Visual grouping of the code field, matching common OTP layouts."
 msgstr "Agrupamento visual do campo do código, seguindo layouts comuns de OTP."
 
-#: Includes/WcForceAuthSettings.php:172
+#: Includes/WcForceAuthSettings.php:192
 msgid "How the digits are grouped in the field."
 msgstr "Como os dígitos são agrupados no campo."
 
-#: Includes/WcForceAuthSettings.php:173
+#: Includes/WcForceAuthSettings.php:193
 msgid ""
 "The separator is only visual: the code is sent without it. \"Plain\" keeps a "
 "single unbroken value (best for the browser one-time-code autofill)."
@@ -805,27 +1114,27 @@ msgstr ""
 "um valor único e contínuo (melhor para o preenchimento automático de one-"
 "time-code do navegador)."
 
-#: Includes/WcForceAuthSettings.php:176 Includes/WcForceAuthSettings.php:185
+#: Includes/WcForceAuthSettings.php:196 Includes/WcForceAuthSettings.php:205
 msgid "Code input style"
 msgstr "Estilo de entrada do código"
 
-#: Includes/WcForceAuthSettings.php:180
+#: Includes/WcForceAuthSettings.php:200
 msgid "Single field"
 msgstr "Campo único"
 
-#: Includes/WcForceAuthSettings.php:181
+#: Includes/WcForceAuthSettings.php:201
 msgid "One box per digit"
 msgstr "Uma caixa por dígito"
 
-#: Includes/WcForceAuthSettings.php:184
+#: Includes/WcForceAuthSettings.php:204
 msgid "How the verification code is entered."
 msgstr "Como o código de verificação é inserido."
 
-#: Includes/WcForceAuthSettings.php:186
+#: Includes/WcForceAuthSettings.php:206
 msgid "Single input, or a separate box for each digit."
 msgstr "Campo único ou uma caixa separada para cada dígito."
 
-#: Includes/WcForceAuthSettings.php:187
+#: Includes/WcForceAuthSettings.php:207
 msgid ""
 "\"Single field\": one input for the whole code (supports the \"Code format\" "
 "grouping). \"One box per digit\": a PIN-style row of boxes, one per digit "
@@ -835,33 +1144,33 @@ msgstr ""
 "\"Formato do código\"). \"Uma caixa por dígito\": uma fileira de caixas "
 "estilo PIN, uma por dígito (ignora o agrupamento do \"Formato do código\")."
 
-#: Includes/WcForceAuthSettings.php:190 Includes/WcForceAuthSettings.php:199
+#: Includes/WcForceAuthSettings.php:210 Includes/WcForceAuthSettings.php:219
 msgid "Notification style"
 msgstr "Estilo de notificação"
 
-#: Includes/WcForceAuthSettings.php:194
+#: Includes/WcForceAuthSettings.php:214
 msgid "Floating (toasts)"
 msgstr "Flutuante (toasts)"
 
-#: Includes/WcForceAuthSettings.php:195
+#: Includes/WcForceAuthSettings.php:215
 msgid "Inline (inside the component)"
 msgstr "Em linha (dentro do componente)"
 
-#: Includes/WcForceAuthSettings.php:198
+#: Includes/WcForceAuthSettings.php:218
 msgid ""
 "Where the feedback messages (code sent, errors, confirmations) are shown."
 msgstr ""
 "Onde as mensagens de retorno (código enviado, erros, confirmações) são "
 "exibidas."
 
-#: Includes/WcForceAuthSettings.php:200
+#: Includes/WcForceAuthSettings.php:220
 msgid ""
 "Floating uses corner pop-ups; inline shows the messages inside the form."
 msgstr ""
 "Flutuante usa pop-ups nos cantos; em linha exibe as mensagens dentro do "
 "formulário."
 
-#: Includes/WcForceAuthSettings.php:201
+#: Includes/WcForceAuthSettings.php:221
 msgid ""
 "\"Floating\": messages appear as floating pop-ups (top/bottom corner). "
 "\"Inline\": messages appear inside the form. The \"code detected\" alert "
@@ -871,23 +1180,23 @@ msgstr ""
 "inferior). \"Em linha\": as mensagens aparecem dentro do formulário. O "
 "alerta de \"código detectado\" permanece sempre flutuante."
 
-#: Includes/WcForceAuthSettings.php:205
+#: Includes/WcForceAuthSettings.php:225
 msgid "Appearance"
 msgstr "Aparência"
 
-#: Includes/WcForceAuthSettings.php:211 Includes/WcForceAuthSettings.php:216
+#: Includes/WcForceAuthSettings.php:231 Includes/WcForceAuthSettings.php:237
 msgid "Primary color"
 msgstr "Cor primária"
 
-#: Includes/WcForceAuthSettings.php:215
+#: Includes/WcForceAuthSettings.php:236
 msgid "Accent color applied to the buttons and highlights on the OTP screens."
 msgstr "Cor de destaque aplicada aos botões e realces nas telas de OTP."
 
-#: Includes/WcForceAuthSettings.php:217
+#: Includes/WcForceAuthSettings.php:238
 msgid "Color of the \"Login\", \"Resend\" and \"Verify & Continue\" buttons."
 msgstr "Cor dos botões \"Login\", \"Reenviar\" e \"Verificar e continuar\"."
 
-#: Includes/WcForceAuthSettings.php:218
+#: Includes/WcForceAuthSettings.php:239
 msgid ""
 "Pick a color or type a hex value (for example #22C1DC). If left empty or "
 "invalid, the default #22C1DC is used."
@@ -895,253 +1204,342 @@ msgstr ""
 "Escolha uma cor ou digite um valor hexadecimal (por exemplo #22C1DC). Se "
 "ficar vazio ou inválido, o padrão #22C1DC é usado."
 
-#: Includes/WcForceAuthSettings.php:221 Includes/WcForceAuthSettings.php:226
-msgid "Brand name"
-msgstr "Nome da marca"
-
-#: Includes/WcForceAuthSettings.php:225
-msgid "Name shown at the top of the OTP screens when no logo is set."
-msgstr "Nome exibido no topo das telas de OTP quando nenhum logo é definido."
-
-#: Includes/WcForceAuthSettings.php:227
-msgid "Text displayed above the sign-in form."
-msgstr "Texto exibido acima do formulário de acesso."
-
-#: Includes/WcForceAuthSettings.php:228
-msgid "Leave empty to use the site name defined in Settings → General."
-msgstr ""
-"Deixe em branco para usar o nome do site definido em Configurações → Geral."
-
-#: Includes/WcForceAuthSettings.php:231 Includes/WcForceAuthSettings.php:236
-msgid "Tagline"
-msgstr "Slogan"
-
-#: Includes/WcForceAuthSettings.php:235
-msgid "Short uppercase line displayed under the brand name or logo."
-msgstr "Linha curta em maiúsculas exibida sob o nome da marca ou logo."
-
-#: Includes/WcForceAuthSettings.php:237
-msgid "Secondary line shown under the brand name."
-msgstr "Linha secundária exibida sob o nome da marca."
-
-#: Includes/WcForceAuthSettings.php:238
-msgid "Leave empty to use the site tagline defined in Settings → General."
-msgstr ""
-"Deixe em branco para usar o slogan do site definido em Configurações → Geral."
-
-#: Includes/WcForceAuthSettings.php:241 Includes/WcForceAuthSettings.php:246
-msgid "Logo URL"
-msgstr "URL do logo"
-
-#: Includes/WcForceAuthSettings.php:245
-msgid "Image shown at the top of the OTP screens, replacing the brand name."
-msgstr "Imagem exibida no topo das telas de OTP, substituindo o nome da marca."
+#: Includes/WcForceAuthSettings.php:242 Includes/WcForceAuthSettings.php:248
+msgid "Card background"
+msgstr "Fundo do card"
 
 #: Includes/WcForceAuthSettings.php:247
-msgid "Logo displayed on the login and verification screens."
-msgstr "Logo exibido nas telas de login e verificação."
+msgid "Background color of the authentication card."
+msgstr "Cor de fundo do card de autenticação."
 
-#: Includes/WcForceAuthSettings.php:248
-msgid ""
-"Paste the full URL of an image. Leave empty to use the theme custom logo "
-"(Appearance → Customize → Site Identity)."
+#: Includes/WcForceAuthSettings.php:249
+msgid "Surface behind the whole form."
+msgstr "Superfície atrás de todo o formulário."
+
+#: Includes/WcForceAuthSettings.php:250
+msgid "The text color adapts automatically for legibility. Default: white."
 msgstr ""
-"Cole a URL completa de uma imagem. Deixe em branco para usar o logo "
-"personalizado do tema (Aparência → Personalizar → Identidade do site)."
+"A cor do texto se adapta automaticamente para facilitar a leitura. Padrão: "
+"branco."
 
-#: Includes/WcForceAuthSettings.php:251 Includes/WcForceAuthSettings.php:256
-msgid "Login heading"
-msgstr "Título do login"
-
-#: Includes/WcForceAuthSettings.php:255
-msgid ""
-"Main heading of the first screen, where the customer enters their email."
-msgstr "Título principal da primeira tela, onde o cliente digita o e-mail."
-
-#: Includes/WcForceAuthSettings.php:257
-msgid "Title shown at the top of the email step."
-msgstr "Título exibido no topo da etapa do e-mail."
+#: Includes/WcForceAuthSettings.php:253 Includes/WcForceAuthSettings.php:259
+msgid "Input background"
+msgstr "Fundo dos campos"
 
 #: Includes/WcForceAuthSettings.php:258
-msgid "If left empty, \"Welcome back\" is shown."
-msgstr "Se deixado em branco, \"Bem-vindo de volta\" é exibido."
+msgid "Background color of the input fields and the code boxes."
+msgstr "Cor de fundo dos campos de entrada e das caixas do código."
 
-#: Includes/WcForceAuthSettings.php:261 Includes/WcForceAuthSettings.php:266
-msgid "Login subheading"
-msgstr "Subtítulo do login"
+#: Includes/WcForceAuthSettings.php:260
+msgid "Surface of the e-mail / password / code fields."
+msgstr "Superfície dos campos de e-mail / senha / código."
 
-#: Includes/WcForceAuthSettings.php:265
-msgid "Explanatory text shown under the login heading, above the email field."
-msgstr ""
-"Texto explicativo exibido sob o título do login, acima do campo de e-mail."
-
-#: Includes/WcForceAuthSettings.php:267
-msgid "Text shown under the login heading."
-msgstr "Texto exibido sob o título do login."
-
-#: Includes/WcForceAuthSettings.php:268
+#: Includes/WcForceAuthSettings.php:261
 msgid ""
-"If left empty, \"Enter your email to sign up or access your account\" is "
-"shown."
+"The typed text color adapts automatically for legibility. Default: white."
 msgstr ""
-"Se deixado em branco, \"Digite seu e-mail para se cadastrar ou acessar sua "
-"conta\" é exibido."
+"A cor do texto digitado se adapta automaticamente para facilitar a leitura. "
+"Padrão: branco."
 
-#: Includes/WcForceAuthSettings.php:271 Includes/WcForceAuthSettings.php:276
-msgid "Verification heading"
-msgstr "Título da verificação"
+#: Includes/WcForceAuthSettings.php:264 Includes/WcForceAuthSettings.php:273
+msgid "Display brand name"
+msgstr "Exibir nome da marca"
+
+#: Includes/WcForceAuthSettings.php:268 Includes/WcForceAuthSettings.php:294
+#: Includes/WcForceAuthSettings.php:320
+msgid "Show"
+msgstr "Mostrar"
+
+#: Includes/WcForceAuthSettings.php:269 Includes/WcForceAuthSettings.php:295
+#: Includes/WcForceAuthSettings.php:321
+msgid "Hide"
+msgstr "Ocultar"
+
+#: Includes/WcForceAuthSettings.php:272
+msgid "Controls whether the brand name is shown on the authentication forms."
+msgstr "Controla se o nome da marca é exibido nos formulários de autenticação."
+
+#: Includes/WcForceAuthSettings.php:274
+msgid "Show or hide the brand name on the forms."
+msgstr "Mostra ou oculta o nome da marca nos formulários."
 
 #: Includes/WcForceAuthSettings.php:275
 msgid ""
-"Main heading of the second screen, where the customer types the received "
-"code."
+"When \"Hide\" is selected, the brand name is removed from the card and the "
+"email."
 msgstr ""
-"Título principal da segunda tela, onde o cliente digita o código recebido."
+"Quando \"Ocultar\" é selecionado, o nome da marca é removido do card e do e-"
+"mail."
 
-#: Includes/WcForceAuthSettings.php:277
-msgid "Title shown at the top of the code step."
-msgstr "Título exibido no topo da etapa do código."
+#: Includes/WcForceAuthSettings.php:278 Includes/WcForceAuthSettings.php:285
+msgid "Brand name"
+msgstr "Nome da marca"
 
-#: Includes/WcForceAuthSettings.php:278
-msgid "If left empty, \"Verify your account\" is shown."
-msgstr "Se deixado em branco, \"Verifique sua conta\" é exibido."
-
-#: Includes/WcForceAuthSettings.php:281 Includes/WcForceAuthSettings.php:286
-msgid "Verification subheading"
-msgstr "Subtítulo da verificação"
-
-#: Includes/WcForceAuthSettings.php:285
-msgid ""
-"Explanatory text shown under the verification heading, above the code field."
-msgstr ""
-"Texto explicativo exibido sob o título da verificação, acima do campo do "
-"código."
+#: Includes/WcForceAuthSettings.php:286
+msgid "Text displayed above the sign-in form."
+msgstr "Texto exibido acima do formulário de acesso."
 
 #: Includes/WcForceAuthSettings.php:287
-msgid "Text shown under the verification heading."
-msgstr "Texto exibido sob o título da verificação."
+msgid "Pre-filled with the site name (Settings → General)."
+msgstr "Preenchido automaticamente com o nome do site (Configurações → Geral)."
 
-#: Includes/WcForceAuthSettings.php:288
-msgid ""
-"If left empty, \"Enter the verification code sent to your email\" is shown."
-msgstr ""
-"Se deixado em branco, \"Digite o código de verificação enviado para o seu e-"
-"mail\" é exibido."
-
-#: Includes/WcForceAuthSettings.php:291 Includes/WcForceAuthSettings.php:296
-msgid "OTP sent message"
-msgstr "Mensagem de OTP enviado"
-
-#: Includes/WcForceAuthSettings.php:295
-msgid ""
-"Green confirmation box shown on the verification screen after the code is "
-"sent."
-msgstr ""
-"Caixa de confirmação verde exibida na tela de verificação após o envio do "
-"código."
-
-#: Includes/WcForceAuthSettings.php:297
-msgid "Message confirming that the code was sent."
-msgstr "Mensagem confirmando que o código foi enviado."
+#: Includes/WcForceAuthSettings.php:290 Includes/WcForceAuthSettings.php:299
+msgid "Display tagline"
+msgstr "Exibir slogan"
 
 #: Includes/WcForceAuthSettings.php:298
-msgid ""
-"If left empty, \"A one-time password (OTP) has been sent to your registered "
-"email address.\" is shown."
+msgid "Controls whether the tagline is shown on the authentication forms."
+msgstr "Controla se o slogan é exibido nos formulários de autenticação."
+
+#: Includes/WcForceAuthSettings.php:300
+msgid "Show or hide the tagline on the forms."
+msgstr "Mostra ou oculta o slogan nos formulários."
+
+#: Includes/WcForceAuthSettings.php:301
+msgid "When \"Hide\" is selected, the tagline is removed from the card."
+msgstr "Quando \"Ocultar\" é selecionado, o slogan é removido do card."
+
+#: Includes/WcForceAuthSettings.php:304 Includes/WcForceAuthSettings.php:311
+msgid "Tagline"
+msgstr "Slogan"
+
+#: Includes/WcForceAuthSettings.php:312
+msgid "Secondary line shown under the brand name."
+msgstr "Linha secundária exibida sob o nome da marca."
+
+#: Includes/WcForceAuthSettings.php:313
+msgid "Pre-filled with the site tagline (Settings → General)."
 msgstr ""
-"Se deixado em branco, \"Uma senha de uso único (OTP) foi enviada para o seu "
-"e-mail cadastrado.\" é exibido."
+"Preenchido automaticamente com o slogan do site (Configurações → Geral)."
 
-#: Includes/WcForceAuthSettings.php:301 Includes/WcForceAuthSettings.php:306
-msgid "Legal text"
-msgstr "Texto legal"
+#: Includes/WcForceAuthSettings.php:316 Includes/WcForceAuthSettings.php:325
+msgid "Display logo"
+msgstr "Exibir logo"
 
-#: Includes/WcForceAuthSettings.php:305
-msgid ""
-"Small footer text shown under the form, usually about privacy policy and "
-"terms of service."
-msgstr ""
-"Texto de rodapé pequeno exibido sob o formulário, geralmente sobre política "
-"de privacidade e termos de serviço."
+#: Includes/WcForceAuthSettings.php:324
+msgid "Controls whether the logo is shown on the authentication forms."
+msgstr "Controla se o logo é exibido nos formulários de autenticação."
 
-#: Includes/WcForceAuthSettings.php:307
-msgid "Footer text displayed below the form."
-msgstr "Texto de rodapé exibido abaixo do formulário."
+#: Includes/WcForceAuthSettings.php:326
+msgid "Show or hide the logo on the forms."
+msgstr "Mostra ou oculta o logo nos formulários."
 
-#: Includes/WcForceAuthSettings.php:308
-msgid ""
-"Basic HTML is allowed (for example links). If left empty, no footer text is "
-"shown."
-msgstr ""
-"HTML básico é permitido (por exemplo, links). Se deixado em branco, nenhum "
-"texto de rodapé é exibido."
-
-#: Includes/WcForceAuthSettings.php:318 Includes/WcForceAuthSettings.php:324
-msgid "Email subject"
-msgstr "Assunto do e-mail"
-
-#. translators: %s: placeholder token that is replaced by the code.
-#: Includes/WcForceAuthSettings.php:323
-#, php-format
-msgid ""
-"Subject line of the email that delivers the code. Accepts a %s placeholder "
-"for the code."
-msgstr ""
-"Linha de assunto do e-mail que entrega o código. Aceita um espaço reservado "
-"%s para o código."
-
-#: Includes/WcForceAuthSettings.php:325
-msgid "Subject of the OTP email sent to the customer."
-msgstr "Assunto do e-mail de OTP enviado ao cliente."
-
-#. translators: 1: placeholder token, 2: example of the subject line.
 #: Includes/WcForceAuthSettings.php:327
-#, php-format
 msgid ""
-"Use %1$s where the code should appear (for example \"Your code: %2$s\"). If "
-"left empty, \"Your access code\" is used."
+"When \"Hide\" is selected, the logo is removed from the card and the email."
 msgstr ""
-"Use %1$s onde o código deve aparecer (por exemplo, \"Seu código: %2$s\"). Se "
-"deixado em branco, \"Seu código de acesso\" é usado."
+"Quando \"Ocultar\" é selecionado, o logo é removido do card e do e-mail."
 
-#: Includes/WcForceAuthSettings.php:331
-msgid "Redirect"
-msgstr "Redirecionamento"
+#: Includes/WcForceAuthSettings.php:330 Includes/WcForceAuthSettings.php:337
+msgid "Logo URL"
+msgstr "URL do logo"
 
-#: Includes/WcForceAuthSettings.php:337 Includes/WcForceAuthSettings.php:342
-msgid "Redirect after login"
-msgstr "Redirecionar após o login"
+#: Includes/WcForceAuthSettings.php:338
+msgid "Logo displayed on the login and verification screens."
+msgstr "Logo exibido nas telas de login e verificação."
 
-#: Includes/WcForceAuthSettings.php:341
-msgid "Page the customer is sent to right after the code is verified."
+#: Includes/WcForceAuthSettings.php:339
+msgid "Pre-filled with the site icon (Settings → General)."
 msgstr ""
-"Página para onde o cliente é enviado logo após o código ser verificado."
+"Preenchido automaticamente com o ícone do site (Configurações → Geral)."
 
-#: Includes/WcForceAuthSettings.php:343
-msgid "Destination after a successful login."
-msgstr "Destino após um login bem-sucedido."
+#: Includes/WcForceAuthSettings.php:342 Includes/WcForceAuthSettings.php:348
+msgid "Texts"
+msgstr "Textos"
 
-#: Includes/WcForceAuthSettings.php:344
-msgid ""
-"Enter a full URL (for example https://example.com/thank-you). Leave empty to "
-"send customers to their account dashboard."
-msgstr ""
-"Digite uma URL completa (por exemplo https://example.com/obrigado). Deixe em "
-"branco para enviar os clientes ao painel da conta."
-
-#: Includes/WcForceAuthSettingsPage.php:211
-#: Includes/WcForceAuthSettingsPage.php:264
+#: Includes/WcForceAuthSettingsPage.php:280
+#: Includes/WcForceAuthSettingsPage.php:360
 msgid "Settings saved successfully!"
 msgstr "Configurações salvas com sucesso!"
 
-#: Includes/WcForceAuthSettingsPage.php:212
+#: Includes/WcForceAuthSettingsPage.php:281
 msgid "An error occurred while saving the settings."
 msgstr "Ocorreu um erro ao salvar as configurações."
 
-#: Includes/WcForceAuthSettingsPage.php:234
+#: Includes/WcForceAuthSettingsPage.php:316
+msgid "Save"
+msgstr "Salvar"
+
+#: Includes/WcForceAuthSettingsPage.php:330
 msgid "Permission denied."
 msgstr "Permissão negada."
 
-#: Includes/WcForceAuthSettingsPage.php:244
+#: Includes/WcForceAuthSettingsPage.php:340
 msgid "Invalid settings data."
 msgstr "Dados de configurações inválidos."
+
+#~ msgid ""
+#~ "Leave empty to use the WooCommerce \"My account\" page. Useful when you "
+#~ "use a custom login page."
+#~ msgstr ""
+#~ "Deixe em branco para usar a página \"Minha conta\" do WooCommerce. Útil "
+#~ "quando você usa uma página de login personalizada."
+
+#~ msgid ""
+#~ "Leave empty to use the WooCommerce checkout page. Useful when you use a "
+#~ "custom checkout page."
+#~ msgstr ""
+#~ "Deixe em branco para usar a página de finalização do WooCommerce. Útil "
+#~ "quando você usa uma página de finalização personalizada."
+
+#~ msgid ""
+#~ "\"Back to the checkout\" sends the customer to the checkout to finish the "
+#~ "purchase. \"My account dashboard\" sends them to their account area "
+#~ "instead."
+#~ msgstr ""
+#~ "\"Voltar para a finalização\" envia o cliente para a finalização para "
+#~ "concluir a compra. \"Painel da minha conta\" o envia para a área da conta."
+
+#~ msgid "Name shown at the top of the OTP screens when no logo is set."
+#~ msgstr ""
+#~ "Nome exibido no topo das telas de OTP quando nenhum logo é definido."
+
+#~ msgid "Short uppercase line displayed under the brand name or logo."
+#~ msgstr "Linha curta em maiúsculas exibida sob o nome da marca ou logo."
+
+#~ msgid "Image shown at the top of the OTP screens, replacing the brand name."
+#~ msgstr ""
+#~ "Imagem exibida no topo das telas de OTP, substituindo o nome da marca."
+
+#~ msgid ""
+#~ "Paste the full URL of an image. Leave empty to use the theme custom logo "
+#~ "(Appearance → Customize → Site Identity)."
+#~ msgstr ""
+#~ "Cole a URL completa de uma imagem. Deixe em branco para usar o logo "
+#~ "personalizado do tema (Aparência → Personalizar → Identidade do site)."
+
+#~ msgid ""
+#~ "Main heading of the first screen, where the customer enters their email."
+#~ msgstr "Título principal da primeira tela, onde o cliente digita o e-mail."
+
+#~ msgid "Title shown at the top of the email step."
+#~ msgstr "Título exibido no topo da etapa do e-mail."
+
+#~ msgid "If left empty, \"Welcome back\" is shown."
+#~ msgstr "Se deixado em branco, \"Bem-vindo de volta\" é exibido."
+
+#~ msgid ""
+#~ "Explanatory text shown under the login heading, above the email field."
+#~ msgstr ""
+#~ "Texto explicativo exibido sob o título do login, acima do campo de e-mail."
+
+#~ msgid "Text shown under the login heading."
+#~ msgstr "Texto exibido sob o título do login."
+
+#~ msgid ""
+#~ "If left empty, \"Enter your email to sign up or access your account\" is "
+#~ "shown."
+#~ msgstr ""
+#~ "Se deixado em branco, \"Digite seu e-mail para se cadastrar ou acessar "
+#~ "sua conta\" é exibido."
+
+#~ msgid "Verification heading"
+#~ msgstr "Título da verificação"
+
+#~ msgid ""
+#~ "Main heading of the second screen, where the customer types the received "
+#~ "code."
+#~ msgstr ""
+#~ "Título principal da segunda tela, onde o cliente digita o código recebido."
+
+#~ msgid "Title shown at the top of the code step."
+#~ msgstr "Título exibido no topo da etapa do código."
+
+#~ msgid "If left empty, \"Verify your account\" is shown."
+#~ msgstr "Se deixado em branco, \"Verifique sua conta\" é exibido."
+
+#~ msgid "Verification subheading"
+#~ msgstr "Subtítulo da verificação"
+
+#~ msgid ""
+#~ "Explanatory text shown under the verification heading, above the code "
+#~ "field."
+#~ msgstr ""
+#~ "Texto explicativo exibido sob o título da verificação, acima do campo do "
+#~ "código."
+
+#~ msgid "Text shown under the verification heading."
+#~ msgstr "Texto exibido sob o título da verificação."
+
+#~ msgid ""
+#~ "If left empty, \"Enter the verification code sent to your email\" is "
+#~ "shown."
+#~ msgstr ""
+#~ "Se deixado em branco, \"Digite o código de verificação enviado para o seu "
+#~ "e-mail\" é exibido."
+
+#~ msgid "OTP sent message"
+#~ msgstr "Mensagem de OTP enviado"
+
+#~ msgid ""
+#~ "Green confirmation box shown on the verification screen after the code is "
+#~ "sent."
+#~ msgstr ""
+#~ "Caixa de confirmação verde exibida na tela de verificação após o envio do "
+#~ "código."
+
+#~ msgid "Message confirming that the code was sent."
+#~ msgstr "Mensagem confirmando que o código foi enviado."
+
+#~ msgid ""
+#~ "If left empty, \"A one-time password (OTP) has been sent to your "
+#~ "registered email address.\" is shown."
+#~ msgstr ""
+#~ "Se deixado em branco, \"Uma senha de uso único (OTP) foi enviada para o "
+#~ "seu e-mail cadastrado.\" é exibido."
+
+#~ msgid ""
+#~ "Small footer text shown under the form, usually about privacy policy and "
+#~ "terms of service."
+#~ msgstr ""
+#~ "Texto de rodapé pequeno exibido sob o formulário, geralmente sobre "
+#~ "política de privacidade e termos de serviço."
+
+#~ msgid "Footer text displayed below the form."
+#~ msgstr "Texto de rodapé exibido abaixo do formulário."
+
+#~ msgid ""
+#~ "Basic HTML is allowed (for example links). If left empty, no footer text "
+#~ "is shown."
+#~ msgstr ""
+#~ "HTML básico é permitido (por exemplo, links). Se deixado em branco, "
+#~ "nenhum texto de rodapé é exibido."
+
+#, php-format
+#~ msgid ""
+#~ "Subject line of the email that delivers the code. Accepts a %s "
+#~ "placeholder for the code."
+#~ msgstr ""
+#~ "Linha de assunto do e-mail que entrega o código. Aceita um espaço "
+#~ "reservado %s para o código."
+
+#~ msgid "Subject of the OTP email sent to the customer."
+#~ msgstr "Assunto do e-mail de OTP enviado ao cliente."
+
+#, php-format
+#~ msgid ""
+#~ "Use %1$s where the code should appear (for example \"Your code: %2$s\"). "
+#~ "If left empty, \"Your access code\" is used."
+#~ msgstr ""
+#~ "Use %1$s onde o código deve aparecer (por exemplo, \"Seu código: %2$s\"). "
+#~ "Se deixado em branco, \"Seu código de acesso\" é usado."
+
+#~ msgid "Redirect"
+#~ msgstr "Redirecionamento"
+
+#~ msgid "Redirect after login"
+#~ msgstr "Redirecionar após o login"
+
+#~ msgid "Page the customer is sent to right after the code is verified."
+#~ msgstr ""
+#~ "Página para onde o cliente é enviado logo após o código ser verificado."
+
+#~ msgid "Destination after a successful login."
+#~ msgstr "Destino após um login bem-sucedido."
+
+#~ msgid ""
+#~ "Enter a full URL (for example https://example.com/thank-you). Leave empty "
+#~ "to send customers to their account dashboard."
+#~ msgstr ""
+#~ "Digite uma URL completa (por exemplo https://example.com/obrigado). Deixe "
+#~ "em branco para enviar os clientes ao painel da conta."
