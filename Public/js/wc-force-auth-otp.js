@@ -17,6 +17,9 @@
 			return;
 		}
 
+		// Outer wrapper that may hold the register column alongside the OTP card.
+		var authWrapper = wrapper.closest('.wcfa-account-auth') || wrapper.parentElement;
+
 		var loginStep = wrapper.querySelector('.wcfa-step--login');
 		var verifyStep = wrapper.querySelector('.wcfa-step--verify');
 		var loginForm = document.getElementById('wcfa-login-form');
@@ -47,6 +50,16 @@
 
 		function hasSwal() {
 			return !!(window.Swal && typeof window.Swal.fire === 'function');
+		}
+
+		// Wrapper around Swal.fire() that disables the scrollbar-padding
+		// compensation. On themes whose scrollbar lives on `html` (e.g. Woodmart,
+		// which uses `overflow-x: clip/clip` on body), SweetAlert2's automatic
+		// `padding-right` on `<body>` does not compensate for anything — the
+		// document scrollbar never disappears — so it only shrinks the page
+		// content by the scrollbar width, giving the "squeezed" flick on open.
+		function swalFire(options) {
+			return window.Swal.fire(Object.assign({ scrollbarPadding: false }, options || {}));
 		}
 
 		function escapeHtml(value) {
@@ -108,7 +121,10 @@
 
 		// Non-blocking notification. In "inline" mode everything is rendered inside
 		// the component; otherwise it uses floating SweetAlert2 toasts/modals.
-		function notify(type, message) {
+		// `forceToast` keeps even errors as a toast (used for the native
+		// registration notices, which should not block the page). `toastTimer`
+		// overrides the auto-dismiss time (ms) for the toast variant.
+		function notify(type, message, forceToast, toastTimer) {
 			if (!message) {
 				return;
 			}
@@ -123,8 +139,8 @@
 				return;
 			}
 
-			if (type === 'error') {
-				window.Swal.fire({
+			if (type === 'error' && !forceToast) {
+				swalFire({
 					icon: 'error',
 					title: i18n.errorTitle || 'Error',
 					text: message,
@@ -134,13 +150,13 @@
 				return;
 			}
 
-			window.Swal.fire({
+			swalFire({
 				toast: true,
 				position: 'top-end',
-				icon: type === 'success' ? 'success' : 'info',
+				icon: type === 'error' ? 'error' : (type === 'success' ? 'success' : 'info'),
 				title: message,
 				showConfirmButton: false,
-				timer: type === 'success' ? 12000 : 5000,
+				timer: toastTimer || (type === 'success' ? 12000 : 6000),
 				timerProgressBar: true,
 				customClass: { popup: 'wcfa-swal-toast' },
 			});
@@ -152,7 +168,7 @@
 				return;
 			}
 
-			window.Swal.fire({
+			swalFire({
 				title: text,
 				allowOutsideClick: false,
 				allowEscapeKey: false,
@@ -172,7 +188,7 @@
 
 		function successThenRedirect(message, target) {
 			if (!inlineNotifications && hasSwal()) {
-				window.Swal.fire({
+				swalFire({
 					icon: 'success',
 					title: message,
 					showConfirmButton: false,
@@ -189,6 +205,54 @@
 			setTimeout(function () {
 				window.location.href = target;
 			}, 800);
+		}
+
+		// Server-rendered WooCommerce notices (e.g. the native registration
+		// errors shown after a non-AJAX submit) follow the same notification
+		// style as the OTP flow: in "floating" mode they are shown through
+		// SweetAlert2 and the static WooCommerce notice box is hidden.
+		function bridgeServerNotices() {
+			if (inlineNotifications || !hasSwal()) {
+				return;
+			}
+
+			var wrapper = document.querySelector('.woocommerce-notices-wrapper');
+			if (!wrapper) {
+				return;
+			}
+
+			var groups = [
+				{ selector: '.woocommerce-error', type: 'error' },
+				{ selector: '.woocommerce-message', type: 'success' },
+				{ selector: '.woocommerce-info', type: 'info' },
+			];
+			var bridged = false;
+
+			groups.forEach(function (group) {
+				var texts = [];
+
+				Array.prototype.forEach.call(wrapper.querySelectorAll(group.selector), function (list) {
+					var items = list.querySelectorAll('li');
+					var nodes = items.length ? items : [list];
+
+					Array.prototype.forEach.call(nodes, function (node) {
+						var text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+
+						if (text) {
+							texts.push(text);
+						}
+					});
+				});
+
+				if (texts.length) {
+					bridged = true;
+					notify(group.type, texts.join(' '), true);
+				}
+			});
+
+			if (bridged) {
+				wrapper.style.display = 'none';
+			}
 		}
 
 		function post(path, body) {
@@ -308,6 +372,13 @@
 			if (verifyStep) {
 				verifyStep.hidden = false;
 			}
+
+			// The register column does not belong to the verification step, so it
+			// is hidden and the OTP card takes the full width (centered).
+			if (authWrapper) {
+				authWrapper.classList.add('wcfa-account-auth--verify');
+			}
+
 			clearCode();
 			focusCode();
 			if (verifyBtn) {
@@ -349,6 +420,149 @@
 			input.addEventListener('input', update);
 			input.addEventListener('change', update);
 			update();
+		}
+
+		// Password strength gate for the native registration form: the submit is
+		// only enabled when the email is valid, the required fields are filled and
+		// the password reaches the strength WooCommerce requires (respecting the
+		// store's `woocommerce_min_password_strength` setting).
+		function bindRegisterState() {
+			var registerForm = document.querySelector('.wcfa-account-register .woocommerce-form-register');
+			if (!registerForm) {
+				return;
+			}
+
+			var emailField = registerForm.querySelector('#reg_email');
+			var passwordField = registerForm.querySelector('#reg_password');
+			var usernameField = registerForm.querySelector('#reg_username');
+			var submit = registerForm.querySelector('.woocommerce-form-register__submit');
+			var emailWrap = registerForm.querySelector('#wcfa-reg-email-wrap');
+			var passwordBox = passwordField ? passwordField.closest('.wcfa-password') : null;
+
+			var minStrength = 3;
+			if (window.wc_password_strength_meter_params && window.wc_password_strength_meter_params.min_password_strength) {
+				minStrength = parseInt(window.wc_password_strength_meter_params.min_password_strength, 10) || 3;
+			}
+
+			function passwordStrength() {
+				if (!passwordField) {
+					return Infinity; // No password field => nothing to gate on.
+				}
+
+				var value = passwordField.value || '';
+				if ('' === value) {
+					return 0;
+				}
+
+				if (window.wp && window.wp.passwordStrength && typeof window.wp.passwordStrength.meter === 'function') {
+					var disallowed = window.wp.passwordStrength.userInputDisallowedList ? window.wp.passwordStrength.userInputDisallowedList() : [];
+					return window.wp.passwordStrength.meter(value, disallowed);
+				}
+
+				return 0;
+			}
+
+			function update() {
+				var emailOk = emailField ? isValidEmail(emailField.value) : false;
+				var usernameOk = usernameField ? ('' !== String(usernameField.value || '').trim()) : true;
+				var passwordOk = passwordField ? (passwordStrength() >= minStrength) : true;
+				var ready = emailOk && usernameOk && passwordOk;
+
+				if (emailWrap) {
+					emailWrap.classList.toggle('wcfa-valid', emailOk);
+				}
+				if (passwordBox) {
+					passwordBox.classList.toggle('wcfa-valid', passwordOk);
+				}
+				if (submit) {
+					submit.disabled = !ready;
+					submit.classList.toggle('wcfa-btn--muted', !ready);
+				}
+			}
+
+			[emailField, passwordField, usernameField].forEach(function (field) {
+				if (field) {
+					field.addEventListener('input', update);
+					field.addEventListener('change', update);
+					field.addEventListener('keyup', update);
+					field.addEventListener('blur', update);
+				}
+			});
+
+			// Native submit: show the loading spinner. The button is NOT disabled
+			// on purpose — WooCommerce's process_registration() requires the
+			// `register` field to be present in the POST, and a disabled submit
+			// button is excluded from the form data.
+			registerForm.addEventListener('submit', function () {
+				if (submit) {
+					submit.classList.remove('wcfa-btn--muted');
+					submit.classList.add('wcfa-loading');
+				}
+			});
+
+			update();
+		}
+
+		// Password strength feedback follows the notification style. In "floating"
+		// (toast) mode the inline WooCommerce meter is hidden and each strength
+		// change is surfaced as a SweetAlert2 toast; in "inline" mode the meter
+		// stays visible in place (like the OTP inline messages).
+		function bridgePasswordStrength() {
+			if (inlineNotifications) {
+				return;
+			}
+
+			var registerForm = document.querySelector('.wcfa-account-register .woocommerce-form-register');
+			if (!registerForm) {
+				return;
+			}
+
+			var passwordBox = registerForm.querySelector('.wcfa-password');
+			if (!passwordBox) {
+				return;
+			}
+
+			var lastMessage = '';
+
+			function sync() {
+				var meter = passwordBox.querySelector('.woocommerce-password-strength');
+				if (!meter) {
+					return;
+				}
+
+				// Keep the inline box hidden; feedback goes to the toast.
+				if (!meter.classList.contains('wcfa-meter-hidden')) {
+					meter.classList.add('wcfa-meter-hidden');
+				}
+
+				// WooCommerce toggles the inline style to hide the meter while the
+				// field is empty.
+				if ('none' === meter.style.display) {
+					lastMessage = '';
+					return;
+				}
+
+				var text = (meter.textContent || '').replace(/\s+/g, ' ').trim();
+				if (!text || text === lastMessage) {
+					return;
+				}
+
+				lastMessage = text;
+
+				var strong = meter.classList.contains('good') || meter.classList.contains('strong');
+				notify(strong ? 'success' : 'error', text, true, 4000);
+			}
+
+			var observer = new MutationObserver(sync);
+			observer.observe(passwordBox, {
+				childList: true,
+				subtree: true,
+				characterData: true,
+				attributes: true,
+				attributeFilter: ['class', 'style'],
+			});
+
+			sync();
 		}
 
 		function applyCode(code) {
@@ -520,7 +734,7 @@
 				return;
 			}
 
-			window.Swal.fire({
+			swalFire({
 				title: i18n.reportTitle || 'Report a problem',
 				html: formHtml,
 				width: 'min(560px, 92vw)',
@@ -580,6 +794,69 @@
 			return digits.length === codeLength ? digits : '';
 		}
 
+		// Minimum viewport width from which the "code detected" toast is glued to
+		// the OTP card's bottom-right corner. Below it (phones) the toast keeps
+		// SweetAlert2's default edge position.
+		var CLIPBOARD_TOAST_ANCHOR_MIN_WIDTH = 768;
+
+		// Anchor the open "code detected" toast to the bottom-right corner of the
+		// OTP card on tablet/desktop. The toast container is `position: fixed`
+		// with `inset: auto 0 0 auto`, so overriding `right`/`bottom` moves it.
+		// Returns a cleanup that detaches the scroll/resize listeners.
+		function anchorClipboardToast(popup) {
+			if (!popup || !wrapper) {
+				return function () {};
+			}
+
+			var container = popup.closest('.swal2-container');
+			if (!container) {
+				return function () {};
+			}
+
+			function apply() {
+				if (window.innerWidth < CLIPBOARD_TOAST_ANCHOR_MIN_WIDTH) {
+					container.style.right = '';
+					container.style.bottom = '';
+					return;
+				}
+
+				var card = wrapper.querySelector('.wcfa-otp-card') || wrapper;
+				var rect = card.getBoundingClientRect();
+				if (!rect.width || !rect.height) {
+					return;
+				}
+
+				// The toast sits inside the fixed container with a small inner
+				// padding; offset by it so the POPUP (not the container) ends up
+				// flush with the card's bottom-right corner. Read it from the
+				// computed style so the show animation (which transforms the
+				// popup) never skews the measurement.
+				var cs = window.getComputedStyle(container);
+				var padRight = parseFloat(cs.paddingRight) || 0;
+				var padBottom = parseFloat(cs.paddingBottom) || 0;
+
+				var clientW = document.documentElement.clientWidth;
+				var clientH = document.documentElement.clientHeight;
+
+				var right = clientW - rect.right - padRight;
+				var bottom = clientH - rect.bottom - padBottom;
+
+				container.style.right = Math.max(0, Math.round(right)) + 'px';
+				container.style.bottom = Math.max(0, Math.round(bottom)) + 'px';
+			}
+
+			apply();
+			window.addEventListener('scroll', apply, { passive: true });
+			window.addEventListener('resize', apply);
+
+			return function cleanup() {
+				window.removeEventListener('scroll', apply);
+				window.removeEventListener('resize', apply);
+			};
+		}
+
+		var cleanupClipboardAnchor = null;
+
 		// Proactively offer a code found in the clipboard (e.g. after the customer
 		// copies it from their email and comes back to the tab).
 		function offerCode(code) {
@@ -593,7 +870,7 @@
 				return;
 			}
 
-			window.Swal.fire({
+			swalFire({
 				toast: true,
 				position: 'bottom-end',
 				icon: 'info',
@@ -608,6 +885,16 @@
 				customClass: { popup: 'wcfa-swal-toast' },
 				didOpen: function (popup) {
 					popup.style.setProperty('--wcfa-primary', primaryColor);
+					if (cleanupClipboardAnchor) {
+						cleanupClipboardAnchor();
+					}
+					cleanupClipboardAnchor = anchorClipboardToast(popup);
+				},
+				willClose: function () {
+					if (cleanupClipboardAnchor) {
+						cleanupClipboardAnchor();
+						cleanupClipboardAnchor = null;
+					}
 				},
 			}).then(function (result) {
 				if (result.isConfirmed) {
@@ -658,13 +945,13 @@
 		// any interaction on the OTP screen is a good moment to re-check.
 		wrapper.addEventListener('click', scheduleClipboardCheck);
 
-		// Email fields: OTP login and the native registration form (login-only).
+		// Email field: OTP login step.
 		bindEmailState(emailInput, document.getElementById('wcfa-email-wrap'), loginBtn);
-		bindEmailState(
-			document.getElementById('reg_email'),
-			null,
-			document.querySelector('.wcfa-account-register .woocommerce-form-register__submit')
-		);
+
+		// Native registration form (login-only): gate the submit on a valid email
+		// plus an accepted password strength.
+		bindRegisterState();
+		bridgePasswordStrength();
 
 		if (loginForm) {
 			loginForm.addEventListener('submit', function (e) {
@@ -840,6 +1127,12 @@
 					if (loginStep) {
 						loginStep.hidden = false;
 					}
+
+					// Back to the login step: bring the register column back.
+					if (authWrapper) {
+						authWrapper.classList.remove('wcfa-account-auth--verify');
+					}
+
 					clearCode();
 					if (verifyBtn) {
 						verifyBtn.disabled = true;
@@ -857,7 +1150,7 @@
 					return;
 				}
 
-				window.Swal.fire({
+				swalFire({
 					icon: 'question',
 					title: i18n.confirmBack || 'Go back?',
 					showCancelButton: true,
@@ -892,12 +1185,9 @@
 				post('/verify-code', { email: currentEmail, code: code })
 					.then(function (result) {
 						if (result.data && result.data.success) {
-							var target = result.data.redirect;
-							if (cfg.redirectToCheckout && cfg.checkoutUrl) {
-								target = cfg.checkoutUrl;
-							}
-
-							successThenRedirect(result.data.message || '', target);
+							// The post-login destination comes from the single,
+							// shared redirect configuration (Settings screen).
+							successThenRedirect(result.data.message || '', result.data.redirect);
 						} else {
 							notify('error', messageFrom(result));
 							setButtonLoading(verifyBtn, false);
@@ -915,5 +1205,9 @@
 					});
 			});
 		}
+
+		// Surface any notice WooCommerce printed on page load (e.g. a native
+		// registration error) through the same notification system.
+		bridgeServerNotices();
 	});
 })();

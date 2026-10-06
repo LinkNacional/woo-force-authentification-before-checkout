@@ -103,19 +103,97 @@ class WcForceAuthOtp {
 			'notification_style' => 'floating',
 			// Appearance.
 			'primary_color'     => '#22C1DC',
+			'card_bg'           => '#ffffff',
+			'input_bg'          => '#ffffff',
 			'brand_name'        => '',
+			'brand_name_show'   => 'yes',
 			'brand_tagline'     => '',
+			'tagline_show'      => 'no',
 			'logo_url'          => '',
+			'logo_show'         => 'yes',
 			'login_heading'     => __( 'Welcome back', 'woo-force-authentification-before-checkout' ),
 			'login_subheading'  => __( 'Enter your email to sign up or access your account', 'woo-force-authentification-before-checkout' ),
+			'login_label_email' => __( 'Email address', 'woo-force-authentification-before-checkout' ),
+			'login_placeholder_email' => __( 'Enter your email', 'woo-force-authentification-before-checkout' ),
+			'login_button_text' => __( 'Login', 'woo-force-authentification-before-checkout' ),
+			'register_heading'  => __( 'Register', 'woo-force-authentification-before-checkout' ),
+			'register_subheading' => __( 'Create your account with your email and a password.', 'woo-force-authentification-before-checkout' ),
+			'register_label_username' => __( 'Username', 'woo-force-authentification-before-checkout' ),
+			'register_label_email' => __( 'Email address', 'woo-force-authentification-before-checkout' ),
+			'register_label_password' => __( 'Password', 'woo-force-authentification-before-checkout' ),
+			'register_placeholder_username' => __( 'Enter a username', 'woo-force-authentification-before-checkout' ),
+			'register_placeholder_email' => __( 'Enter your email', 'woo-force-authentification-before-checkout' ),
+			'register_placeholder_password' => __( 'Enter your password', 'woo-force-authentification-before-checkout' ),
+			'register_button_text' => __( 'Register', 'woo-force-authentification-before-checkout' ),
 			'verify_heading'    => __( 'Verify your account', 'woo-force-authentification-before-checkout' ),
 			'verify_subheading' => __( 'Enter the verification code sent to your email', 'woo-force-authentification-before-checkout' ),
+			'verify_label_code' => __( 'Verification Code', 'woo-force-authentification-before-checkout' ),
+			'verify_button_text' => __( 'Verify & Continue', 'woo-force-authentification-before-checkout' ),
+			'verify_button_resend' => __( 'Resend code', 'woo-force-authentification-before-checkout' ),
+			'verify_button_back' => __( 'Use another email', 'woo-force-authentification-before-checkout' ),
 			'otp_sent_message'  => __( 'A one-time password (OTP) has been sent to your registered email address.', 'woo-force-authentification-before-checkout' ),
 			'legal_text'        => __( 'By clicking on "Login" you agree to our Privacy Policy and Terms of Service.', 'woo-force-authentification-before-checkout' ),
 			// Email.
 			'email_subject'     => __( 'Your access code', 'woo-force-authentification-before-checkout' ),
-			// Redirect.
-			'redirect_url'      => '',
+			'email_heading'     => __( 'Your access code', 'woo-force-authentification-before-checkout' ),
+			'email_message'     => __( 'Use the code below to access your account:', 'woo-force-authentification-before-checkout' ),
+			'email_footer_note' => __( 'If you did not request this code, you can safely ignore this email.', 'woo-force-authentification-before-checkout' ),
+		);
+	}
+
+	/**
+	 * Groups of editable texts for the visual editor, mapped to their option
+	 * keys. Drives the preview (tabs + pencils) on the settings page.
+	 *
+	 * @return array<string,array{title:string,texts:array<int,array{key:string,label:string,kind:string}>}>
+	 */
+	public static function editable_text_groups() {
+		return array(
+			'login'    => array(
+				'title' => __( 'Login', 'woo-force-authentification-before-checkout' ),
+				'texts' => array(
+					array( 'key' => 'login_heading', 'label' => __( 'Heading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'login_subheading', 'label' => __( 'Subheading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'login_label_email', 'label' => __( 'Email label', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'login_placeholder_email', 'label' => __( 'Email placeholder', 'woo-force-authentification-before-checkout' ), 'kind' => 'placeholder' ),
+					array( 'key' => 'login_button_text', 'label' => __( 'Button', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'legal_text', 'label' => __( 'Legal text', 'woo-force-authentification-before-checkout' ), 'kind' => 'html' ),
+				),
+			),
+			'verify'   => array(
+				'title' => __( 'Verification', 'woo-force-authentification-before-checkout' ),
+				'texts' => array(
+					array( 'key' => 'verify_heading', 'label' => __( 'Heading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'verify_subheading', 'label' => __( 'Subheading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'verify_label_code', 'label' => __( 'Code label', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'verify_button_text', 'label' => __( 'Verify button', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'verify_button_resend', 'label' => __( 'Resend button', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'verify_button_back', 'label' => __( 'Back button', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+				),
+			),
+			'register' => array(
+				'title' => __( 'Register', 'woo-force-authentification-before-checkout' ),
+				'texts' => array(
+					array( 'key' => 'register_heading', 'label' => __( 'Heading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'register_subheading', 'label' => __( 'Subheading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'register_label_username', 'label' => __( 'Username label', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'register_placeholder_username', 'label' => __( 'Username placeholder', 'woo-force-authentification-before-checkout' ), 'kind' => 'placeholder' ),
+					array( 'key' => 'register_label_email', 'label' => __( 'Email label', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'register_placeholder_email', 'label' => __( 'Email placeholder', 'woo-force-authentification-before-checkout' ), 'kind' => 'placeholder' ),
+					array( 'key' => 'register_label_password', 'label' => __( 'Password label', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'register_placeholder_password', 'label' => __( 'Password placeholder', 'woo-force-authentification-before-checkout' ), 'kind' => 'placeholder' ),
+					array( 'key' => 'register_button_text', 'label' => __( 'Button', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+				),
+			),
+			'email'    => array(
+				'title' => __( 'Email', 'woo-force-authentification-before-checkout' ),
+				'texts' => array(
+					array( 'key' => 'email_subject', 'label' => __( 'Subject', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'email_heading', 'label' => __( 'Heading', 'woo-force-authentification-before-checkout' ), 'kind' => 'text' ),
+					array( 'key' => 'email_message', 'label' => __( 'Message', 'woo-force-authentification-before-checkout' ), 'kind' => 'html' ),
+					array( 'key' => 'email_footer_note', 'label' => __( 'Footer note', 'woo-force-authentification-before-checkout' ), 'kind' => 'html' ),
+				),
+			),
 		);
 	}
 
@@ -134,7 +212,7 @@ class WcForceAuthOtp {
 		$defaults = self::defaults();
 
 		if ( '' === $default && isset( $defaults[ $key ] ) ) {
-			$default = $defaults[ $key ];
+			$default = self::default_for( $key );
 		}
 
 		$value = get_option( self::OPTION_PREFIX . $key, null );
@@ -147,12 +225,108 @@ class WcForceAuthOtp {
 	}
 
 	/**
+	 * Default value for a setting, when nothing is stored yet.
+	 *
+	 * A couple of texts depend on the active mode: in "Login only" the code
+	 * never creates an account, so the login subheading must not advertise
+	 * signing up. The combined "Register and login" mode keeps the original
+	 * wording. Returning the value here (instead of baking it into defaults())
+	 * keeps a single stored option per field while adapting the copy to context.
+	 *
+	 * @param string $key Setting key (without the prefix).
+	 * @return string
+	 */
+	public static function default_for( $key ) {
+		$defaults = self::defaults();
+
+		if ( ! isset( $defaults[ $key ] ) ) {
+			return '';
+		}
+
+		if ( 'login_subheading' === $key ) {
+			$mode = (string) get_option( self::OPTION_PREFIX . 'enable_type', 'disabled' );
+
+			if ( 'login_only' === $mode ) {
+				return __( 'Enter your email to access your account', 'woo-force-authentification-before-checkout' );
+			}
+		}
+
+		// Pre-fill the branding/redirect fields with the live WordPress/WooCommerce
+		// values so the settings are never shown empty.
+		if ( '' === $defaults[ $key ] ) {
+			switch ( $key ) {
+				case 'brand_name':
+					return get_bloginfo( 'name' );
+				case 'brand_tagline':
+					return get_bloginfo( 'description' );
+				case 'logo_url':
+					return get_site_icon_url( 512 );
+			}
+		}
+
+		return $defaults[ $key ];
+	}
+
+	/**
+	 * Every known default text for a setting (the base one plus the mode
+	 * variants). Used to tell a "not customized" value apart from a real edit,
+	 * so the mode-aware default can still apply after the settings were saved.
+	 *
+	 * @param string $key Setting key (without the prefix).
+	 * @return string[]
+	 */
+	public static function default_variants( $key ) {
+		$defaults = self::defaults();
+
+		if ( ! isset( $defaults[ $key ] ) ) {
+			return array();
+		}
+
+		$variants = array( $defaults[ $key ] );
+
+		if ( 'login_subheading' === $key ) {
+			$variants[] = __( 'Enter your email to access your account', 'woo-force-authentification-before-checkout' );
+		}
+
+		return array_values( array_unique( $variants ) );
+	}
+
+	/**
+	 * Normalize a stored value: when it is empty or still equals one of the
+	 * known default texts (i.e. the admin never customized it), fall back to the
+	 * mode-aware default. A real custom text is returned untouched.
+	 *
+	 * @param string $key   Setting key (without the prefix).
+	 * @param mixed  $value Stored value.
+	 * @return string
+	 */
+	public static function normalize_stored_value( $key, $value ) {
+		if ( ! isset( self::defaults()[ $key ] ) ) {
+			return (string) $value;
+		}
+
+		$value = is_scalar( $value ) ? (string) $value : '';
+
+		if ( '' === $value || in_array( $value, self::default_variants( $key ), true ) ) {
+			return self::default_for( $key );
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Current authentication mode.
 	 *
 	 * @return string disabled|login_only|register_and_login
 	 */
 	public function get_mode() {
 		$mode = (string) $this->option( 'enable_type', 'disabled' );
+
+		// Never create accounts when WooCommerce registration is disabled — fall
+		// back to "login only" so the plugin respects the store's setting.
+		if ( 'register_and_login' === $mode && 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) {
+			$mode = 'login_only';
+		}
 
 		if ( ! in_array( $mode, array( 'disabled', 'login_only', 'register_and_login' ), true ) ) {
 			$mode = 'disabled';
@@ -803,6 +977,16 @@ class WcForceAuthOtp {
 	 * @return bool
 	 */
 	private function send_email( $email, $code ) {
+		// Preferred path: hand the delivery to the registered WooCommerce email
+		// (so the store's email template, From address and preview are reused).
+		$wc_email = $this->get_wc_email();
+
+		if ( $wc_email ) {
+			return (bool) $wc_email->trigger( $email, $code );
+		}
+
+		// Fallback (WooCommerce inactive or the email class unavailable): the
+		// plugin's own self-contained template.
 		$subject = sprintf(
 			/* translators: %s: the one-time password code. */
 			// phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
@@ -814,8 +998,21 @@ class WcForceAuthOtp {
 			'otp_code'           => $code,
 			'site_name'          => $this->get_brand_name(),
 			'site_url'           => home_url(),
+			'logo_url'           => $this->get_logo_url(),
 			'expiration_minutes' => $this->get_expiration_minutes(),
 			'primary_color'      => $this->get_primary_color(),
+			'email_heading'      => $this->replace_email_tokens(
+				(string) $this->option( 'email_heading', __( 'Your access code', 'woo-force-authentification-before-checkout' ) ),
+				$code
+			),
+			'email_message'      => $this->replace_email_tokens(
+				(string) $this->option( 'email_message', __( 'Use the code below to access your account:', 'woo-force-authentification-before-checkout' ) ),
+				$code
+			),
+			'email_footer_note'  => $this->replace_email_tokens(
+				(string) $this->option( 'email_footer_note', __( 'If you did not request this code, you can safely ignore this email.', 'woo-force-authentification-before-checkout' ) ),
+				$code
+			),
 		);
 
 		$message = $this->render_email_template( $template_data );
@@ -826,6 +1023,39 @@ class WcForceAuthOtp {
 		);
 
 		return wp_mail( $email, $subject, $message, $headers );
+	}
+
+	/**
+	 * The registered WooCommerce OTP email instance, when available.
+	 *
+	 * @return \Lkn\WcForceAuth\Includes\WcForceAuthOtpEmail|null
+	 */
+	private function get_wc_email() {
+		if ( ! function_exists( 'WC' ) || ! WC()->mailer() ) {
+			return null;
+		}
+
+		$emails = WC()->mailer()->get_emails();
+
+		return isset( $emails['WcForceAuthOtpEmail'] ) ? $emails['WcForceAuthOtpEmail'] : null;
+	}
+
+	/**
+	 * Replace the supported tokens in an admin-configured email string.
+	 *
+	 * Supported tokens: {code} (the one-time password), {site_name} (brand
+	 * name) and {expiration} (validity in minutes).
+	 *
+	 * @param string $text Email text with optional tokens.
+	 * @param string $code The one-time password code.
+	 * @return string
+	 */
+	public function replace_email_tokens( $text, $code ) {
+		return str_replace(
+			array( '{code}', '{site_name}', '{expiration}' ),
+			array( (string) $code, $this->get_brand_name(), (string) $this->get_expiration_minutes() ),
+			(string) $text
+		);
 	}
 
 	/**
@@ -1037,16 +1267,14 @@ class WcForceAuthOtp {
 	/**
 	 * URL the customer is sent to after a successful login.
 	 *
+	 * Sourced from the shared redirect configuration (WcForceAuthRedirectSettings),
+	 * so the OTP flow lands on the exact same destination as the Force
+	 * Authentication flow.
+	 *
 	 * @return string
 	 */
 	public function get_redirect_url() {
-		$configured = trim( (string) $this->option( 'redirect_url', '' ) );
-
-		if ( '' !== $configured ) {
-			return esc_url_raw( $configured );
-		}
-
-		return wc_get_account_endpoint_url( 'dashboard' );
+		return WcForceAuthRedirectSettings::get_after_login_url();
 	}
 
 	/**
@@ -1101,11 +1329,18 @@ class WcForceAuthOtp {
 	 */
 	private function render_form() {
 		$mode       = $this->get_mode();
-		$heading    = (string) $this->option( 'login_heading', __( 'Welcome back', 'woo-force-authentification-before-checkout' ) );
-		$subheading = (string) $this->option( 'login_subheading', __( 'Enter your email to sign up or access your account', 'woo-force-authentification-before-checkout' ) );
-		$v_heading  = (string) $this->option( 'verify_heading', __( 'Verify your account', 'woo-force-authentification-before-checkout' ) );
-		$v_subhead  = (string) $this->option( 'verify_subheading', __( 'Enter the verification code sent to your email', 'woo-force-authentification-before-checkout' ) );
-		$sent_msg   = (string) $this->option( 'otp_sent_message', __( 'A one-time password (OTP) has been sent to your registered email address.', 'woo-force-authentification-before-checkout' ) );
+		$heading    = (string) $this->option( 'login_heading' );
+		$subheading = (string) $this->option( 'login_subheading' );
+		$l_label    = (string) $this->option( 'login_label_email' );
+		$l_ph       = (string) $this->option( 'login_placeholder_email' );
+		$l_btn      = (string) $this->option( 'login_button_text' );
+		$v_heading  = (string) $this->option( 'verify_heading' );
+		$v_subhead  = (string) $this->option( 'verify_subheading' );
+		$v_label    = (string) $this->option( 'verify_label_code' );
+		$v_btn      = (string) $this->option( 'verify_button_text' );
+		$v_btn_resend = (string) $this->option( 'verify_button_resend' );
+		$v_btn_back = (string) $this->option( 'verify_button_back' );
+		$sent_msg   = (string) $this->option( 'otp_sent_message' );
 		$legal      = (string) $this->option( 'legal_text', '' );
 		$logo       = $this->get_logo_url();
 		$brand      = $this->get_brand_name();
@@ -1115,12 +1350,13 @@ class WcForceAuthOtp {
 
 		ob_start();
 		?>
-		<div class="wcfa-otp-wrapper" data-mode="<?php echo esc_attr( $mode ); ?>" data-notify="<?php echo esc_attr( $notify ); ?>" style="--wcfa-primary: <?php echo esc_attr( $color ); ?>;">
+		<div class="wcfa-otp-wrapper" data-mode="<?php echo esc_attr( $mode ); ?>" data-notify="<?php echo esc_attr( $notify ); ?>" style="<?php echo $this->get_color_style(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside get_color_style(). ?>">
 			<div class="wcfa-otp-card">
 				<div class="wcfa-brand">
 					<?php if ( $logo ) : ?>
 						<img class="wcfa-logo" src="<?php echo esc_url( $logo ); ?>" alt="<?php echo esc_attr( $brand ); ?>" />
-					<?php else : ?>
+					<?php endif; ?>
+					<?php if ( $brand ) : ?>
 						<span class="wcfa-brand-name"><?php echo esc_html( $brand ); ?></span>
 					<?php endif; ?>
 					<?php if ( $tagline ) : ?>
@@ -1134,7 +1370,7 @@ class WcForceAuthOtp {
 
 					<form id="wcfa-login-form" class="wcfa-form" novalidate>
 						<label class="wcfa-label" for="wcfa_email">
-							<?php esc_html_e( 'Email', 'woo-force-authentification-before-checkout' ); ?>
+							<?php echo esc_html( $l_label ); ?>
 							<span class="wcfa-required">*</span>
 						</label>
 						<div class="wcfa-input-wrap" id="wcfa-email-wrap">
@@ -1146,7 +1382,7 @@ class WcForceAuthOtp {
 								id="wcfa_email"
 								name="email"
 								class="wcfa-input"
-								placeholder="<?php esc_attr_e( 'Enter your email', 'woo-force-authentification-before-checkout' ); ?>"
+								placeholder="<?php echo esc_attr( $l_ph ); ?>"
 								required
 							/>
 						</div>
@@ -1154,7 +1390,7 @@ class WcForceAuthOtp {
 						<div class="wcfa-messages wcfa-step-messages" id="wcfa-login-message" role="status" aria-live="polite"></div>
 
 						<button type="submit" class="wcfa-btn wcfa-btn--primary" id="wcfa-login-btn">
-							<?php esc_html_e( 'Login', 'woo-force-authentification-before-checkout' ); ?>
+							<?php echo esc_html( $l_btn ); ?>
 						</button>
 					</form>
 
@@ -1184,7 +1420,7 @@ class WcForceAuthOtp {
 
 					<form id="wcfa-verify-form" class="wcfa-form" novalidate>
 						<label class="wcfa-label" for="<?php echo $this->is_segmented_input() ? 'wcfa_code_0' : 'wcfa_code'; ?>">
-							<?php esc_html_e( 'Verification Code', 'woo-force-authentification-before-checkout' ); ?>
+							<?php echo esc_html( $v_label ); ?>
 							<span class="wcfa-required">*</span>
 						</label>
 						<?php if ( $this->is_segmented_input() ) : ?>
@@ -1246,17 +1482,17 @@ class WcForceAuthOtp {
 						<p class="wcfa-expires" id="wcfa-expires" hidden></p>
 
 						<button type="submit" class="wcfa-btn wcfa-btn--primary" id="wcfa-verify-btn" disabled>
-							<?php esc_html_e( 'Verify & Continue', 'woo-force-authentification-before-checkout' ); ?>
+							<?php echo esc_html( $v_btn ); ?>
 						</button>
 
 						<div class="wcfa-resend-row">
 							<button type="button" class="wcfa-btn-resend wcfa-btn--muted" id="wcfa-resend" disabled>
-								<?php esc_html_e( 'Resend code', 'woo-force-authentification-before-checkout' ); ?>
+								<?php echo esc_html( $v_btn_resend ); ?>
 							</button>
 						</div>
 
 						<button type="button" class="wcfa-back" id="wcfa-back">
-							<?php esc_html_e( 'Use another email', 'woo-force-authentification-before-checkout' ); ?>
+							<?php echo esc_html( $v_btn_back ); ?>
 						</button>
 					</form>
 
@@ -1282,6 +1518,10 @@ class WcForceAuthOtp {
 	 * @return string
 	 */
 	public function get_brand_name() {
+		if ( 'yes' !== (string) $this->option( 'brand_name_show', 'yes' ) ) {
+			return '';
+		}
+
 		$name = trim( (string) $this->option( 'brand_name', '' ) );
 
 		return '' !== $name ? $name : get_bloginfo( 'name' );
@@ -1293,6 +1533,10 @@ class WcForceAuthOtp {
 	 * @return string
 	 */
 	public function get_tagline() {
+		if ( 'yes' !== (string) $this->option( 'tagline_show', 'yes' ) ) {
+			return '';
+		}
+
 		$tagline = trim( (string) $this->option( 'brand_tagline', '' ) );
 
 		return '' !== $tagline ? $tagline : get_bloginfo( 'description' );
@@ -1304,23 +1548,64 @@ class WcForceAuthOtp {
 	 * @return string
 	 */
 	public function get_logo_url() {
+		if ( 'yes' !== (string) $this->option( 'logo_show', 'yes' ) ) {
+			return '';
+		}
+
 		$logo = trim( (string) $this->option( 'logo_url', '' ) );
 
 		if ( '' !== $logo ) {
 			return $logo;
 		}
 
-		$custom_logo_id = get_theme_mod( 'custom_logo' );
+		// Fall back to the site icon defined in WordPress → Settings → General
+		// (never the active theme's custom logo, so the brand follows the site).
+		$site_icon = get_site_icon_url( 512 );
 
-		if ( $custom_logo_id ) {
-			$url = wp_get_attachment_image_url( (int) $custom_logo_id, 'medium' );
+		return $site_icon ? $site_icon : '';
+	}
 
-			if ( $url ) {
-				return $url;
-			}
-		}
+	/**
+	 * Card background color (defaults to white).
+	 *
+	 * @return string
+	 */
+	public function get_card_bg() {
+		$color = trim( (string) $this->option( 'card_bg', '' ) );
 
-		return '';
+		return preg_match( '/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $color ) ? $color : '#ffffff';
+	}
+
+	/**
+	 * Input background color (defaults to white).
+	 *
+	 * @return string
+	 */
+	public function get_input_bg() {
+		$color = trim( (string) $this->option( 'input_bg', '' ) );
+
+		return preg_match( '/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $color ) ? $color : '#ffffff';
+	}
+
+	/**
+	 * Readable text color for a given background (dark text on light, light text
+	 * on dark). Keeps the text legible whatever background the admin picks.
+	 *
+	 * @param string $bg Background hex color.
+	 * @return string
+	 */
+	public function contrast_for( $bg ) {
+		return self::luminance( $bg ) > 0.5 ? '#121519' : '#f5f7fa';
+	}
+
+	/**
+	 * Muted text color matching contrast_for() (secondary text on a background).
+	 *
+	 * @param string $bg Background hex color.
+	 * @return string
+	 */
+	public function muted_for( $bg ) {
+		return self::luminance( $bg ) > 0.5 ? '#6b7280' : '#c9cdd3';
 	}
 
 	/**
@@ -1336,6 +1621,122 @@ class WcForceAuthOtp {
 		}
 
 		return $color;
+	}
+
+	/**
+	 * Relative luminance (WCAG) of a hex color, 0 (black) to 1 (white).
+	 *
+	 * @param string $hex Hex color (#rgb or #rrggbb).
+	 * @return float
+	 */
+	private static function luminance( $hex ) {
+		$hex = ltrim( (string) $hex, '#' );
+
+		if ( 3 === strlen( $hex ) ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+
+		if ( 6 !== strlen( $hex ) || ! ctype_xdigit( $hex ) ) {
+			return 0;
+		}
+
+		$channel = static function ( $value ) {
+			$value = $value / 255;
+
+			return $value <= 0.03928 ? $value / 12.92 : pow( ( $value + 0.055 ) / 1.055, 2.4 );
+		};
+
+		$r = $channel( hexdec( substr( $hex, 0, 2 ) ) );
+		$g = $channel( hexdec( substr( $hex, 2, 2 ) ) );
+		$b = $channel( hexdec( substr( $hex, 4, 2 ) ) );
+
+		return 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+	}
+
+	/**
+	 * Mix a hex color with black.
+	 *
+	 * @param string $hex   Base hex color.
+	 * @param float  $ratio 0 = unchanged, 1 = black.
+	 * @return string Hex color (#rrggbb).
+	 */
+	private static function darken( $hex, $ratio ) {
+		$hex = ltrim( (string) $hex, '#' );
+
+		if ( 3 === strlen( $hex ) ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+
+		$ratio = max( 0, min( 1, (float) $ratio ) );
+		$out   = '#';
+
+		for ( $i = 0; $i < 3; $i++ ) {
+			$c   = hexdec( substr( $hex, $i * 2, 2 ) );
+			$val = (int) round( $c * ( 1 - $ratio ) );
+			$out .= str_pad( dechex( max( 0, min( 255, $val ) ) ), 2, '0', STR_PAD_LEFT );
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Readable text color (black or white) to place on top of the primary color.
+	 * Keeps white for normal brands and only switches to black on genuinely light
+	 * colors (white, yellow, pastels) — prevents "white text on white button"
+	 * without changing how a mid-tone brand looks.
+	 *
+	 * @return string
+	 */
+	public function get_primary_contrast() {
+		return self::luminance( $this->get_primary_color() ) > 0.5 ? '#111111' : '#ffffff';
+	}
+
+	/**
+	 * A darker variant of the primary color, safe to use as text/icon color on a
+	 * light (tinted/white) background — e.g. the "Resend" / "Use another email"
+	 * buttons. Keeps the primary color unless it is too light to be read.
+	 *
+	 * @return string
+	 */
+	public function get_primary_ink() {
+		$primary = $this->get_primary_color();
+
+		if ( self::luminance( $primary ) <= 0.5 ) {
+			return $primary;
+		}
+
+		for ( $i = 1; $i <= 20; $i++ ) {
+			$mixed = self::darken( $primary, $i / 20 );
+
+			if ( self::luminance( $mixed ) <= 0.2 ) {
+				return $mixed;
+			}
+		}
+
+		return self::darken( $primary, 1 );
+	}
+
+	/**
+	 * Inline style string with the brand color and its derived, contrast-safe
+	 * variants, ready to print inside a `style="..."` attribute.
+	 *
+	 * @return string
+	 */
+	public function get_color_style() {
+		$card_bg  = $this->get_card_bg();
+		$input_bg = $this->get_input_bg();
+
+		return sprintf(
+			'--wcfa-primary: %1$s; --wcfa-on-primary: %2$s; --wcfa-primary-ink: %3$s; --wcfa-card-bg: %4$s; --wcfa-input-bg: %5$s; --wcfa-text: %6$s; --wcfa-muted: %7$s; --wcfa-on-input: %8$s;',
+			esc_attr( $this->get_primary_color() ),
+			esc_attr( $this->get_primary_contrast() ),
+			esc_attr( $this->get_primary_ink() ),
+			esc_attr( $card_bg ),
+			esc_attr( $input_bg ),
+			esc_attr( $this->contrast_for( $card_bg ) ),
+			esc_attr( $this->muted_for( $card_bg ) ),
+			esc_attr( $this->contrast_for( $input_bg ) )
+		);
 	}
 
 	/**
@@ -1412,8 +1813,6 @@ class WcForceAuthOtp {
 				'resendInterval' => $this->get_resend_interval(),
 				'primaryColor'  => $this->get_primary_color(),
 				'notificationStyle' => $this->get_notification_style(),
-				'redirectToCheckout' => isset( $_GET[ WcForceAuthCheckout::URL_ARG ] ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				'checkoutUrl'   => function_exists( 'wc_get_checkout_url' ) ? wc_get_checkout_url() : home_url(),
 				'i18n'          => array(
 					'sending'      => __( 'Sending code...', 'woo-force-authentification-before-checkout' ),
 					'verifying'    => __( 'Verifying code...', 'woo-force-authentification-before-checkout' ),
@@ -1423,9 +1822,9 @@ class WcForceAuthOtp {
 					'resendIn'     => __( 'You can resend in %ds', 'woo-force-authentification-before-checkout' ),
 					/* translators: %s: time when the code expires. */
 					'expiresAt'    => __( 'Code expires at %s', 'woo-force-authentification-before-checkout' ),
-					'resendButton' => __( 'Resend code', 'woo-force-authentification-before-checkout' ),
+					'resendButton' => (string) $this->option( 'verify_button_resend' ),
 					'confirmBack'  => __( 'Go back and change the email?', 'woo-force-authentification-before-checkout' ),
-					'back'         => __( 'Use another email', 'woo-force-authentification-before-checkout' ),
+					'back'         => (string) $this->option( 'verify_button_back' ),
 					'errorTitle'   => __( 'Something went wrong', 'woo-force-authentification-before-checkout' ),
 					'clipboardTitle' => __( 'Code detected', 'woo-force-authentification-before-checkout' ),
 					'clipboardText'  => __( 'We found your access code in the clipboard.', 'woo-force-authentification-before-checkout' ),

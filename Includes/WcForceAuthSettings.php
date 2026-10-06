@@ -82,6 +82,22 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 	}
 
 	/**
+	 * Notice shown above the save button, warning about email deliverability.
+	 *
+	 * @return array{title?: string, texts?: string[]}
+	 */
+	protected function get_save_notice(): array {
+		return array(
+			'title' => __( 'Email delivery', 'woo-force-authentification-before-checkout' ),
+			'texts' => array(
+				__( 'The one-time passwords are sent by email through your store\'s email system (WooCommerce). Make sure the store email address is correctly configured in WooCommerce → Settings → Emails.', 'woo-force-authentification-before-checkout' ),
+				__( 'If your customers are not receiving the codes — or if your store is not sending emails at all — it usually is a mail delivery problem, not a plugin issue.', 'woo-force-authentification-before-checkout' ),
+				__( 'In that case, install and configure an SMTP plugin (such as "WP Mail SMTP", "Fluent SMTP" or "Post SMTP") so WordPress can deliver emails reliably.', 'woo-force-authentification-before-checkout' ),
+			),
+		);
+	}
+
+	/**
 	 * Settings fields consumed by the layout template.
 	 *
 	 * @return array
@@ -103,8 +119,12 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'options'           => array(
 					'disabled'           => __( 'Disabled', 'woo-force-authentification-before-checkout' ),
 					'login_only'         => __( 'Login only', 'woo-force-authentification-before-checkout' ),
-					'register_and_login' => __( 'Register and login', 'woo-force-authentification-before-checkout' ),
+					'register_and_login' => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' )
+						? __( 'Register and login', 'woo-force-authentification-before-checkout' )
+						/* translators: %s: the WooCommerce setting name. */
+						: sprintf( __( 'Register and login (unavailable: enable “%s” in WooCommerce first)', 'woo-force-authentification-before-checkout' ), __( 'Allow customers to create an account', 'woocommerce' ) ),
 				),
+				'options_disabled'  => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ? array() : array( 'register_and_login' ),
 				'default'           => 'disabled',
 				'description'       => __( 'Turns email OTP (one-time password) authentication on and chooses how it behaves. While disabled, the default WooCommerce login and registration forms are used.', 'woo-force-authentification-before-checkout' ),
 				'block_title'       => __( 'Authentication mode', 'woo-force-authentification-before-checkout' ),
@@ -112,12 +132,12 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'input_description' => __( '"Disabled": keeps the standard WooCommerce login/registration. "Login only": only customers that already have an account can sign in with a code (the native registration form stays available for new customers). "Register and login": the 2-in-1 flow — the customer types their email, and we log them in if the account exists or create a passwordless account with the same code if it does not.', 'woo-force-authentification-before-checkout' ),
 			),
 			$p . 'expiration_time' => array(
-				'title'             => __( 'Code expiration', 'woo-force-authentification-before-checkout' ),
+				'title'             => __( 'Code expiration in Minutes', 'woo-force-authentification-before-checkout' ),
 				'type'              => 'number',
 				'id'                => $p . 'expiration_time',
 				'default'           => '10',
 				'description'       => __( 'How long, in minutes, a code stays valid after it is sent to the customer.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Code expiration', 'woo-force-authentification-before-checkout' ),
+				'block_title'       => __( 'Code expiration in Minutes', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Lifetime of each verification code.', 'woo-force-authentification-before-checkout' ),
 				'input_description' => __( 'Accepts 1 to 60 minutes. If left empty, 10 minutes is used. After this time the code stops working and the customer must request a new one.', 'woo-force-authentification-before-checkout' ),
 				'custom_attributes' => array(
@@ -211,139 +231,148 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'title'             => __( 'Primary color', 'woo-force-authentification-before-checkout' ),
 				'type'              => 'color',
 				'id'                => $p . 'primary_color',
+				'preview_link'      => true,
 				'default'           => '#22C1DC',
 				'description'       => __( 'Accent color applied to the buttons and highlights on the OTP screens.', 'woo-force-authentification-before-checkout' ),
 				'block_title'       => __( 'Primary color', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Color of the "Login", "Resend" and "Verify & Continue" buttons.', 'woo-force-authentification-before-checkout' ),
 				'input_description' => __( 'Pick a color or type a hex value (for example #22C1DC). If left empty or invalid, the default #22C1DC is used.', 'woo-force-authentification-before-checkout' ),
 			),
+			$p . 'card_bg' => array(
+				'title'             => __( 'Card background', 'woo-force-authentification-before-checkout' ),
+				'type'              => 'color',
+				'id'                => $p . 'card_bg',
+				'preview_link'      => true,
+				'default'           => '#ffffff',
+				'description'       => __( 'Background color of the authentication card.', 'woo-force-authentification-before-checkout' ),
+				'block_title'       => __( 'Card background', 'woo-force-authentification-before-checkout' ),
+				'block_sub_title'   => __( 'Surface behind the whole form.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'The text color adapts automatically for legibility. Default: white.', 'woo-force-authentification-before-checkout' ),
+			),
+			$p . 'input_bg' => array(
+				'title'             => __( 'Input background', 'woo-force-authentification-before-checkout' ),
+				'type'              => 'color',
+				'id'                => $p . 'input_bg',
+				'preview_link'      => true,
+				'default'           => '#ffffff',
+				'description'       => __( 'Background color of the input fields and the code boxes.', 'woo-force-authentification-before-checkout' ),
+				'block_title'       => __( 'Input background', 'woo-force-authentification-before-checkout' ),
+				'block_sub_title'   => __( 'Surface of the e-mail / password / code fields.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'The typed text color adapts automatically for legibility. Default: white.', 'woo-force-authentification-before-checkout' ),
+			),
+			$p . 'brand_name_show' => array(
+				'title'             => __( 'Display brand name', 'woo-force-authentification-before-checkout' ),
+				'type'              => 'radio',
+				'id'                => $p . 'brand_name_show',
+				'options'           => array(
+					'yes' => __( 'Show', 'woo-force-authentification-before-checkout' ),
+					'no'  => __( 'Hide', 'woo-force-authentification-before-checkout' ),
+				),
+				'default'           => 'yes',
+				'description'       => __( 'Controls whether the brand name is shown on the authentication forms.', 'woo-force-authentification-before-checkout' ),
+				'block_title'       => __( 'Display brand name', 'woo-force-authentification-before-checkout' ),
+				'block_sub_title'   => __( 'Show or hide the brand name on the forms.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'When "Hide" is selected, the brand name is removed from the card and the email.', 'woo-force-authentification-before-checkout' ),
+			),
 			$p . 'brand_name' => array(
 				'title'             => __( 'Brand name', 'woo-force-authentification-before-checkout' ),
 				'type'              => 'text',
 				'id'                => $p . 'brand_name',
+				'preview_link'      => true,
 				'default'           => '',
-				'description'       => __( 'Name shown at the top of the OTP screens when no logo is set.', 'woo-force-authentification-before-checkout' ),
+				'join'              => $p . 'brand_name_show',
+				'dim_when'          => 'no',
 				'block_title'       => __( 'Brand name', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Text displayed above the sign-in form.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Leave empty to use the site name defined in Settings → General.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'Pre-filled with the site name (Settings → General).', 'woo-force-authentification-before-checkout' ),
+			),
+			$p . 'tagline_show' => array(
+				'title'             => __( 'Display tagline', 'woo-force-authentification-before-checkout' ),
+				'type'              => 'radio',
+				'id'                => $p . 'tagline_show',
+				'options'           => array(
+					'yes' => __( 'Show', 'woo-force-authentification-before-checkout' ),
+					'no'  => __( 'Hide', 'woo-force-authentification-before-checkout' ),
+				),
+				'default'           => 'no',
+				'description'       => __( 'Controls whether the tagline is shown on the authentication forms.', 'woo-force-authentification-before-checkout' ),
+				'block_title'       => __( 'Display tagline', 'woo-force-authentification-before-checkout' ),
+				'block_sub_title'   => __( 'Show or hide the tagline on the forms.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'When "Hide" is selected, the tagline is removed from the card.', 'woo-force-authentification-before-checkout' ),
 			),
 			$p . 'brand_tagline' => array(
 				'title'             => __( 'Tagline', 'woo-force-authentification-before-checkout' ),
 				'type'              => 'text',
 				'id'                => $p . 'brand_tagline',
+				'preview_link'      => true,
 				'default'           => '',
-				'description'       => __( 'Short uppercase line displayed under the brand name or logo.', 'woo-force-authentification-before-checkout' ),
+				'join'              => $p . 'tagline_show',
+				'dim_when'          => 'no',
 				'block_title'       => __( 'Tagline', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Secondary line shown under the brand name.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Leave empty to use the site tagline defined in Settings → General.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'Pre-filled with the site tagline (Settings → General).', 'woo-force-authentification-before-checkout' ),
+			),
+			$p . 'logo_show' => array(
+				'title'             => __( 'Display logo', 'woo-force-authentification-before-checkout' ),
+				'type'              => 'radio',
+				'id'                => $p . 'logo_show',
+				'options'           => array(
+					'yes' => __( 'Show', 'woo-force-authentification-before-checkout' ),
+					'no'  => __( 'Hide', 'woo-force-authentification-before-checkout' ),
+				),
+				'default'           => 'yes',
+				'description'       => __( 'Controls whether the logo is shown on the authentication forms.', 'woo-force-authentification-before-checkout' ),
+				'block_title'       => __( 'Display logo', 'woo-force-authentification-before-checkout' ),
+				'block_sub_title'   => __( 'Show or hide the logo on the forms.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'When "Hide" is selected, the logo is removed from the card and the email.', 'woo-force-authentification-before-checkout' ),
 			),
 			$p . 'logo_url' => array(
 				'title'             => __( 'Logo URL', 'woo-force-authentification-before-checkout' ),
 				'type'              => 'text',
 				'id'                => $p . 'logo_url',
+				'preview_link'      => true,
 				'default'           => '',
-				'description'       => __( 'Image shown at the top of the OTP screens, replacing the brand name.', 'woo-force-authentification-before-checkout' ),
+				'join'              => $p . 'logo_show',
+				'dim_when'          => 'no',
 				'block_title'       => __( 'Logo URL', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Logo displayed on the login and verification screens.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Paste the full URL of an image. Leave empty to use the theme custom logo (Appearance → Customize → Site Identity).', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'Pre-filled with the site icon (Settings → General).', 'woo-force-authentification-before-checkout' ),
 			),
-			$p . 'login_heading' => array(
-				'title'             => __( 'Login heading', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'login_heading',
-				'default'           => __( 'Welcome back', 'woo-force-authentification-before-checkout' ),
-				'description'       => __( 'Main heading of the first screen, where the customer enters their email.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Login heading', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Title shown at the top of the email step.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'If left empty, "Welcome back" is shown.', 'woo-force-authentification-before-checkout' ),
-			),
-			$p . 'login_subheading' => array(
-				'title'             => __( 'Login subheading', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'login_subheading',
-				'default'           => __( 'Enter your email to sign up or access your account', 'woo-force-authentification-before-checkout' ),
-				'description'       => __( 'Explanatory text shown under the login heading, above the email field.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Login subheading', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Text shown under the login heading.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'If left empty, "Enter your email to sign up or access your account" is shown.', 'woo-force-authentification-before-checkout' ),
-			),
-			$p . 'verify_heading' => array(
-				'title'             => __( 'Verification heading', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'verify_heading',
-				'default'           => __( 'Verify your account', 'woo-force-authentification-before-checkout' ),
-				'description'       => __( 'Main heading of the second screen, where the customer types the received code.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Verification heading', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Title shown at the top of the code step.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'If left empty, "Verify your account" is shown.', 'woo-force-authentification-before-checkout' ),
-			),
-			$p . 'verify_subheading' => array(
-				'title'             => __( 'Verification subheading', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'verify_subheading',
-				'default'           => __( 'Enter the verification code sent to your email', 'woo-force-authentification-before-checkout' ),
-				'description'       => __( 'Explanatory text shown under the verification heading, above the code field.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Verification subheading', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Text shown under the verification heading.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'If left empty, "Enter the verification code sent to your email" is shown.', 'woo-force-authentification-before-checkout' ),
-			),
-			$p . 'otp_sent_message' => array(
-				'title'             => __( 'OTP sent message', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'otp_sent_message',
-				'default'           => __( 'A one-time password (OTP) has been sent to your registered email address.', 'woo-force-authentification-before-checkout' ),
-				'description'       => __( 'Green confirmation box shown on the verification screen after the code is sent.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'OTP sent message', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Message confirming that the code was sent.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'If left empty, "A one-time password (OTP) has been sent to your registered email address." is shown.', 'woo-force-authentification-before-checkout' ),
-			),
-			$p . 'legal_text' => array(
-				'title'             => __( 'Legal text', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'textarea',
-				'id'                => $p . 'legal_text',
-				'default'           => __( 'By clicking on "Login" you agree to our Privacy Policy and Terms of Service.', 'woo-force-authentification-before-checkout' ),
-				'description'       => __( 'Small footer text shown under the form, usually about privacy policy and terms of service.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Legal text', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Footer text displayed below the form.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Basic HTML is allowed (for example links). If left empty, no footer text is shown.', 'woo-force-authentification-before-checkout' ),
-			),
-
-			'email_title' => array(
-				'title'    => __( 'Email', 'woo-force-authentification-before-checkout' ),
+			'texts_title' => array(
+				'title'    => __( 'Texts', 'woo-force-authentification-before-checkout' ),
 				'type'     => 'title',
-				'id'       => $p . 'email_section',
-				'block_id' => 'email',
+				'id'       => $p . 'texts_section',
+				'block_id' => 'texts',
 			),
-			$p . 'email_subject' => array(
-				'title'             => __( 'Email subject', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'email_subject',
-				'default'           => __( 'Your access code', 'woo-force-authentification-before-checkout' ),
-				/* translators: %s: placeholder token that is replaced by the code. */
-				'description'       => __( 'Subject line of the email that delivers the code. Accepts a %s placeholder for the code.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Email subject', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Subject of the OTP email sent to the customer.', 'woo-force-authentification-before-checkout' ),
-				/* translators: 1: placeholder token, 2: example of the subject line. */
-				'input_description' => __( 'Use %1$s where the code should appear (for example "Your code: %2$s"). If left empty, "Your access code" is used.', 'woo-force-authentification-before-checkout' ),
-			),
-
-			'redirect_title' => array(
-				'title'    => __( 'Redirect', 'woo-force-authentification-before-checkout' ),
-				'type'     => 'title',
-				'id'       => $p . 'redirect_section',
-				'block_id' => 'redirect',
-			),
-			$p . 'redirect_url' => array(
-				'title'             => __( 'Redirect after login', 'woo-force-authentification-before-checkout' ),
-				'type'              => 'text',
-				'id'                => $p . 'redirect_url',
-				'default'           => '',
-				'description'       => __( 'Page the customer is sent to right after the code is verified.', 'woo-force-authentification-before-checkout' ),
-				'block_title'       => __( 'Redirect after login', 'woo-force-authentification-before-checkout' ),
-				'block_sub_title'   => __( 'Destination after a successful login.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Enter a full URL (for example https://example.com/thank-you). Leave empty to send customers to their account dashboard.', 'woo-force-authentification-before-checkout' ),
+			$p . 'text_editor' => array(
+				'title' => __( 'Texts', 'woo-force-authentification-before-checkout' ),
+				'type'  => 'editor',
+				'id'    => $p . 'text_editor',
 			),
 		);
+	}
+
+	/**
+	 * Resolve a default value, honoring mode-aware texts (see
+	 * WcForceAuthOtp::default_for()).
+	 *
+	 * @param string $key Setting key.
+	 * @return mixed
+	 */
+	protected function default_value( $key ) {
+		return WcForceAuthOtp::default_for( $key );
+	}
+
+	/**
+	 * Normalize a stored value so a text still equal to a known default keeps
+	 * following the current mode (see WcForceAuthOtp::normalize_stored_value()).
+	 *
+	 * @param string $key   Setting key.
+	 * @param mixed  $value Stored value.
+	 * @return mixed
+	 */
+	protected function normalize_value( $key, $value ) {
+		return WcForceAuthOtp::normalize_stored_value( $key, $value );
 	}
 
 	/**
@@ -358,6 +387,11 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 
 		switch ( $key ) {
 			case 'enable_type':
+				if ( 'register_and_login' === $value && 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) {
+					// Registration is disabled in WooCommerce: never create accounts.
+					return 'login_only';
+				}
+
 				return in_array( $value, array( 'disabled', 'login_only', 'register_and_login' ), true ) ? $value : 'disabled';
 
 			case 'expiration_time':
@@ -382,11 +416,22 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				$color = sanitize_hex_color( $value );
 				return $color ? $color : '#22C1DC';
 
+			case 'brand_name_show':
+			case 'tagline_show':
+			case 'logo_show':
+				return 'no' === $value ? 'no' : 'yes';
+
+			case 'card_bg':
+			case 'input_bg':
+				$color = sanitize_hex_color( $value );
+				return $color ? $color : '#ffffff';
+
 			case 'logo_url':
-			case 'redirect_url':
 				return esc_url_raw( $value );
 
 			case 'legal_text':
+			case 'email_message':
+			case 'email_footer_note':
 				return wp_kses_post( $value );
 
 			default:
