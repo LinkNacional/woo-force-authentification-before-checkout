@@ -2,8 +2,10 @@
 * Nova arquitetura em classes (PSR-4, `Lkn\WcForceAuth`), com separação `Admin/`, `Public/` e `Includes/`
 * Camada de testes (`tests/`) sem dependências: runner próprio que roda contra o WordPress real do Local, com e-mail real capturado pelo Mailpit; cobre os formatos do código (4/6/8, `plain`/`space`/`dash`/`pair`, input único e segmentado), o fluxo REST (envio/verificação/limites) e o Force Authentication
 * Correção: as opções de OTP não usam mais o fallback das opções do plugin Invoice Payment (`lkn_wcip_otp_email_*`), que fazia valores como o tempo de expiração vazarem entre os plugins
-* Novo menu lateral no admin do WordPress ("Force Authentification" → "OTP")
-* Reestruturação do menu admin: item de topo "Force Authentification" abre as configurações do recurso principal; ao passar o mouse aparecem os submenus "Force Authentification" e "OTP"
+* Novo menu lateral no admin do WordPress ("Authentification" → "Force", "OTP" e "Settings")
+* Reestruturação do menu admin: item de topo "Authentification" abre as configurações do recurso principal; ao passar o mouse aparecem os submenus "Force", "OTP" e "Settings"
+* Novo submenu "Settings" que centraliza todo o fluxo de redirect (páginas de login e de checkout + destino após o login). As duas telas (Force Authentication e OTP) passam a ler a mesma configuração, evitando destinos divergentes entre os módulos
+* Nova opção de destino após o login: "Previous page" — devolve o cliente à página em que ele estava antes de ir para a conta (por exemplo, o produto que estava vendo), capturada no cookie `wcfa_return_url`
 * Nova tela de configuração do recurso principal (Force Authentication): ativar/desativar, mensagem do aviso, URLs de login/checkout e destino após o login; as opções agora controlam o comportamento (antes fixo)
 * Arquitetura de settings com classe base compartilhada (`WcForceAuthSettingsPage`) e uma página por recurso
 * Ajuste de espaçamento no topo das telas de configuração (as páginas próprias não têm a nav de abas do WooCommerce que dava esse respiro no plugin fraud)
