@@ -1,0 +1,337 @@
+/**
+ * Visual text editor (settings page): tabs, preview canvas, pencils and popover.
+ *
+ * The preview reuses the front-end component CSS (wc-force-auth-otp.css), so
+ * only the editor chrome and the pencil hit-areas live here.
+ *
+ * @package WcForceAuth
+ */
+
+.wcfa-editor {
+	margin-top: 8px;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────── */
+.wcfa-editor__tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 16px;
+}
+
+.wcfa-editor__tab {
+	padding: 8px 16px;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	background: #fff;
+	color: #50575e;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.wcfa-editor__tab.is-active {
+	background: var(--wcfa-primary, #22c1dc);
+	border-color: var(--wcfa-primary, #22c1dc);
+	color: var(--wcfa-on-primary, #fff);
+}
+
+/* ── Canvas / panels ───────────────────────────────────────────────────── */
+.wcfa-editor__canvas {
+	padding: 24px;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	background: #f6f7f7;
+}
+
+.wcfa-editor__panel {
+	display: none;
+}
+
+.wcfa-editor__panel.is-active {
+	display: block;
+}
+
+/* Keep the preview compact inside the admin box. */
+.wcfa-editor__canvas .wcfa-otp-wrapper {
+	padding: 0;
+}
+
+.wcfa-editor__hint {
+	margin: 12px 0 0;
+	color: #646970;
+	font-size: 12px;
+	font-style: italic;
+}
+
+/* ── Editable text + pencil ────────────────────────────────────────────── */
+.wcfa-et-item {
+	position: relative;
+	display: inline-block;
+}
+
+.wcfa-et-text {
+	border-bottom: 1px dashed rgba(34, 193, 220, 0.55);
+}
+
+/* Pencil for inline texts (headings, labels, subheadings): absolutely placed
+   right after the text so it never wraps the text onto a new line. */
+.wcfa-et-item > .wcfa-et-pencil {
+	position: absolute;
+	top: 50%;
+	left: 100%;
+	margin-left: 6px;
+	transform: translateY(-50%);
+	z-index: 3;
+}
+
+.wcfa-et-item > .wcfa-et-pencil:hover {
+	transform: translateY(-50%) scale(1.06);
+}
+
+.wcfa-et-pencil {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 6px;
+	padding: 0;
+	width: 24px;
+	height: 24px;
+	border: 1px solid #d9a400;
+	border-radius: 6px;
+	background: #ffd400;
+	color: #1d2327;
+	cursor: pointer;
+	vertical-align: middle;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.18);
+	transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.wcfa-et-pencil:hover {
+	background: #ffc400;
+	transform: translateY(-1px);
+}
+
+.wcfa-et-pencil .dashicons {
+	width: 15px;
+	height: 15px;
+	font-size: 15px;
+}
+
+/* Placeholder pencils float over the input, vertically centered on the right. */
+.wcfa-et-pencil--over {
+	position: absolute;
+	top: 50%;
+	right: 8px;
+	transform: translateY(-50%);
+	z-index: 3;
+}
+
+.wcfa-et-pencil--over:hover {
+	transform: translateY(-50%) scale(1.05);
+}
+
+.wcfa-editor .wcfa-input-wrap,
+.wcfa-editor .wcfa-password {
+	position: relative;
+}
+
+/* Editable buttons: the pencil overlaps the right edge, vertically centered. The
+   button's own top margin is moved onto the wrapper so the pencil centers on the
+   button (not on the margin incl. the button). */
+.wcfa-et-btn-wrap {
+	position: relative;
+	display: block;
+	margin-top: 12px;
+}
+
+.wcfa-et-btn-wrap > button {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+
+.wcfa-resend-row .wcfa-et-btn-wrap {
+	margin-top: 0;
+}
+
+.wcfa-et-btn-wrap .wcfa-et-pencil {
+	position: absolute;
+	top: 50%;
+	right: -12px;
+	margin: 0;
+	transform: translateY(-50%);
+	z-index: 3;
+}
+
+.wcfa-et-btn-wrap .wcfa-et-pencil:hover {
+	transform: translateY(-50%) scale(1.06);
+}
+
+.wcfa-editor__notice {
+	margin: 0 0 16px;
+	padding: 12px 16px;
+	border: 1px solid #f0c33c;
+	border-radius: 8px;
+	background: #fcf9e8;
+	color: #6b5300;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.wcfa-editor__canvas .wcfa-input-wrap:has(.wcfa-et-pencil--over) {
+	padding-right: 40px;
+}
+
+.wcfa-resend-row .wcfa-et-btn-wrap {
+	flex: 1;
+}
+
+.wcfa-register-submit .wcfa-et-btn-wrap {
+	display: block;
+}
+
+/* ── Popover ───────────────────────────────────────────────────────────── */
+.wcfa-et-popover {
+	position: fixed;
+	z-index: 100100;
+	width: 320px;
+	padding: 14px;
+	border: 1px solid #dcdcde;
+	border-radius: 10px;
+	background: #fff;
+	box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.35);
+}
+
+.wcfa-et-popover__label {
+	display: block;
+	margin-bottom: 8px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wcfa-et-popover__input {
+	width: 100%;
+	font-size: 14px;
+}
+
+.wcfa-et-popover__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 10px;
+}
+
+/* ── E-mail mock ───────────────────────────────────────────────────────── */
+.wcfa-mail {
+	max-width: 520px;
+	margin: 0 auto;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	/* Not `overflow: hidden`: the edit pencils of the centred texts must be able
+	   to overflow the box (like the login/verify/register cards), otherwise they
+	   get clipped on narrow widths. The corner rounding is applied to the inner
+	   blocks instead. */
+	overflow: visible;
+	background: #f5f7fa;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.wcfa-mail__subject {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 18px;
+	background: #fff;
+	border-bottom: 1px solid #e2e8f0;
+	border-radius: 11px 11px 0 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.wcfa-mail__label {
+	color: #646970;
+	font-weight: 500;
+}
+
+.wcfa-mail__body {
+	padding: 28px 24px;
+	background: #fff;
+	border-radius: 0 0 11px 11px;
+	text-align: center;
+}
+
+.wcfa-mail__brand {
+	font-size: 18px;
+	font-weight: 700;
+	color: #121519;
+	margin-bottom: 20px;
+}
+
+.wcfa-mail__logo {
+	display: block;
+	margin: 0 auto 20px;
+	max-height: 64px;
+	width: auto;
+}
+
+.wcfa-mail__heading {
+	margin: 0 0 12px;
+	font-size: 18px;
+	font-weight: 700;
+	color: #121519;
+}
+
+.wcfa-mail__text {
+	margin: 0 0 20px;
+	font-size: 14px;
+	line-height: 1.6;
+	color: #555;
+}
+
+.wcfa-mail__text--muted {
+	color: #9aa3af;
+	font-size: 13px;
+}
+
+.wcfa-mail__code {
+	display: inline-block;
+	margin: 0 auto 20px;
+	padding: 14px 26px;
+	border: 2px solid #e9edf2;
+	border-radius: 10px;
+	background: #f6f9fc;
+	font-family: "Courier New", monospace;
+	font-size: 26px;
+	font-weight: 700;
+	letter-spacing: 6px;
+	color: #121519;
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────────── */
+/* Trim the heavy paddings so the preview (and the pencils that overflow it)
+   keep breathing room instead of being pushed/cropped on narrow screens. */
+@media (max-width: 600px) {
+	.wcfa-editor__canvas {
+		padding: 12px 10px;
+	}
+
+	.wcfa-editor__tabs {
+		gap: 6px;
+		margin-bottom: 12px;
+	}
+
+	.wcfa-editor__tab {
+		padding: 7px 12px;
+		font-size: 12px;
+	}
+
+	.wcfa-mail__subject {
+		padding: 10px 14px;
+	}
+
+	.wcfa-mail__body {
+		padding: 22px 16px;
+	}
+}

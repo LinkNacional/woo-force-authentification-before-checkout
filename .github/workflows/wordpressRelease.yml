@@ -6,7 +6,7 @@ on:
 env:
   PLUGIN_NAME: woo-force-authentification-before-checkout
   PHP_VERSION: "8.2"
-  DEPLOY_TAG: "1.5.0"
+  DEPLOY_TAG: "1.6.0"
 
 jobs:
   deploy-to-wp:
@@ -20,7 +20,7 @@ jobs:
       - name: Prepare plugin folder
         run: |
           mkdir -p build/${{ env.PLUGIN_NAME }}
-          mv ./languages *.php *.txt LICENSE ./build/${{ env.PLUGIN_NAME }}
+          mv ./Admin ./Includes ./languages ./Public *.php *.txt LICENSE ./build/${{ env.PLUGIN_NAME }}
           find ./build -type f -exec chmod 0644 {} +
           find ./build -type d -exec chmod 0755 {} +
 

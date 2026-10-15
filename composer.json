@@ -9,8 +9,18 @@
         }
     ],
     "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Lkn\\WcForceAuth\\Includes\\": "Includes/",
+            "Lkn\\WcForceAuth\\Admin\\": "Admin/",
+            "Lkn\\WcForceAuth\\PublicView\\": "Public/"
+        }
+    },
     "require-dev": {
         "phan/phan": "5.4.1"
+    },
+    "scripts": {
+        "test": "tests/run.sh"
     },
     "config": {
         "allow-plugins": {
