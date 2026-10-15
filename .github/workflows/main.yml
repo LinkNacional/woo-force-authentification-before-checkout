@@ -31,7 +31,7 @@ jobs:
       run: |
         mkdir -p dist
         mkdir -p build/${{ env.PLUGIN_NAME }}
-        mv ./languages *.php *.txt LICENSE ./build/${{ env.PLUGIN_NAME }}
+        mv ./Admin ./Includes ./languages ./Public *.php *.txt LICENSE ./build/${{ env.PLUGIN_NAME }}
         find ./build -type f -exec chmod 0644 {} +
         find ./build -type d -exec chmod 0755 {} +
 
