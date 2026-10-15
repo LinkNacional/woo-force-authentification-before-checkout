@@ -134,7 +134,7 @@ class WcForceAuthOtp {
 			'otp_sent_message'  => __( 'A one-time password (OTP) has been sent to your registered email address.', 'woo-force-authentification-before-checkout' ),
 			'legal_text'        => __( 'By clicking on "Login" you agree to our Privacy Policy and Terms of Service.', 'woo-force-authentification-before-checkout' ),
 			// Email.
-			'email_subject'     => __( 'Your access code', 'woo-force-authentification-before-checkout' ),
+			'email_subject'     => __( 'Your access code: {code}', 'woo-force-authentification-before-checkout' ),
 			'email_heading'     => __( 'Your access code', 'woo-force-authentification-before-checkout' ),
 			'email_message'     => __( 'Use the code below to access your account:', 'woo-force-authentification-before-checkout' ),
 			'email_footer_note' => __( 'If you did not request this code, you can safely ignore this email.', 'woo-force-authentification-before-checkout' ),
@@ -987,12 +987,16 @@ class WcForceAuthOtp {
 
 		// Fallback (WooCommerce inactive or the email class unavailable): the
 		// plugin's own self-contained template.
-		$subject = sprintf(
-			/* translators: %s: the one-time password code. */
-			// phpcs:ignore WordPress.WP.I18n.MissingTranslatorsComment
-			(string) $this->option( 'email_subject', __( 'Your access code', 'woo-force-authentification-before-checkout' ) ),
+		$subject = $this->replace_email_tokens(
+			(string) $this->option( 'email_subject', __( 'Your access code: {code}', 'woo-force-authentification-before-checkout' ) ),
 			$code
 		);
+
+		// Back-compat: the subject still accepts the legacy `%s` placeholder,
+		// which resolves to the code.
+		if ( false !== strpos( $subject, '%s' ) ) {
+			$subject = sprintf( $subject, $code );
+		}
 
 		$template_data = array(
 			'otp_code'           => $code,
