@@ -124,7 +124,7 @@ class WcForceAuthOtpEmail extends \WC_Email {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return $this->otp_option( 'email_subject', __( 'Your access code', 'woo-force-authentification-before-checkout' ) );
+		return $this->otp_option( 'email_subject', __( 'Your access code: {code}', 'woo-force-authentification-before-checkout' ) );
 	}
 
 	/**
