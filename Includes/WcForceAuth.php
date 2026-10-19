@@ -48,8 +48,27 @@ class WcForceAuth {
 		$this->plugin_name = 'woo-force-authentification-before-checkout';
 
 		$this->load_dependencies();
+
+		// Defer hook registration to `woocommerce_init` (fired during the `init`
+		// action) instead of doing it in the constructor. Instantiating the
+		// settings pages registers `default_option_*` filters, and those read the
+		// option defaults — translatable strings built with __(). Running that
+		// before `init` loads the text domain too early and triggers the
+		// "_load_textdomain_just_in_time was called incorrectly" notice on
+		// WordPress 6.7+.
+		$this->loader->add_action( 'woocommerce_init', $this, 'define_hooks' );
+	}
+
+	/**
+	 * Register all admin and public hooks.
+	 *
+	 * Hooked to `woocommerce_init` so translations are already available.
+	 */
+	public function define_hooks() {
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
+
+		$this->run();
 	}
 
 	/**
