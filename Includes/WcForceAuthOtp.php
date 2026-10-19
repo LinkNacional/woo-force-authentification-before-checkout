@@ -29,6 +29,28 @@ class WcForceAuthOtp {
 	public const REST_NAMESPACE = 'wc-force-auth/v1';
 
 	/**
+	 * Nonce action required by the OTP REST endpoints (also used by blocks that
+	 * drive the flow with their own markup).
+	 */
+	public const NONCE_ACTION = 'wcfa_otp_nonce';
+
+	/**
+	 * `source` value an integration sends with /send-code when it drives the flow
+	 * with its own screens (the "Login and Register Form" block). It only changes
+	 * presentation — never validation: a shorter code and the simple e-mail below.
+	 */
+	public const BLOCK_SOURCE = 'lknform';
+
+	/**
+	 * Code length used for that integration.
+	 *
+	 * The block's field is meant to be typed on a phone in a few seconds, so it
+	 * always uses the shortest code this plugin supports, whatever the store set
+	 * for its own account page.
+	 */
+	public const BLOCK_CODE_LENGTH = 4;
+
+	/**
 	 * Bundled SweetAlert2 version.
 	 */
 	public const SWEETALERT_VERSION = '11.0.0';
@@ -37,6 +59,16 @@ class WcForceAuthOtp {
 	 * Maximum number of verification attempts per code.
 	 */
 	public const MAX_ATTEMPTS = 5;
+
+	/**
+	 * Per-request cache for the "block page owns the login screen" check.
+	 *
+	 * Keyed by page revision, so editing the page (or picking another one) is
+	 * picked up immediately.
+	 *
+	 * @var array<string,bool>
+	 */
+	private static $login_page_owner_cache = array();
 
 	/**
 	 * Maximum number of codes sent from a single IP within the throttle window.
@@ -63,6 +95,16 @@ class WcForceAuthOtp {
 	 * @var WcForceAuthOtp|null
 	 */
 	private static $instance = null;
+
+	/**
+	 * Who asked for the current code (empty, or self::BLOCK_SOURCE).
+	 *
+	 * Set from the /send-code request: it decides the code length and whether the
+	 * e-mail carries the logo. Request-scoped state, never persisted.
+	 *
+	 * @var string
+	 */
+	private $source = '';
 
 	/**
 	 * Constructor.
@@ -320,6 +362,13 @@ class WcForceAuthOtp {
 	 * @return string disabled|login_only|register_and_login
 	 */
 	public function get_mode() {
+		// A page of the "LKN Forms - Login and Register" block can be the store's
+		// login page. That page owns the login screen, so the OTP is off — one
+		// login screen at a time (see WcForceAuthSettings for the locked field).
+		if ( self::login_page_owned_by_block() ) {
+			return 'disabled';
+		}
+
 		$mode = (string) $this->option( 'enable_type', 'disabled' );
 
 		// Never create accounts when WooCommerce registration is disabled — fall
@@ -333,6 +382,67 @@ class WcForceAuthOtp {
 		}
 
 		return $mode;
+	}
+
+	/**
+	 * Whether a "LKN Forms - Login and Register" block page is the store's login
+	 * page.
+	 *
+	 * In that case the block renders the login screen inside "My account" and the
+	 * OTP must stay off, so the two features never compete for the same screen.
+	 * The check is defensive on purpose: the other plugin's option is only
+	 * trusted while that plugin is active and the page still holds the block, so
+	 * a stale option can never lock the OTP out.
+	 *
+	 * @return bool
+	 */
+	public static function login_page_owned_by_block(): bool {
+		if ( ! class_exists( 'Lkn\LknFormLoginRegister\Includes\LoginPage' ) ) {
+			return false;
+		}
+
+		$page_id = absint( get_option( 'lknform_wc_login_page_id', 0 ) );
+
+		if ( $page_id < 1 ) {
+			return false;
+		}
+
+		$page = get_post( $page_id );
+
+		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type || 'publish' !== $page->post_status ) {
+			return false;
+		}
+
+		// Called from get_mode()/is_enabled() on every request: parse the page
+		// content once per page revision, not per call.
+		$cache_key = $page_id . ':' . $page->post_modified_gmt;
+
+		if ( ! isset( self::$login_page_owner_cache[ $cache_key ] ) ) {
+			self::$login_page_owner_cache[ $cache_key ] = has_block( 'lknform/login-register', $page );
+		}
+
+		return self::$login_page_owner_cache[ $cache_key ];
+	}
+
+	/**
+	 * The authentication mode as stored in the database.
+	 *
+	 * `get_option()` reports "disabled" while the block page owns the login screen
+	 * (see WcForceAuthSettings::normalize_value()), so the raw value is read from
+	 * the object cache to keep the store's real choice intact.
+	 *
+	 * @return string
+	 */
+	public static function stored_mode(): string {
+		$option = self::OPTION_PREFIX . 'enable_type';
+
+		// Prime the cache first: get_option() applies filters to the value it
+		// returns, but the object cache keeps what is really stored.
+		get_option( $option, 'disabled' );
+
+		$stored = wp_cache_get( $option, 'options' );
+
+		return false === $stored ? 'disabled' : (string) $stored;
 	}
 
 	/**
@@ -368,9 +478,24 @@ class WcForceAuthOtp {
 	 * @return int
 	 */
 	public function get_code_length() {
+		if ( self::BLOCK_SOURCE === $this->source ) {
+			// The integration has its own screens and always asks for the short one.
+			return self::BLOCK_CODE_LENGTH;
+		}
+
 		$length = (int) $this->option( 'code_length', 6 );
 
 		return in_array( $length, array( 4, 6, 8 ), true ) ? $length : 6;
+	}
+
+	/**
+	 * Who is asking for this code: '' (the store's own screens) or the source
+	 * slug of an integration.
+	 *
+	 * @return string
+	 */
+	public function get_source() {
+		return $this->source;
 	}
 
 	/**
@@ -702,7 +827,7 @@ class WcForceAuthOtp {
 
 		$nonce = $request->get_param( 'nonce' );
 
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wcfa_otp_nonce' ) ) {
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
 			return new \WP_Error( 'wcfa_bad_nonce', __( 'Security check failed. Please reload the page.', 'woo-force-authentification-before-checkout' ), array( 'status' => 403 ) );
 		}
 
@@ -717,6 +842,12 @@ class WcForceAuthOtp {
 	 */
 	public function rest_send_code( $request ) {
 		$email = sanitize_email( $request->get_param( 'email' ) );
+
+		// Which screens asked for this code. It only affects presentation (code
+		// length and the e-mail's logo), never the validation below.
+		$source = sanitize_key( (string) $request->get_param( 'source' ) );
+
+		$this->source = self::BLOCK_SOURCE === $source ? self::BLOCK_SOURCE : '';
 
 		if ( ! $this->ip_allowed() ) {
 			return new \WP_REST_Response(
@@ -1000,9 +1131,9 @@ class WcForceAuthOtp {
 
 		$template_data = array(
 			'otp_code'           => $code,
-			'site_name'          => $this->get_brand_name(),
+			'site_name'          => $this->get_email_site_name(),
 			'site_url'           => home_url(),
-			'logo_url'           => $this->get_logo_url(),
+			'logo_url'           => $this->get_email_logo_url(),
 			'expiration_minutes' => $this->get_expiration_minutes(),
 			'primary_color'      => $this->get_primary_color(),
 			'email_heading'      => $this->replace_email_tokens(
@@ -1057,7 +1188,7 @@ class WcForceAuthOtp {
 	public function replace_email_tokens( $text, $code ) {
 		return str_replace(
 			array( '{code}', '{site_name}', '{expiration}' ),
-			array( (string) $code, $this->get_brand_name(), (string) $this->get_expiration_minutes() ),
+			array( (string) $code, $this->get_email_site_name(), (string) $this->get_expiration_minutes() ),
 			(string) $text
 		);
 	}
@@ -1316,6 +1447,35 @@ class WcForceAuthOtp {
 	}
 
 	/**
+	 * What an integration needs to drive the OTP flow with its own markup.
+	 *
+	 * The integration (e.g. a login block) renders the e-mail and code screens
+	 * itself and only calls the endpoints below, so the visitor keeps the site's
+	 * own design instead of this plugin's card. Nothing here is secret: the nonce
+	 * is the same one the bundled script receives.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public function get_block_config() {
+		$route = static function ( $path ) {
+			return esc_url_raw( rest_url( self::REST_NAMESPACE . $path ) );
+		};
+
+		return array(
+			'sendCode'       => $route( '/send-code' ),
+			'verifyCode'     => $route( '/verify-code' ),
+			'reportCode'     => $route( '/report-code' ),
+			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
+			// Where the block says it comes from, and the length it always gets.
+			'source'         => self::BLOCK_SOURCE,
+			'codeLength'     => self::BLOCK_CODE_LENGTH,
+			'codeInput'      => $this->get_code_input(),
+			'expiration'     => $this->get_expiration_minutes() * 60,
+			'resendInterval' => $this->get_resend_interval(),
+		);
+	}
+
+	/**
 	 * Whether the native WooCommerce registration form should be shown
 	 * alongside the OTP login (only in "Login only" mode).
 	 *
@@ -1529,6 +1689,38 @@ class WcForceAuthOtp {
 		$name = trim( (string) $this->option( 'brand_name', '' ) );
 
 		return '' !== $name ? $name : get_bloginfo( 'name' );
+	}
+
+	/**
+	 * Logo printed on the e-mailed code.
+	 *
+	 * Empty when an integration (the block) asked for the code: its screens have
+	 * no logo option, so the e-mail stays simple — the site name only.
+	 *
+	 * @return string
+	 */
+	public function get_email_logo_url() {
+		if ( self::BLOCK_SOURCE === $this->source ) {
+			return '';
+		}
+
+		return $this->get_logo_url();
+	}
+
+	/**
+	 * Site name printed on the e-mailed code.
+	 *
+	 * The integration's e-mail shows the WordPress site name, not the brand name
+	 * configured for the store's own screens (the block has no such setting).
+	 *
+	 * @return string
+	 */
+	public function get_email_site_name() {
+		if ( self::BLOCK_SOURCE === $this->source ) {
+			return (string) get_bloginfo( 'name' );
+		}
+
+		return $this->get_brand_name();
 	}
 
 	/**
@@ -1746,19 +1938,30 @@ class WcForceAuthOtp {
 	/**
 	 * Whether the OTP assets should be loaded on the current request.
 	 *
+	 * The OTP UI is rendered by this plugin on the WooCommerce account page. A
+	 * block that drives the flow with its own markup (see get_block_config())
+	 * does not need these assets: it styles and scripts the form itself.
+	 *
 	 * @return bool
 	 */
 	public function should_enqueue() {
-		return $this->is_enabled() && function_exists( 'is_account_page' ) && is_account_page();
+		if ( ! $this->is_enabled() ) {
+			return false;
+		}
+
+		return function_exists( 'is_account_page' ) && is_account_page();
 	}
 
 	/**
 	 * Enqueue the public OTP stylesheet.
 	 *
 	 * Hook: wp_enqueue_scripts.
+	 *
+	 * @param bool $force Enqueue even when should_enqueue() is false (used by
+	 *                    integrations that render the OTP after the page head).
 	 */
-	public function enqueue_styles() {
-		if ( ! $this->should_enqueue() ) {
+	public function enqueue_styles( $force = false ) {
+		if ( ! $force && ! $this->should_enqueue() ) {
 			return;
 		}
 
@@ -1781,9 +1984,12 @@ class WcForceAuthOtp {
 	 * Enqueue the public OTP script and localize its data.
 	 *
 	 * Hook: wp_enqueue_scripts.
+	 *
+	 * @param bool $force Enqueue even when should_enqueue() is false (used by
+	 *                    integrations that render the OTP after the page head).
 	 */
-	public function enqueue_scripts() {
-		if ( ! $this->should_enqueue() ) {
+	public function enqueue_scripts( $force = false ) {
+		if ( ! $force && ! $this->should_enqueue() ) {
 			return;
 		}
 
@@ -1808,7 +2014,7 @@ class WcForceAuthOtp {
 			'wcForceAuthOtp',
 			array(
 				'restUrl'       => esc_url_raw( rest_url( self::REST_NAMESPACE ) ),
-				'nonce'         => wp_create_nonce( 'wcfa_otp_nonce' ),
+				'nonce'         => wp_create_nonce( self::NONCE_ACTION ),
 				'mode'          => $this->get_mode(),
 				'codeLength'    => $this->get_code_length(),
 				'codeFormat'    => $this->get_code_format(),

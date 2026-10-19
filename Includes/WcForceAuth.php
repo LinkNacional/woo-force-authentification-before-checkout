@@ -133,6 +133,10 @@ class WcForceAuth {
 		// checks whether OTP is enabled and whether the customer is logged out.
 		$this->loader->add_filter( 'woocommerce_locate_template', $otp, 'locate_form_login_template', 99, 4 );
 
+		// A block that wants the code flow renders its own screens and only calls
+		// the REST endpoints (see WcForceAuthOtp::get_block_config()); nothing is
+		// injected into other plugins' markup.
+
 		// Safety net: keep WooCommerce's native registration blocked when the
 		// passwordless (register and login) mode owns the account creation.
 		$this->loader->add_filter( 'woocommerce_process_registration_errors', $otp, 'block_registration', 10, 4 );
