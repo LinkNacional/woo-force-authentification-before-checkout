@@ -1,3 +1,11 @@
+# 1.7.0 - 19/10/26
+* Novo: o bloco de login do plugin "LKN Forms - Login and Register" (`lknform/login-register`) pode usar o fluxo de código com o próprio markup — as telas de e-mail e de código, a contagem de expiração, o reenvio e o link "não recebi o código" são desenhados pelo bloco, mantendo o design do site em vez do card deste plugin
+* Novo método público `get_block_config()` (endpoints, nonce, tamanho do código, expiração e intervalo de reenvio) e a constante `WcForceAuthOtp::NONCE_ACTION`, para qualquer integração chamar o fluxo
+* Código pedido pelo bloco sai sempre com 4 dígitos e o e-mail vai sem logo (só o nome do site), porque o bloco não tem opções de marca; a página Minha Conta mantém o tamanho, a logo e o brand name configurados aqui
+* Este plugin não injeta mais markup dentro de blocos de outros plugins: o card dele continua sendo renderizado apenas na página Minha Conta do WooCommerce
+* Novo filtro `wc_force_auth_after_login_url` (destino após o login, para integrações que renderizam o OTP em outra página)
+* Uma tela de login por vez: quando uma página do bloco "LKN Forms" é a página de login da loja, o OTP fica desabilitado (o modo é reportado e salvo como "Disabled" e o campo fica travado, com aviso apontando para as configurações do LKN Forms)
+
 # 1.6.0 - 02/10/26
 * Nova arquitetura em classes (PSR-4, `Lkn\WcForceAuth`), com separação `Admin/`, `Public/` e `Includes/`
 * Camada de testes (`tests/`) sem dependências: runner próprio que roda contra o WordPress real do Local, com e-mail real capturado pelo Mailpit; cobre os formatos do código (4/6/8, `plain`/`space`/`dash`/`pair`, input único e segmentado), o fluxo REST (envio/verificação/limites) e o Force Authentication

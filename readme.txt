@@ -5,7 +5,7 @@ Tags: woocommerce, checkout, login, register, cart
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.2
-Stable tag: 1.6.0
+Stable tag: 1.7.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -21,6 +21,7 @@ Optionally, replace the login and registration forms on the "My account" page wi
 
 * Forces authentication before checkout (redirects guests to the account page).
 * Email OTP authentication with three modes: Disabled, Login only and Register and login.
+* The OTP login can also be used by the "Login and Register Form" block of the free LKN Forms plugin: that block draws its own e-mail and code screens and only calls the endpoints of this plugin, so the visitor keeps the site's design. Codes requested by that block are always 4 digits and the e-mail keeps just the site name (no logo), since the block has no branding options; the store's own account page keeps the length, logo and brand name configured here.
 * Configurable code length (4, 6 or 8 digits), expiration time and resend interval (with countdown timer).
 * Code input as a single field or one box per digit (PIN style), with visual grouping: plain, groups with space, groups with dash or pairs.
 * Automatic clipboard detection: when the code is copied, a floating prompt offers to use it and fills the field.
@@ -70,6 +71,16 @@ Yes. When OTP is enabled, the plugin serves its own account template, so the ema
 1. Notice in "my account" page.
 
 == Changelog ==
+
+= 1.7.0 - 2026-10-19 =
+
+* New: the "Login and Register Form" block of the LKN Forms plugin can drive the code flow with its own markup — the e-mail and code screens, the countdown, the resend and the "did not receive the code" link are drawn by the block, so the visitor keeps that site's design instead of this plugin's card
+* New public `get_block_config()` (endpoints, nonce, code length, expiry and resend interval) and the `WcForceAuthOtp::NONCE_ACTION` constant, so any integration can call the flow
+* A code requested by the block is always 4 digits and its e-mail drops the logo, keeping only the site name: the block has no branding settings, so its e-mail stays simple
+* No markup is injected into other plugins' blocks: this plugin keeps rendering its own card only on the WooCommerce account page
+* New filter `wc_force_auth_otp_needs_assets` (load the OTP assets outside the My account page)
+* New filter `wc_force_auth_after_login_url` (post-login destination for integrations that render the OTP on another page)
+* One login screen at a time: when a page of the LKN Forms block is the store login page, the OTP is off — the authentication mode reads and saves as "Disabled" and its field is locked, with a notice pointing to the LKN Forms settings
 
 = 1.6.0 - 2026/10/2 =
 
