@@ -1,4 +1,4 @@
-# 1.7.1 - 21/10/26
+# 1.7.0 - 19/10/26
 * **Botão "Usar a página 'Minha conta'" sob o campo "Redirect after login" do bloco**: preenche o destino de login daquela página com o endereço da conta da loja, sem ninguém digitar (e errar) a URL. Fica desabilitado quando o campo já aponta para ela ou quando "Return to the previous page" está ligado, com a explicação embaixo. O bloco só declara o lugar (`lknform-redirect-after`): "Minha conta" é uma página do WooCommerce, então quem oferece o endereço é este plugin
 * As configurações do código passam a ser **por página** quando o bloco "LKN Forms - Login and Register" cuida do login: o bloco guarda as próprias regras (modo, tamanho e formato do código, validade, intervalo de reenvio, marca/logo e assunto do e-mail), então duas páginas de login podem pedir códigos diferentes. As configurações globais (Authentification > OTP) passam a ser o padrão apenas para as telas do próprio plugin (Minha Conta e a página de login da loja)
 * Novo contexto de página no motor do OTP (`use_context()`, `clear_context()`, `context_token()`, `context_from_token()`): `option()` responde pelo contexto quando ele está em uso, e as chaves aceitas são as de `context_keys()`
@@ -26,7 +26,6 @@
 * O wrapper das telas passou a imprimir os valores daquela tela (`data-code-length`, `data-code-format`, `data-expiration`, `data-resend-interval` e `data-context`), para o mesmo script servir telas com regras diferentes
 * Correção: a injeção no editor não acontecia (detecção por classe renomeada) e o script do painel não declarava `wp-edit-post` como dependência
 
-# 1.7.0 - 19/10/26
 * Suporte ao bloco de login do plugin "LKN Forms - Login and Register" (`lknform/login-register`), que passou a ser atendido por este plugin em vez de implementar o fluxo por conta própria
 * Novo método público `get_block_config()` (endpoints, nonce, tamanho do código, expiração e intervalo de reenvio) e a constante `WcForceAuthOtp::NONCE_ACTION`, para integrações que conduzem o fluxo
 * Novo filtro `wc_force_auth_after_login_url` (destino após o login, para integrações que renderizam o OTP em outra página)
