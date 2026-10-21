@@ -1,0 +1,58 @@
+/**
+ * Styles for the OTP panel inside the "LKN Forms" login block editor.
+ *
+ * Only what the block's own sidebar does not give us is styled here (the group
+ * titles and the logo field): the controls are WordPress' own components.
+ * The logo field needs a little help — the thumbnail that shows which image the
+ * URL points at, and the row of buttons under it.
+ *
+ * @package WcForceAuth
+ */
+
+.wcfa-block-panel__group + .wcfa-block-panel__group {
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* The group titles ("Code", "E-mail and branding") are labels, not fields. */
+.wcfa-block-panel__group > .components-base-control:first-child {
+	margin-bottom: 4px;
+}
+
+.wcfa-block-panel__group > .components-base-control:first-child .components-base-control__label {
+	margin-bottom: 0;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #757575;
+}
+
+/* The "Use the 'My account' page" shortcut sits right under the block's
+   "Redirect after login" field: a small gap above, and no gap before the help
+   line that explains why it is disabled. */
+.wcfa-block-panel__redirect {
+	margin-top: -4px;
+}
+
+.wcfa-block-panel__redirect .components-base-control__help {
+	margin: 8px 0 0;
+}
+
+.wcfa-block-panel__logo-preview {
+	display: block;
+	max-width: 100%;
+	max-height: 64px;
+	width: auto;
+	height: auto;
+	margin-bottom: 8px;
+}
+
+.wcfa-block-panel__logo-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+	margin-top: 8px;
+}

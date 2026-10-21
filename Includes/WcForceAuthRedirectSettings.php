@@ -199,7 +199,9 @@ class WcForceAuthRedirectSettings extends WcForceAuthSettingsPage {
 				'show_when'         => 'custom',
 				'block_title'       => __( 'Custom destination URL', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Used only when "Custom URL" is selected above.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Full URL the customer is sent to after login. Leave empty to fall back to the account dashboard.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'Full URL the customer is sent to after login. Leave empty to fall back to the account dashboard. The button beside the field fills it with the "My account" page defined in WooCommerce, so you do not have to copy the URL by hand.', 'woo-force-authentification-before-checkout' ),
+				// A button beside the input that fills it with that page's URL.
+				'fill_with'         => 'myaccount',
 			),
 		);
 	}
@@ -261,6 +263,13 @@ class WcForceAuthRedirectSettings extends WcForceAuthSettingsPage {
 
 		if ( 'custom' === self::option( 'login_url_mode', 'account' ) ) {
 			$url = trim( (string) self::option( 'login_url', '' ) );
+		}
+
+		// A page holding the store login screen is where the form really is: send
+		// guests straight to it instead of making "My account" forward them (one
+		// redirect instead of two, and the marker survives).
+		if ( '' === $url && WcForceAuthLoginPage::owns_login() ) {
+			$url = (string) get_permalink( WcForceAuthLoginPage::page_id() );
 		}
 
 		if ( '' === $url ) {

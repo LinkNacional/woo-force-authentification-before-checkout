@@ -14,14 +14,14 @@ Force customer to log in or register before checkout to increase your conversion
 
 When a guest tries to access the checkout, the plugin redirects them to the "My account" page to log in or create an account. After logging in or registering, they are automatically sent back to the checkout to complete the purchase.
 
-Optionally, replace the login and registration forms on the "My account" page with a passwordless email OTP (one-time password) flow: customers enter their email, receive a code and are logged in (a new account is created automatically in "Register and login" mode).
+Optionally, replace the login and registration forms on the "My account" page with a passwordless email OTP (one-time password) flow: customers enter their email, receive a code and are logged in (a new account is created automatically in the "Login and register" mode).
 
 ## Features
 
 - Redirects guests from the checkout to the "My account" page
 - Returns the customer to the checkout automatically after login or registration
 - Shows a notice on the "My account" page asking the customer to log in or register
-- Email OTP authentication with three modes: Disabled, Login only and Register and login
+- Email OTP authentication with three modes: Disabled, Login only + Register and Login and register
 - Configurable code length (4, 6 or 8 digits), expiration time and resend interval (with countdown timer)
 - Code input as a single field or one box per digit (PIN style), with visual grouping: plain, groups with space, groups with dash or pairs
 - Automatic clipboard detection: when the code is copied, a floating prompt offers to use it and fills the field

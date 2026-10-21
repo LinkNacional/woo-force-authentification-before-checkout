@@ -4,6 +4,7 @@ namespace WcfaTests\Lib;
 
 use Lkn\WcForceAuth\Includes\WcForceAuthCheckoutSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthOtp;
+use Lkn\WcForceAuth\Includes\WcForceAuthLoginPage;
 use Lkn\WcForceAuth\Includes\WcForceAuthRedirectSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthSettings;
 
@@ -42,6 +43,11 @@ class Wp {
 		foreach ( array_keys( WcForceAuthRedirectSettings::defaults() ) as $key ) {
 			$names[] = WcForceAuthRedirectSettings::OPTION_PREFIX . $key;
 		}
+
+		// The login page is not a "config" option (it is a page id written by the
+		// block editor), but it changes where guests are sent: the tests control it
+		// explicitly instead of inheriting the site's value.
+		$names[] = WcForceAuthLoginPage::OPTION_PAGE_ID;
 
 		return $names;
 	}
@@ -94,6 +100,15 @@ class Wp {
 	 *
 	 * @param array<string,string> $overrides Key => value.
 	 */
+	/**
+	 * Choose (or clear) the page that receives the guests of "My account".
+	 *
+	 * @param int $page_id Page id, 0 for none.
+	 */
+	public static function setLoginPage( int $page_id ): void {
+		update_option( WcForceAuthLoginPage::OPTION_PAGE_ID, $page_id, false );
+	}
+
 	public static function setForceConfig( array $overrides ): void {
 		$config = array_merge(
 			WcForceAuthCheckoutSettings::defaults(),

@@ -34,7 +34,11 @@ class OtpRestFlowTest extends WpTestCase {
 		$response = $this->sendCode( $unknown );
 
 		$this->assertSame( 400, $response->get_status(), 'unknown email in login_only -> 400' );
-		$this->assertContains( 'not registered', strtolower( (string) $response->get_data()['message'] ), 'message explains it' );
+
+		// Compared against the plugin's own string, so the test does not depend on
+		// the site language: on a pt_BR install the message comes back translated.
+		$expected = strtolower( (string) __( 'Email not registered.', 'woo-force-authentification-before-checkout' ) );
+		$this->assertContains( $expected, strtolower( (string) $response->get_data()['message'] ), 'message explains it' );
 	}
 
 	public function test_send_returns_expiration_and_resend_metadata(): void {

@@ -41,8 +41,24 @@
 		var verifyMessage = document.getElementById('wcfa-verify-message');
 
 		var i18n = cfg.i18n || {};
-		var codeLength = parseInt(cfg.codeLength, 10) || 6;
-		var codeFormat = cfg.codeFormat || 'plain';
+
+		/*
+		 * The screen's own values win over the localized ones: this script serves
+		 * the store's account page and any number of "Login and Register" pages,
+		 * and each of those can ask for a different code length and format. The
+		 * wrapper prints what applies to it (the lifetime and the resend interval
+		 * come back from /send-code, so they are not read here).
+		 */
+		function wrapperValue(name) {
+			var value = wrapper.getAttribute('data-' + name);
+
+			return value === null || value === '' ? null : value;
+		}
+
+		var pageContext = wrapperValue('context') || '';
+
+		var codeLength = parseInt(wrapperValue('code-length') || cfg.codeLength, 10) || 6;
+		var codeFormat = wrapperValue('code-format') || cfg.codeFormat || 'plain';
 		var primaryColor = cfg.primaryColor || '#22C1DC';
 		var inlineNotifications = cfg.notificationStyle === 'inline';
 		var currentEmail = '';
@@ -257,6 +273,12 @@
 
 		function post(path, body) {
 			var payload = Object.assign({ nonce: cfg.nonce }, body);
+
+			// The code rules of this screen, signed by the server: without it the
+			// endpoints would use the store-wide settings.
+			if (pageContext) {
+				payload.context = pageContext;
+			}
 
 			return fetch(cfg.restUrl + path, {
 				method: 'POST',

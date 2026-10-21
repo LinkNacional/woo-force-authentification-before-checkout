@@ -301,6 +301,14 @@ abstract class WcForceAuthSettingsPage {
 		);
 
 		wp_enqueue_script(
+			'wc-force-auth-admin-fill',
+			WC_FORCE_AUTH_URL . 'Admin/js/wc-force-auth-admin-fill.js',
+			array(),
+			WC_FORCE_AUTH_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
 			'wc-force-auth-admin-preview',
 			WC_FORCE_AUTH_URL . 'Admin/js/wc-force-auth-admin-preview.js',
 			array( 'wc-force-auth-text-editor' ),

@@ -118,18 +118,21 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'id'                => $p . 'enable_type',
 				'options'           => array(
 					'disabled'           => __( 'Disabled', 'woo-force-authentification-before-checkout' ),
-					'login_only'         => __( 'Login only', 'woo-force-authentification-before-checkout' ),
+					// The labels say what happens to registration, not just to the code:
+					// "Login only" alone left the reader guessing whether new customers
+					// could still sign up.
+					'login_only'         => __( 'Login only + Register', 'woo-force-authentification-before-checkout' ),
 					'register_and_login' => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' )
-						? __( 'Register and login', 'woo-force-authentification-before-checkout' )
+						? __( 'Login and register', 'woo-force-authentification-before-checkout' )
 						/* translators: %s: the WooCommerce setting name. */
-						: sprintf( __( 'Register and login (unavailable: enable “%s” in WooCommerce first)', 'woo-force-authentification-before-checkout' ), __( 'Allow customers to create an account', 'woocommerce' ) ),
+						: sprintf( __( 'Login and register (unavailable: enable “%s” in WooCommerce first)', 'woo-force-authentification-before-checkout' ), __( 'Allow customers to create an account', 'woocommerce' ) ),
 				),
 				'options_disabled'  => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ? array() : array( 'register_and_login' ),
 				'default'           => 'disabled',
 				'description'       => __( 'Turns email OTP (one-time password) authentication on and chooses how it behaves. While disabled, the default WooCommerce login and registration forms are used.', 'woo-force-authentification-before-checkout' ),
 				'block_title'       => __( 'Authentication mode', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Defines whether customers sign in with an emailed code and whether new accounts can be created.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( '"Disabled": keeps the standard WooCommerce login/registration. "Login only": only customers that already have an account can sign in with a code (the native registration form stays available for new customers). "Register and login": the 2-in-1 flow — the customer types their email, and we log them in if the account exists or create a passwordless account with the same code if it does not.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( '"Disabled": keeps the standard WooCommerce login/registration. "Login only + Register": only customers that already have an account can sign in with a code, and the native registration form stays available for new customers. "Login and register": the 2-in-1 flow — the customer types their email, and we log them in if the account exists or create a passwordless account with the same code if it does not.', 'woo-force-authentification-before-checkout' ),
 			),
 			$p . 'expiration_time' => array(
 				'title'             => __( 'Code expiration in Minutes', 'woo-force-authentification-before-checkout' ),
@@ -351,34 +354,6 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 			),
 		);
 
-		return $this->lock_mode_field( $fields, $p . 'enable_type' );
-	}
-
-	/**
-	 * Show the authentication mode as "Disabled" and lock it while a page of the
-	 * "LKN Forms - Login and Register" block is the store's login page.
-	 *
-	 * Only one login screen can own the store: when that block page is the login
-	 * page, the OTP stays off (its configuration lives in the other plugin's
-	 * block, with the LKN Forms settings). Removing the block page from that role
-	 * gives the OTP back.
-	 *
-	 * @param array  $fields Settings fields.
-	 * @param string $key    The authentication-mode field key.
-	 * @return array
-	 */
-	private function lock_mode_field( array $fields, $key ) {
-		if ( ! isset( $fields[ $key ] ) || ! WcForceAuthOtp::login_page_owned_by_block() ) {
-			return $fields;
-		}
-
-		$fields[ $key ]['options_disabled'] = array_keys( (array) $fields[ $key ]['options'] );
-		$fields[ $key ]['description']      = sprintf(
-			/* translators: %s: LKN Forms settings screen link. */
-			__( 'The login screen is currently rendered by a page of the "LKN Forms - Login and Register" block, so email OTP is off and one-time passwords are not sent. Change the block page in %s, or remove it from that role, to use OTP again.', 'woo-force-authentification-before-checkout' ),
-			'<a href="' . esc_url( admin_url( 'options-general.php?page=lknform' ) ) . '">' . esc_html__( 'Settings > LKN Forms', 'woo-force-authentification-before-checkout' ) . '</a>'
-		);
-
 		return $fields;
 	}
 
@@ -397,20 +372,11 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 	 * Normalize a stored value so a text still equal to a known default keeps
 	 * following the current mode (see WcForceAuthOtp::normalize_stored_value()).
 	 *
-	 * Also reports the authentication mode as "disabled" while a page of the
-	 * "LKN Forms - Login and Register" block is the store's login page: that page
-	 * owns the login screen, so the OTP stays off (and its field is locked).
-	 *
 	 * @param string $key   Setting key.
 	 * @param mixed  $value Stored value.
 	 * @return mixed
 	 */
 	protected function normalize_value( $key, $value ) {
-		if ( 'enable_type' === $key && WcForceAuthOtp::login_page_owned_by_block() ) {
-			// The block page owns the login screen: the OTP is off whatever is stored.
-			return 'disabled';
-		}
-
 		return WcForceAuthOtp::normalize_stored_value( $key, $value );
 	}
 
@@ -426,14 +392,6 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 
 		switch ( $key ) {
 			case 'enable_type':
-				if ( WcForceAuthOtp::login_page_owned_by_block() ) {
-					// Locked: never overwrite the mode the store chose. The screen
-					// shows (and get_mode() reports) "disabled" while a block page
-					// owns the login screen, so saving the other fields must not
-					// destroy that choice.
-					return WcForceAuthOtp::stored_mode();
-				}
-
 				if ( 'register_and_login' === $value && 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) {
 					// Registration is disabled in WooCommerce: never create accounts.
 					return 'login_only';

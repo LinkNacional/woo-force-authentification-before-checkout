@@ -36,19 +36,10 @@ class WcForceAuthOtp {
 
 	/**
 	 * `source` value an integration sends with /send-code when it drives the flow
-	 * with its own screens (the "Login and Register Form" block). It only changes
-	 * presentation — never validation: a shorter code and the simple e-mail below.
+	 * with its own screens (the "Login and Register Form" block). It only says who
+	 * is asking: the code rules and the e-mail are the store's own settings.
 	 */
 	public const BLOCK_SOURCE = 'lknform';
-
-	/**
-	 * Code length used for that integration.
-	 *
-	 * The block's field is meant to be typed on a phone in a few seconds, so it
-	 * always uses the shortest code this plugin supports, whatever the store set
-	 * for its own account page.
-	 */
-	public const BLOCK_CODE_LENGTH = 4;
 
 	/**
 	 * Bundled SweetAlert2 version.
@@ -59,16 +50,6 @@ class WcForceAuthOtp {
 	 * Maximum number of verification attempts per code.
 	 */
 	public const MAX_ATTEMPTS = 5;
-
-	/**
-	 * Per-request cache for the "block page owns the login screen" check.
-	 *
-	 * Keyed by page revision, so editing the page (or picking another one) is
-	 * picked up immediately.
-	 *
-	 * @var array<string,bool>
-	 */
-	private static $login_page_owner_cache = array();
 
 	/**
 	 * Maximum number of codes sent from a single IP within the throttle window.
@@ -105,6 +86,19 @@ class WcForceAuthOtp {
 	 * @var string
 	 */
 	private $source = '';
+
+	/**
+	 * Settings of one page, replacing the store-wide ones for this request.
+	 *
+	 * A "Login and Register" block can carry its own OTP settings, page by page:
+	 * two login pages can then ask for different codes (length, lifetime, resend
+	 * interval, branding, mode). This array is that page's set; while it is in
+	 * place, `option()` answers from it first. Request-scoped, never persisted —
+	 * the page's values live in the block, in the post.
+	 *
+	 * @var array<string,string>
+	 */
+	private $context = array();
 
 	/**
 	 * Constructor.
@@ -173,6 +167,8 @@ class WcForceAuthOtp {
 			'verify_button_text' => __( 'Verify & Continue', 'woo-force-authentification-before-checkout' ),
 			'verify_button_resend' => __( 'Resend code', 'woo-force-authentification-before-checkout' ),
 			'verify_button_back' => __( 'Use another email', 'woo-force-authentification-before-checkout' ),
+			'verify_button_report' => __( 'Didn\'t receive the code?', 'woo-force-authentification-before-checkout' ),
+			'verify_placeholder_code' => '',
 			'otp_sent_message'  => __( 'A one-time password (OTP) has been sent to your registered email address.', 'woo-force-authentification-before-checkout' ),
 			'legal_text'        => __( 'By clicking on "Login" you agree to our Privacy Policy and Terms of Service.', 'woo-force-authentification-before-checkout' ),
 			// Email.
@@ -255,6 +251,11 @@ class WcForceAuthOtp {
 
 		if ( '' === $default && isset( $defaults[ $key ] ) ) {
 			$default = self::default_for( $key );
+		}
+
+		// The page's own value wins while a context is in place (see use_context).
+		if ( array_key_exists( $key, $this->context ) && '' !== (string) $this->context[ $key ] ) {
+			return $this->context[ $key ];
 		}
 
 		$value = get_option( self::OPTION_PREFIX . $key, null );
@@ -357,18 +358,168 @@ class WcForceAuthOtp {
 	}
 
 	/**
+	 * Option keys a page may set for itself.
+	 *
+	 * These are the settings that shape what a particular page asks of the
+	 * customer: the mode, the code rules and the e-mail branding. Anything else
+	 * (colors, redirects, notifications) stays store-wide on purpose — it is what
+	 * makes the site look like one site.
+	 *
+	 * @return string[]
+	 */
+	public static function context_keys() {
+		return array(
+			// Behaviour.
+			'enable_type',
+			'expiration_time',
+			'resend_interval',
+			'code_length',
+			'code_format',
+			'code_input',
+			// Branding.
+			'brand_name_show',
+			'brand_name',
+			'logo_show',
+			'logo_url',
+			// Texts of the screens, so a page can word its own flow.
+			'login_heading',
+			'login_subheading',
+			'login_label_email',
+			'login_placeholder_email',
+			'login_button_text',
+			'verify_heading',
+			'verify_subheading',
+			'verify_label_code',
+			'verify_placeholder_code',
+			'verify_button_text',
+			'verify_button_resend',
+			'verify_button_back',
+			'verify_button_report',
+			// The e-mail the customer receives.
+			'email_subject',
+		);
+	}
+
+	/**
+	 * Use one page's settings for this request.
+	 *
+	 * Only the keys in `context_keys()` are taken, and only string values: the
+	 * caller (a block, or a verified request token) never reaches anything else.
+	 * An empty value means "not set on this page", so the store-wide option keeps
+	 * answering for it.
+	 *
+	 * @param array<string,mixed> $values Setting values keyed without the prefix.
+	 */
+	public function use_context( array $values ) {
+		$this->context = self::sanitize_context( $values );
+	}
+
+	/**
+	 * Drop the page context (back to the store-wide settings).
+	 */
+	public function clear_context() {
+		$this->context = array();
+	}
+
+	/**
+	 * The page context in place, if any.
+	 *
+	 * @return array<string,string>
+	 */
+	public function context() {
+		return $this->context;
+	}
+
+	/**
+	 * Normalize a set of page values to what `use_context()` accepts.
+	 *
+	 * @param array<string,mixed> $values Raw values.
+	 * @return array<string,string>
+	 */
+	private static function sanitize_context( array $values ) {
+		$clean = array();
+
+		foreach ( self::context_keys() as $key ) {
+			if ( ! isset( $values[ $key ] ) || is_array( $values[ $key ] ) || is_object( $values[ $key ] ) ) {
+				continue;
+			}
+
+			$value = (string) $values[ $key ];
+
+			if ( '' === $value ) {
+				continue;
+			}
+
+			$clean[ $key ] = $value;
+		}
+
+		if ( isset( $clean['enable_type'] ) && ! in_array( $clean['enable_type'], array( 'disabled', 'login_only', 'register_and_login' ), true ) ) {
+			unset( $clean['enable_type'] );
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * The page context as a signed token, to carry it across requests.
+	 *
+	 * The code is generated and checked in requests of their own (/send-code and
+	 * /verify-code), far from the page that asked for it. The token is how the
+	 * page says "use these settings" — signed, so the browser cannot invent a
+	 * longer code lifetime or a mode that creates accounts.
+	 *
+	 * @return string Empty when there is no context.
+	 */
+	public function context_token() {
+		if ( empty( $this->context ) ) {
+			return '';
+		}
+
+		$payload = wp_json_encode( $this->context );
+
+		if ( ! is_string( $payload ) ) {
+			return '';
+		}
+
+		$encoded = base64_encode( $payload ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Carrying data in an attribute, not hiding code.
+
+		return $encoded . '.' . wp_hash( $encoded, 'nonce' );
+	}
+
+	/**
+	 * Read a context token back.
+	 *
+	 * @param mixed $token Token from the request.
+	 * @return array<string,string> Empty when the token is missing or not ours.
+	 */
+	public static function context_from_token( $token ) {
+		if ( ! is_string( $token ) || '' === $token || false === strpos( $token, '.' ) ) {
+			return array();
+		}
+
+		list( $encoded, $signature ) = explode( '.', $token, 2 );
+
+		if ( ! hash_equals( wp_hash( $encoded, 'nonce' ), $signature ) ) {
+			return array();
+		}
+
+		$decoded = base64_decode( $encoded, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- See context_token().
+
+		if ( ! is_string( $decoded ) ) {
+			return array();
+		}
+
+		$values = json_decode( $decoded, true );
+
+		return is_array( $values ) ? self::sanitize_context( $values ) : array();
+	}
+
+	/**
 	 * Current authentication mode.
 	 *
 	 * @return string disabled|login_only|register_and_login
 	 */
 	public function get_mode() {
-		// A page of the "LKN Forms - Login and Register" block can be the store's
-		// login page. That page owns the login screen, so the OTP is off — one
-		// login screen at a time (see WcForceAuthSettings for the locked field).
-		if ( self::login_page_owned_by_block() ) {
-			return 'disabled';
-		}
-
 		$mode = (string) $this->option( 'enable_type', 'disabled' );
 
 		// Never create accounts when WooCommerce registration is disabled — fall
@@ -382,46 +533,6 @@ class WcForceAuthOtp {
 		}
 
 		return $mode;
-	}
-
-	/**
-	 * Whether a "LKN Forms - Login and Register" block page is the store's login
-	 * page.
-	 *
-	 * In that case the block renders the login screen inside "My account" and the
-	 * OTP must stay off, so the two features never compete for the same screen.
-	 * The check is defensive on purpose: the other plugin's option is only
-	 * trusted while that plugin is active and the page still holds the block, so
-	 * a stale option can never lock the OTP out.
-	 *
-	 * @return bool
-	 */
-	public static function login_page_owned_by_block(): bool {
-		if ( ! class_exists( 'Lkn\LknFormLoginRegister\Includes\LoginPage' ) ) {
-			return false;
-		}
-
-		$page_id = absint( get_option( 'lknform_wc_login_page_id', 0 ) );
-
-		if ( $page_id < 1 ) {
-			return false;
-		}
-
-		$page = get_post( $page_id );
-
-		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type || 'publish' !== $page->post_status ) {
-			return false;
-		}
-
-		// Called from get_mode()/is_enabled() on every request: parse the page
-		// content once per page revision, not per call.
-		$cache_key = $page_id . ':' . $page->post_modified_gmt;
-
-		if ( ! isset( self::$login_page_owner_cache[ $cache_key ] ) ) {
-			self::$login_page_owner_cache[ $cache_key ] = has_block( 'lknform/login-register', $page );
-		}
-
-		return self::$login_page_owner_cache[ $cache_key ];
 	}
 
 	/**
@@ -478,11 +589,6 @@ class WcForceAuthOtp {
 	 * @return int
 	 */
 	public function get_code_length() {
-		if ( self::BLOCK_SOURCE === $this->source ) {
-			// The integration has its own screens and always asks for the short one.
-			return self::BLOCK_CODE_LENGTH;
-		}
-
 		$length = (int) $this->option( 'code_length', 6 );
 
 		return in_array( $length, array( 4, 6, 8 ), true ) ? $length : 6;
@@ -841,6 +947,10 @@ class WcForceAuthOtp {
 	 * @return \WP_REST_Response
 	 */
 	public function rest_send_code( $request ) {
+		// The page's own rules (mode, code length, lifetime, resend interval,
+		// branding) apply to this request when it brings its signed context.
+		$this->apply_request_context( $request );
+
 		$email = sanitize_email( $request->get_param( 'email' ) );
 
 		// Which screens asked for this code. It only affects presentation (code
@@ -935,6 +1045,10 @@ class WcForceAuthOtp {
 	 * @return \WP_REST_Response
 	 */
 	public function rest_verify_code( $request ) {
+		// The mode decides whether a new account may be created, so it comes from
+		// the page's signed settings too.
+		$this->apply_request_context( $request );
+
 		$email = sanitize_email( $request->get_param( 'email' ) );
 		$code  = sanitize_text_field( (string) $request->get_param( 'code' ) );
 
@@ -947,6 +1061,29 @@ class WcForceAuthOtp {
 		}
 
 		return new \WP_REST_Response( $result, $status );
+	}
+
+	/**
+	 * Apply the page settings a request carries, if it carries any.
+	 *
+	 * The token is signed by `context_token()` on the page, so a request cannot
+	 * invent its own rules (a longer lifetime, a mode that creates accounts). A
+	 * missing or tampered token simply means "use the store-wide settings".
+	 *
+	 * @param \WP_REST_Request $request The request.
+	 */
+	private function apply_request_context( $request ) {
+		$token = $request->get_param( 'context' );
+
+		if ( ! is_string( $token ) || '' === $token ) {
+			return;
+		}
+
+		$values = self::context_from_token( $token );
+
+		if ( ! empty( $values ) ) {
+			$this->use_context( $values );
+		}
 	}
 
 	/**
@@ -1466,12 +1603,24 @@ class WcForceAuthOtp {
 			'verifyCode'     => $route( '/verify-code' ),
 			'reportCode'     => $route( '/report-code' ),
 			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
-			// Where the block says it comes from, and the length it always gets.
+			// Where the block says it comes from.
 			'source'         => self::BLOCK_SOURCE,
-			'codeLength'     => self::BLOCK_CODE_LENGTH,
+			// The code rules come from this plugin's settings, so changing them
+			// there changes what the block asks for — no value is baked into the
+			// block's saved markup.
+			'codeLength'     => $this->get_code_length(),
+			'codeFormat'     => $this->get_code_format(),
+			'codeGroups'     => $this->get_code_group_sizes(),
+			'codeSeparator'  => 'dash' === $this->get_code_format() ? '-' : ' ',
+			'codeMaxlength'  => $this->get_code_maxlength(),
 			'codeInput'      => $this->get_code_input(),
 			'expiration'     => $this->get_expiration_minutes() * 60,
 			'resendInterval' => $this->get_resend_interval(),
+			// Branding the block's screens show above the form and the e-mail
+			// prints above the code. Resolved here (empty when the store turned it
+			// off), so the block only has to print what it receives.
+			'brandLogo'      => $this->get_logo_url(),
+			'brandName'      => $this->get_brand_name(),
 		);
 	}
 
@@ -1499,7 +1648,10 @@ class WcForceAuthOtp {
 		$l_ph       = (string) $this->option( 'login_placeholder_email' );
 		$l_btn      = (string) $this->option( 'login_button_text' );
 		$v_heading  = (string) $this->option( 'verify_heading' );
-		$v_subhead  = (string) $this->option( 'verify_subheading' );
+		// The e-mail is printed right after this line, so a `%s` placeholder in the
+		// text (how a page may word it) is dropped — with the punctuation that came
+		// right after it — instead of showing up.
+		$v_subhead  = trim( (string) preg_replace( '/\s*%s\s*[.,;:!?]?/', ' ', (string) $this->option( 'verify_subheading' ) ) );
 		$v_label    = (string) $this->option( 'verify_label_code' );
 		$v_btn      = (string) $this->option( 'verify_button_text' );
 		$v_btn_resend = (string) $this->option( 'verify_button_resend' );
@@ -1514,7 +1666,24 @@ class WcForceAuthOtp {
 
 		ob_start();
 		?>
-		<div class="wcfa-otp-wrapper" data-mode="<?php echo esc_attr( $mode ); ?>" data-notify="<?php echo esc_attr( $notify ); ?>" style="<?php echo $this->get_color_style(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside get_color_style(). ?>">
+		<?php
+		/*
+		 * The wrapper carries the values the script needs, so the same script can
+		 * serve several screens with different rules (the store's own pages and any
+		 * number of "Login and Register" pages, each with its own settings). The
+		 * signed context is what takes those rules to /send-code and /verify-code.
+		 */
+		?>
+		<div class="wcfa-otp-wrapper"
+			data-mode="<?php echo esc_attr( $mode ); ?>"
+			data-notify="<?php echo esc_attr( $notify ); ?>"
+			data-code-length="<?php echo esc_attr( (string) $this->get_code_length() ); ?>"
+			data-code-format="<?php echo esc_attr( $this->get_code_format() ); ?>"
+			data-code-input="<?php echo esc_attr( $this->get_code_input() ); ?>"
+			data-expiration="<?php echo esc_attr( (string) ( $this->get_expiration_minutes() * 60 ) ); ?>"
+			data-resend-interval="<?php echo esc_attr( (string) $this->get_resend_interval() ); ?>"
+			data-context="<?php echo esc_attr( $this->context_token() ); ?>"
+			style="<?php echo $this->get_color_style(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside get_color_style(). ?>">
 			<div class="wcfa-otp-card">
 				<div class="wcfa-brand">
 					<?php if ( $logo ) : ?>
@@ -1535,7 +1704,6 @@ class WcForceAuthOtp {
 					<form id="wcfa-login-form" class="wcfa-form" novalidate>
 						<label class="wcfa-label" for="wcfa_email">
 							<?php echo esc_html( $l_label ); ?>
-							<span class="wcfa-required">*</span>
 						</label>
 						<div class="wcfa-input-wrap" id="wcfa-email-wrap">
 							<span class="wcfa-input-icon" aria-hidden="true">
@@ -1585,7 +1753,6 @@ class WcForceAuthOtp {
 					<form id="wcfa-verify-form" class="wcfa-form" novalidate>
 						<label class="wcfa-label" for="<?php echo $this->is_segmented_input() ? 'wcfa_code_0' : 'wcfa_code'; ?>">
 							<?php echo esc_html( $v_label ); ?>
-							<span class="wcfa-required">*</span>
 						</label>
 						<?php if ( $this->is_segmented_input() ) : ?>
 							<div class="wcfa-otp-boxes" id="wcfa-otp-boxes"
@@ -1636,7 +1803,7 @@ class WcForceAuthOtp {
 									maxlength="<?php echo esc_attr( (string) $this->get_code_maxlength() ); ?>"
 									data-code-length="<?php echo esc_attr( (string) $this->get_code_length() ); ?>"
 									data-code-format="<?php echo esc_attr( $this->get_code_format() ); ?>"
-									placeholder="<?php echo esc_attr( $this->get_code_placeholder() ); ?>"
+									placeholder="<?php echo esc_attr( '' !== (string) $this->option( 'verify_placeholder_code' ) ? (string) $this->option( 'verify_placeholder_code' ) : $this->get_code_placeholder() ); ?>"
 									required
 								/>
 							</div>
@@ -1664,7 +1831,7 @@ class WcForceAuthOtp {
 						<span class="wcfa-report-icon" aria-hidden="true">
 							<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
 						</span>
-						<?php esc_html_e( "Didn't receive the code?", 'woo-force-authentification-before-checkout' ); ?>
+						<?php echo esc_html( (string) $this->option( 'verify_button_report' ) ); ?>
 					</button>
 				</div>
 
@@ -1694,32 +1861,22 @@ class WcForceAuthOtp {
 	/**
 	 * Logo printed on the e-mailed code.
 	 *
-	 * Empty when an integration (the block) asked for the code: its screens have
-	 * no logo option, so the e-mail stays simple — the site name only.
+	 * The same logo configured for the store's screens: an integration that
+	 * renders its own screens (the login block) reads the branding from here, so
+	 * there is no reason to strip it.
 	 *
 	 * @return string
 	 */
 	public function get_email_logo_url() {
-		if ( self::BLOCK_SOURCE === $this->source ) {
-			return '';
-		}
-
 		return $this->get_logo_url();
 	}
 
 	/**
 	 * Site name printed on the e-mailed code.
 	 *
-	 * The integration's e-mail shows the WordPress site name, not the brand name
-	 * configured for the store's own screens (the block has no such setting).
-	 *
 	 * @return string
 	 */
 	public function get_email_site_name() {
-		if ( self::BLOCK_SOURCE === $this->source ) {
-			return (string) get_bloginfo( 'name' );
-		}
-
 		return $this->get_brand_name();
 	}
 
