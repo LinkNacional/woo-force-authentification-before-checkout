@@ -22,12 +22,14 @@ abstract class WpTestCase extends TestCase {
 	public function setUp(): void {
 		$this->snapshot = Wp::snapshotOptions();
 		Wp::clearOtpState();
+		Wp::clearOtpContext();
 		wp_set_current_user( 0 );
 	}
 
 	public function tearDown(): void {
 		Wp::restoreOptions( $this->snapshot );
 		Wp::clearOtpState();
+		Wp::clearOtpContext();
 		wp_set_current_user( 0 );
 
 		foreach ( $this->createdEmails as $email ) {
@@ -67,14 +69,18 @@ abstract class WpTestCase extends TestCase {
 	 *
 	 * @param string      $email Email address.
 	 * @param string|null $nonce Override nonce (defaults to a valid one).
+	 * @param array       $extra Extra body params (e.g. a page's `context`).
 	 * @return \WP_REST_Response
 	 */
-	protected function sendCode( string $email, $nonce = null ): \WP_REST_Response {
+	protected function sendCode( string $email, $nonce = null, array $extra = array() ): \WP_REST_Response {
 		return Wp::rest(
 			'/send-code',
-			array(
-				'email' => $email,
-				'nonce' => null === $nonce ? Wp::otpNonce() : $nonce,
+			array_merge(
+				array(
+					'email' => $email,
+					'nonce' => null === $nonce ? Wp::otpNonce() : $nonce,
+				),
+				$extra
 			)
 		);
 	}

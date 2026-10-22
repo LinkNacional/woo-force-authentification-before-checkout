@@ -74,6 +74,7 @@ Yes. When OTP is enabled, the plugin serves its own account template, so the ema
 == Changelog ==
 
 = 1.7.0 - 2026-10-19 =
+* New: the long explanations of the block panel sit behind a "?" next to the label they belong to, and a click opens them in a bubble. The warnings of the store login page (publish the page first, another page holding the role, permissions, WooCommerce) show only the short line, and the "Send guests from 'My account' to this page" switch keeps its explanation one click away — the panel is a narrow column, and those paragraphs hid the fields.
 
 * New: a "Use the 'My account' page" button under the login block's **Redirect after login** field fills it with the store's account address, so nobody has to type (and mistype) that URL. It is disabled when the field already holds it or when "Return to the previous page" is on, with the reason below it. The block declares only the place; "My account" is a WooCommerce page, so the address comes from this plugin.
 * New: the "Login and Register Form" block of the LKN Forms plugin can drive the code flow with its own markup — the e-mail and code screens, the countdown, the resend and the "did not receive the code" link are drawn by the block, so the visitor keeps that site's design instead of this plugin's card

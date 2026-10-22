@@ -262,4 +262,57 @@ class OtpPageContextTest extends WpTestCase {
 		$this->assertFalse( isset( $defaults['settings']['enable_type'] ), 'the mode is the page choice, not part of the snapshot' );
 		$this->assertFalse( isset( $defaults['settings']['verify_heading'] ), 'screen texts are block attributes, not snapshot copies' );
 	}
+
+	/**
+	 * A page that turns the code on works while the store keeps it off.
+	 *
+	 * The block's own switch is the page's whole decision: it writes the flow on
+	 * for that page and nothing else, so the store-wide mode (which owns this
+	 * plugin's "My account" screen) can stay "disabled". The signed context the
+	 * page hands its requests is what says so — signed by the server, so a
+	 * request cannot talk itself into a mode the store never published.
+	 */
+	public function test_page_context_turns_the_flow_on_while_the_store_keeps_it_off(): void {
+		$email   = $this->trackEmail( 'wcfa-page-' . uniqid() . '@wpengine.local' );
+		$subject = $this->useUniqueSubject();
+
+		Wp::setOtpConfig(
+			array(
+				'enable_type'   => 'disabled',
+				'code_length'   => '6',
+				'email_subject' => $subject,
+			)
+		);
+
+		// The page's own settings, as the block hands them over (see block_flow()).
+		$otp = $this->otp();
+		$otp->use_context(
+			array(
+				'enable_type'   => 'login_only',
+				'code_length'   => '4',
+				'email_subject' => $subject,
+			)
+		);
+
+		$token = $otp->context_token();
+		$otp->clear_context();
+
+		// "login only" never creates an account.
+		Wp::ensureUser( $email );
+
+		// A token that is not ours turns nothing on.
+		$forged = $this->sendCode( $email, null, array( 'context' => 'x' . $token ) );
+		$this->assertSame( 403, $forged->get_status(), 'tampered token -> the store mode still rules' );
+
+		$response = $this->sendCode( $email, null, array( 'context' => $token ) );
+		$this->assertSame( 200, $response->get_status(), 'the page context turns the flow on' );
+		$this->assertTrue( ! empty( $response->get_data()['success'] ), 'send succeeds' );
+
+		// The page's code rules apply, not the store's.
+		$this->assertNotEmpty( $this->waitForEmailedCode( $subject, 4 ), 'the page code length is used' );
+
+		// And the store kept its own mode: this is not a store-wide switch.
+		$this->assertSame( 'disabled', get_option( WcForceAuthOtp::OPTION_PREFIX . 'enable_type' ), 'the store mode is untouched' );
+		$this->assertSame( 'disabled', $this->otp()->get_mode(), 'a request without a page context still reads "disabled"' );
+	}
 }

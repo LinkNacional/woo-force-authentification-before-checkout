@@ -921,12 +921,28 @@ class WcForceAuthOtp {
 	}
 
 	/**
-	 * Verify the request nonce (CSRF protection).
+	 * Check the request may run the flow, and that it comes from the site.
+	 *
+	 * Two questions, in this order:
+	 *
+	 *  - is the flow on? A page can turn the code on for itself while the
+	 *    store-wide mode stays off (the block's own switch — see
+	 *    WcForceAuthBlockOtp), and that choice travels in the request's signed
+	 *    context. The context has to be applied here, before the mode is judged:
+	 *    this callback runs before the request's own callback, so nothing else
+	 *    has read the token yet. A request without one — this plugin's own
+	 *    screens — still obeys the store-wide setting.
+	 *  - is the nonce ours (CSRF protection)?
+	 *
+	 * The context stays in place for the callback that follows (same instance,
+	 * same request), which is what makes the page's code rules apply there.
 	 *
 	 * @param \WP_REST_Request $request The request.
 	 * @return bool|\WP_Error
 	 */
 	public function check_permission( $request ) {
+		$this->apply_request_context( $request );
+
 		if ( ! $this->is_enabled() ) {
 			return new \WP_Error( 'wcfa_otp_disabled', __( 'OTP authentication is not enabled.', 'woo-force-authentification-before-checkout' ), array( 'status' => 403 ) );
 		}

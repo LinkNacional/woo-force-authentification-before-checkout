@@ -50,6 +50,275 @@
 	var SLOT_NAME = config.slot || 'lknform-otp-panel';
 
 	/**
+	 * Length from which a help text is worth a bubble instead of a paragraph.
+	 *
+	 * The sidebar is narrow: a paragraph of help under every field pushes the
+	 * fields themselves out of view, so a long explanation moves behind a "?"
+	 * next to the label of the field it belongs to. Two lines of hint still fit
+	 * and are read at a glance, so they stay where they are (and a translation
+	 * that runs a few characters longer than the English text does not move an
+	 * explanation behind the "?" by itself).
+	 */
+	var HELP_LONG = 70;
+
+	/**
+	 * Width of the bubble in pixels. Keep in sync with
+	 * `.wcfa-block-panel__bubble` in Admin/css/wc-force-auth-block-panel.css: it
+	 * is what keeps the bubble inside the window.
+	 */
+	var BUBBLE_WIDTH = 260;
+
+	/** Gap between the "?" and its bubble. */
+	var GAP = 6;
+
+	/** Space kept between the bubble and the edges of the window. */
+	var MARGIN = 8;
+
+	/** Tells the other "?" that one of them opened (one bubble at a time). */
+	var OPEN_EVENT = 'wcfa-block-panel-tip-open';
+
+	/** Last number handed out, for the bubbles' DOM ids. */
+	var lastTip = 0;
+
+	/**
+	 * Rough height of a bubble, to place it before it has been measured.
+	 *
+	 * @param {string} text The explanation.
+	 * @return {number} Estimated height in pixels.
+	 */
+	function estimateHeight( text ) {
+		// About 40 characters a line in 260px, 18px a line, plus the padding.
+		return Math.ceil( ( text ? text.length : 0 ) / 40 ) * 18 + 28;
+	}
+
+	/**
+	 * Where the bubble goes, from the "?" button's place on the screen.
+	 *
+	 * Below the "?" normally, and above it when there is no room left — a "?"
+	 * near the bottom of a long panel still shows its text. Horizontally it is
+	 * kept inside the window, since it is as wide as the sidebar.
+	 *
+	 * @param {HTMLElement|null} node   The "?" button.
+	 * @param {number}           height Height the bubble will take.
+	 * @return {Object} Inline style (fixed position) for the bubble.
+	 */
+	function anchorSpot( node, height ) {
+		if ( ! node ) {
+			return { top: MARGIN, left: MARGIN };
+		}
+
+		var rect = node.getBoundingClientRect();
+		var below = rect.bottom + GAP;
+		var above = rect.top - height - GAP;
+		var room = window.innerHeight - MARGIN - height;
+
+		// Below, unless that would run off the bottom and there is room above.
+		var top = below + height > window.innerHeight - MARGIN ? above : below;
+
+		top = Math.max( MARGIN, Math.min( top, room > MARGIN ? room : MARGIN ) );
+
+		return {
+			top: Math.round( top ),
+			left: Math.round(
+				Math.max( MARGIN, Math.min( rect.left, window.innerWidth - BUBBLE_WIDTH - MARGIN ) )
+			),
+		};
+	}
+
+	/**
+	 * The "?" button and the bubble it opens.
+	 *
+	 * Drawn here instead of with `Popover`: that component's API has changed
+	 * between WordPress versions (the newest one wants a store), while a
+	 * fixed-position bubble anchored to the button behaves the same everywhere —
+	 * and, being fixed, it is never clipped by the sidebar's scrolling box.
+	 *
+	 * @param {Object} props       Component props.
+	 * @param {string} props.text  The full explanation.
+	 * @param {string} props.label The setting it belongs to (accessible name).
+	 * @return {Element|null} The button and its bubble, or null without text.
+	 */
+	function HelpTip( props ) {
+		var text = props.text || '';
+		var label = props.label || '';
+		var open = wp.element.useState( false );
+		var isOpen = open[ 0 ];
+		var setOpen = open[ 1 ];
+		var spot = wp.element.useState( null );
+		var setSpot = spot[ 1 ];
+		var button = wp.element.useRef( null );
+		var bubble = wp.element.useRef( null );
+		var domId = wp.element.useRef( '' );
+
+		// Ids are only needed for `aria-controls`: a counter is enough, and it
+		// does not tie this to the editor's own id generator.
+		if ( ! domId.current ) {
+			lastTip += 1;
+			domId.current = 'wcfa-block-panel-bubble-' + lastTip;
+		}
+
+		wp.element.useEffect(
+			function () {
+				if ( ! isOpen ) {
+					return undefined;
+				}
+
+				var place = function () {
+					setSpot(
+						anchorSpot(
+							button.current,
+							bubble.current ? bubble.current.offsetHeight : estimateHeight( text )
+						)
+					);
+				};
+
+				var away = function ( event ) {
+					// The bubble is portaled, so it is not inside the button: its
+					// own clicks (selecting the text, mostly) have to be ignored.
+					if ( button.current && button.current.contains( event.target ) ) {
+						return;
+					}
+
+					if ( bubble.current && bubble.current.contains( event.target ) ) {
+						return;
+					}
+
+					setOpen( false );
+				};
+
+				// Another "?" was opened: this one closes.
+				var elsewhere = function () {
+					setOpen( false );
+				};
+
+				var escape = function ( event ) {
+					if ( 'Escape' === event.key ) {
+						setOpen( false );
+					}
+				};
+
+				// Measured now that it is on the page, and focused so the text is read.
+				place();
+
+				if ( bubble.current && bubble.current.focus ) {
+					bubble.current.focus( { preventScroll: true } );
+				}
+
+				document.addEventListener( 'mousedown', away );
+				document.addEventListener( 'keydown', escape );
+				document.addEventListener( OPEN_EVENT, elsewhere );
+				window.addEventListener( 'resize', place );
+				// `true`: any scrolling box (the sidebar has one), not just the window.
+				window.addEventListener( 'scroll', place, true );
+
+				return function () {
+					document.removeEventListener( 'mousedown', away );
+					document.removeEventListener( 'keydown', escape );
+					document.removeEventListener( OPEN_EVENT, elsewhere );
+					window.removeEventListener( 'resize', place );
+					window.removeEventListener( 'scroll', place, true );
+
+					// Focus went into the bubble, which is going away: hand it back
+					// to the "?" so keyboard users are not dropped at the top.
+					if ( button.current && button.current.focus ) {
+						button.current.focus( { preventScroll: true } );
+					}
+				};
+			},
+			[ isOpen ]
+		);
+
+		if ( ! text ) {
+			return null;
+		}
+
+		return el(
+			Fragment,
+			null,
+			el(
+				'button',
+				{
+					type: 'button',
+					ref: button,
+					className: 'wcfa-block-panel__tip',
+					'aria-expanded': isOpen,
+					'aria-haspopup': 'dialog',
+					'aria-controls': domId.current,
+					'aria-label': wp.i18n.sprintf( i18n.moreAbout || 'More about %s', label ),
+					onClick: function ( event ) {
+						// The text sits inside the label of a checkbox, and clicking a
+						// label flips its control: the "?" must not.
+						event.preventDefault();
+						event.stopPropagation();
+
+						if ( isOpen ) {
+							setOpen( false );
+
+							return;
+						}
+
+						document.dispatchEvent( new window.CustomEvent( OPEN_EVENT ) );
+
+						// Positioned before it exists, so it never shows up misplaced
+						// (the effect measures it and adjusts right after).
+						setSpot( anchorSpot( button.current, estimateHeight( text ) ) );
+						setOpen( true );
+					},
+				},
+				'?'
+			),
+			isOpen &&
+				wp.element.createPortal(
+					el(
+						'div',
+						{
+							id: domId.current,
+							ref: bubble,
+							className: 'wcfa-block-panel__bubble',
+							role: 'dialog',
+							'aria-label': label,
+							tabIndex: -1,
+							style: spot[ 0 ] || undefined,
+						},
+						text
+					),
+					document.body
+				)
+		);
+	}
+
+	/**
+	 * A label with the "?" when the explanation is long.
+	 *
+	 * @param {string} label The field label.
+	 * @param {string} help  The explanation.
+	 * @return {string|Element} The label, with the "?" when there is a long text.
+	 */
+	function labelWithTip( label, help ) {
+		if ( ! help || help.length <= HELP_LONG ) {
+			return label;
+		}
+
+		return el(
+			'span',
+			{ className: 'wcfa-block-panel__label' },
+			label,
+			el( HelpTip, { text: help, label: label } )
+		);
+	}
+
+	/**
+	 * The help line a field should show under itself: nothing when the text went
+	 * behind the "?".
+	 *
+	 * @param {string} help The explanation.
+	 * @return {string|undefined} Text to print under the field, if short.
+	 */
+	function inlineHelp( help ) {
+		return ! help || help.length <= HELP_LONG ? help : undefined;
+	}
+
+	/**
 	 * Slot under the block's "Show" field, for the store login page switch.
 	 */
 	var LOGIN_PAGE_SLOT = config.loginPageSlot || 'lknform-store-login-page';
@@ -127,7 +396,7 @@
 
 		return el(
 			components.BaseControl,
-			{ label: i18n.logoLabel, id: 'wcfa-block-panel-logo', help },
+			{ label: labelWithTip( i18n.logoLabel, help ), id: 'wcfa-block-panel-logo', help: inlineHelp( help ) },
 			el(
 				'div',
 				{ className: 'wcfa-block-panel__logo' },
@@ -181,14 +450,19 @@
 	 * @return {Element} The control.
 	 */
 	function Field( { name, field, value, onChange, disabled } ) {
+		// A long explanation moves behind the "?" beside the label (see HelpTip),
+		// so the fields of the panel stay visible in the narrow sidebar.
+		var label = labelWithTip( field.label, field.description );
+		var help = inlineHelp( field.description );
+
 		if ( isToggle( field ) ) {
 			return el( components.ToggleControl, {
-				label: field.label,
+				label: label,
 				checked: 'yes' === value,
 				onChange: function ( checked ) {
 					onChange( checked ? 'yes' : 'no' );
 				},
-				help: field.description,
+				help: help,
 				disabled: disabled,
 				__nextHasNoMarginBottom: true,
 			} );
@@ -200,22 +474,22 @@
 			} );
 
 			return el( components.SelectControl, {
-				label: field.label,
+				label: label,
 				value: value,
 				options: options,
 				onChange: onChange,
-				help: field.description,
+				help: help,
 				disabled: disabled,
 				__nextHasNoMarginBottom: true,
 			} );
 		}
 
 		return el( components.TextControl, {
-			label: field.label,
+			label: label,
 			value: value,
 			type: 'number' === field.type ? 'number' : 'text',
 			onChange: onChange,
-			help: field.description,
+			help: help,
 			disabled: disabled,
 			__nextHasNoMarginBottom: true,
 			key: name,
@@ -301,7 +575,7 @@
 
 		if ( ! data.woocommerce ) {
 			return group(
-				el( components.Notice, { status: 'info', isDismissible: false }, i18n.loginPageNeedsWoo )
+				el( components.Notice, { status: 'info', isDismissible: false }, noticeLine( i18n.loginPageNeedsWooShort, i18n.loginPageNeedsWoo ) )
 			);
 		}
 
@@ -310,7 +584,10 @@
 				el(
 					components.Notice,
 					{ status: 'info', isDismissible: false },
-					pageId === post.id ? i18n.loginPageNoPermissionOn : i18n.loginPageNoPermission
+					noticeLine(
+						i18n.loginPageNoPermissionShort,
+						pageId === post.id ? i18n.loginPageNoPermissionOn : i18n.loginPageNoPermission
+					)
 				)
 			);
 		}
@@ -323,7 +600,7 @@
 
 		return group(
 			el( components.CheckboxControl, {
-				label: i18n.loginPageLabel,
+				label: labelWithTip( i18n.loginPageLabel, i18n.loginPageHelp ),
 				checked: isThisPage,
 				// An unpublished page cannot take the role, but a page that already
 				// has it must always be able to give it back.
@@ -344,19 +621,28 @@
 						setStatus( response.data.message || '' );
 					} );
 				},
-				help: i18n.loginPageHelp,
+				help: inlineHelp( i18n.loginPageHelp ),
 				__nextHasNoMarginBottom: true,
 			} ),
 
 			'publish' !== post.status &&
-				el( components.Notice, { status: 'warning', isDismissible: false }, i18n.loginPageUnpublished ),
+				el(
+					components.Notice,
+					{ status: 'warning', isDismissible: false },
+					noticeLine( i18n.loginPageUnpublishedShort, i18n.loginPageUnpublished )
+				),
 
 			! isThisPage &&
 				pageId > 0 &&
 				el(
 					components.Notice,
 					{ status: 'info', isDismissible: false },
-					holder ? wp.i18n.sprintf( i18n.loginPageOther, holder ) : i18n.loginPageOtherGeneric
+					holder
+						? noticeLine(
+								wp.i18n.sprintf( i18n.loginPageOtherShort || '%s', holder ),
+								wp.i18n.sprintf( i18n.loginPageOther || '%s', holder )
+						  )
+						: noticeLine( i18n.loginPageOtherGenericShort || '', i18n.loginPageOtherGeneric || '' )
 				),
 
 			'' !== status[ 0 ] &&
@@ -474,6 +760,27 @@
 			} ),
 
 			disabled && el( 'p', { className: 'components-base-control__help' }, i18n.readOnly )
+		);
+	}
+
+	/**
+	 * A one-line notice: the short text, with the full wording behind its "?".
+	 *
+	 * The warnings of this panel used to be paragraphs inside `Notice`s, which is
+	 * a lot of room for a sidebar that has to show fields. What the reader needs
+	 * at a glance is the state ("publish the page first"); the reason stays one
+	 * click away.
+	 *
+	 * @param {string} text   Short line shown in the notice.
+	 * @param {string} detail Full explanation, in the bubble.
+	 * @return {Element} The notice content.
+	 */
+	function noticeLine( text, detail ) {
+		return el(
+			'span',
+			{ className: 'wcfa-block-panel__label' },
+			text,
+			el( HelpTip, { text: detail, label: text } )
 		);
 	}
 

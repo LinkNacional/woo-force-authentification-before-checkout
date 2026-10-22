@@ -255,6 +255,19 @@ class WcForceAuthBlockPanel {
 				'loginPageNeedsWoo'   => __( 'Sending guests here needs WooCommerce: it is the "My account" page that hands them over, while you are logged out.', 'woo-force-authentification-before-checkout' ),
 				'loginPageNoPermission' => __( 'Sending the guests of "My account" to this page requires a store manager.', 'woo-force-authentification-before-checkout' ),
 				'loginPageNoPermissionOn' => __( 'Guests of "My account" are sent to this page. Changing that requires a store manager.', 'woo-force-authentification-before-checkout' ),
+				/*
+				 * Short lines for the same warnings: they are what the sidebar shows, and the
+				 * texts above are the detail behind their "?" (see HelpTip). The panel is a
+				 * column in the block's sidebar, where a paragraph hides the fields.
+				 */
+				'loginPageUnpublishedShort' => __( 'Publish this page first.', 'woo-force-authentification-before-checkout' ),
+				/* translators: %s: page title. */
+				'loginPageOtherShort' => __( 'Guests are sent to "%s" today.', 'woo-force-authentification-before-checkout' ),
+				'loginPageOtherGenericShort' => __( 'Guests are sent to another page today.', 'woo-force-authentification-before-checkout' ),
+				'loginPageNeedsWooShort' => __( 'Requires WooCommerce.', 'woo-force-authentification-before-checkout' ),
+				'loginPageNoPermissionShort' => __( 'Requires a store manager.', 'woo-force-authentification-before-checkout' ),
+				/* translators: %s: name of the setting the "?" belongs to. */
+				'moreAbout'           => __( 'More about %s', 'woo-force-authentification-before-checkout' ),
 				'redirectFill'        => __( "Use the 'My account' page", 'woo-force-authentification-before-checkout' ),
 				'redirectFillFilled'  => __( 'The field already points to "My account".', 'woo-force-authentification-before-checkout' ),
 				'redirectFillIgnored' => __( 'Turn off "Return to the previous page" above to use this address.', 'woo-force-authentification-before-checkout' ),

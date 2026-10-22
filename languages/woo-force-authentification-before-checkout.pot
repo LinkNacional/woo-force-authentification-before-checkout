@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-21T15:25:46+00:00\n"
+"POT-Creation-Date: 2026-10-22T16:23:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: woo-force-authentification-before-checkout\n"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: Admin/WcForceAuthMenu.php:101
 #: Admin/WcForceAuthMenu.php:102
-#: Includes/WcForceAuth.php:205
+#: Includes/WcForceAuth.php:204
 #: Includes/WcForceAuthRedirectSettings.php:77
 msgid "Settings"
 msgstr ""
@@ -135,21 +135,21 @@ msgstr ""
 
 #: Includes/templates/otp-email-template.php:33
 #: Includes/WcForceAuthOtp.php:176
-#: Includes/WcForceAuthOtp.php:1277
+#: Includes/WcForceAuthOtp.php:1293
 #: Includes/WcForceAuthOtpEmail.php:136
 msgid "Your access code"
 msgstr ""
 
 #: Includes/templates/otp-email-template.php:36
 #: Includes/WcForceAuthOtp.php:177
-#: Includes/WcForceAuthOtp.php:1281
+#: Includes/WcForceAuthOtp.php:1297
 #: Includes/WcForceAuthOtpEmail.php:209
 msgid "Use the code below to access your account:"
 msgstr ""
 
 #: Includes/templates/otp-email-template.php:39
 #: Includes/WcForceAuthOtp.php:178
-#: Includes/WcForceAuthOtp.php:1285
+#: Includes/WcForceAuthOtp.php:1301
 #: Includes/WcForceAuthOtpEmail.php:210
 msgid "If you did not request this code, you can safely ignore this email."
 msgstr ""
@@ -194,6 +194,7 @@ msgstr ""
 
 #: Includes/templates/WcForceAuthSettingsJoined.php:194
 #: Includes/templates/WcForceAuthSettingsLayout.php:341
+#: Includes/WcForceAuthBlockPanel.php:271
 msgid "Use the 'My account' page"
 msgstr ""
 
@@ -363,7 +364,7 @@ msgstr ""
 
 #: Includes/templates/WcForceAuthTextEditor.php:276
 #: Includes/WcForceAuthOtp.php:231
-#: Includes/WcForceAuthOtp.php:2202
+#: Includes/WcForceAuthOtp.php:2218
 msgid "Message"
 msgstr ""
 
@@ -376,99 +377,127 @@ msgstr ""
 msgid "Click the pencil next to any text to edit it. The value is saved together with the other settings."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:197
+#: Includes/WcForceAuthBlockPanel.php:236
 msgid "Email code (OTP)"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:198
+#: Includes/WcForceAuthBlockPanel.php:237
 msgid "Saving…"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:199
+#: Includes/WcForceAuthBlockPanel.php:238
 msgid "Saved"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:200
+#: Includes/WcForceAuthBlockPanel.php:239
 msgid "Could not save the settings."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:201
+#: Includes/WcForceAuthBlockPanel.php:240
 msgid "Only the store manager can change these settings."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:202
+#: Includes/WcForceAuthBlockPanel.php:241
 msgid "Code"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:203
+#: Includes/WcForceAuthBlockPanel.php:242
 #: Includes/WcForceAuthSettings.php:333
 #: Includes/WcForceAuthSettings.php:340
 msgid "Logo URL"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:204
+#: Includes/WcForceAuthBlockPanel.php:243
 msgid "Choose from the media library"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:205
+#: Includes/WcForceAuthBlockPanel.php:244
 msgid "Select the logo"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:206
+#: Includes/WcForceAuthBlockPanel.php:245
 msgid "Use this image"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:207
+#: Includes/WcForceAuthBlockPanel.php:246
 msgid "Remove"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:208
+#: Includes/WcForceAuthBlockPanel.php:247
 msgid "E-mail and branding"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:209
+#: Includes/WcForceAuthBlockPanel.php:248
 msgid "Store login page"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:210
+#: Includes/WcForceAuthBlockPanel.php:249
 msgid "Send guests from \"My account\" to this page"
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:211
+#: Includes/WcForceAuthBlockPanel.php:250
 msgid "A visitor who opens \"My account\" while logged out is redirected here, so this page's block is the store's login and registration screen. Customers who are already logged in stay on \"My account\", with its sections and endpoints. One page at a time: turning this on turns it off on any other page. After signing in, the destination set in Authentification → Redirect applies."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:212
+#: Includes/WcForceAuthBlockPanel.php:251
 msgid "Publish this page first: an unpublished page cannot receive the guests of \"My account\"."
 msgstr ""
 
 #. translators: %s: page title.
-#: Includes/WcForceAuthBlockPanel.php:214
+#: Includes/WcForceAuthBlockPanel.php:253
 #, php-format
 msgid "Guests are currently sent to \"%s\". Turning this on sends them here instead."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:215
+#: Includes/WcForceAuthBlockPanel.php:254
 msgid "Guests are currently sent to another page. Turning this on sends them here instead."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:216
+#: Includes/WcForceAuthBlockPanel.php:255
 msgid "Sending guests here needs WooCommerce: it is the \"My account\" page that hands them over, while you are logged out."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:217
+#: Includes/WcForceAuthBlockPanel.php:256
 msgid "Sending the guests of \"My account\" to this page requires a store manager."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php:218
+#: Includes/WcForceAuthBlockPanel.php:257
 msgid "Guests of \"My account\" are sent to this page. Changing that requires a store manager."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php
+#: Includes/WcForceAuthBlockPanel.php:263
+msgid "Publish this page first."
+msgstr ""
+
+#. translators: %s: page title.
+#: Includes/WcForceAuthBlockPanel.php:265
+#, php-format
+msgid "Guests are sent to \"%s\" today."
+msgstr ""
+
+#: Includes/WcForceAuthBlockPanel.php:266
+msgid "Guests are sent to another page today."
+msgstr ""
+
+#: Includes/WcForceAuthBlockPanel.php:267
+msgid "Requires WooCommerce."
+msgstr ""
+
+#: Includes/WcForceAuthBlockPanel.php:268
+msgid "Requires a store manager."
+msgstr ""
+
+#. translators: %s: name of the setting the "?" belongs to.
+#: Includes/WcForceAuthBlockPanel.php:270
+#, php-format
+msgid "More about %s"
+msgstr ""
+
+#: Includes/WcForceAuthBlockPanel.php:272
 msgid "The field already points to \"My account\"."
 msgstr ""
 
-#: Includes/WcForceAuthBlockPanel.php
+#: Includes/WcForceAuthBlockPanel.php:273
 msgid "Turn off \"Return to the previous page\" above to use this address."
 msgstr ""
 
@@ -622,7 +651,7 @@ msgid "By clicking on \"Login\" you agree to our Privacy Policy and Terms of Ser
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:175
-#: Includes/WcForceAuthOtp.php:1259
+#: Includes/WcForceAuthOtp.php:1275
 #: Includes/WcForceAuthOtpEmail.php:127
 msgid "Your access code: {code}"
 msgstr ""
@@ -641,7 +670,7 @@ msgid "Enter your email to access your account"
 msgstr ""
 
 #: Includes/WcForceAuthOtp.php:807
-#: Includes/WcForceAuthOtp.php:967
+#: Includes/WcForceAuthOtp.php:983
 msgid "Too many requests. Please try again later."
 msgstr ""
 
@@ -686,137 +715,137 @@ msgstr ""
 msgid "Thank you! Your report was sent and our team will look into it."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:931
+#: Includes/WcForceAuthOtp.php:947
 msgid "OTP authentication is not enabled."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:937
+#: Includes/WcForceAuthOtp.php:953
 #: Includes/WcForceAuthSettingsPage.php:282
 msgid "Security check failed. Please reload the page."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:979
+#: Includes/WcForceAuthOtp.php:995
 msgid "Email not registered."
 msgstr ""
 
 #. translators: %d: seconds to wait before requesting a new code.
-#: Includes/WcForceAuthOtp.php:998
+#: Includes/WcForceAuthOtp.php:1014
 #, php-format
 msgid "Please wait %d seconds before requesting a new code."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1018
+#: Includes/WcForceAuthOtp.php:1034
 msgid "Could not send the code. Please try again."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1029
+#: Includes/WcForceAuthOtp.php:1045
 msgid "A one-time password (OTP) has been sent to your email."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1395
+#: Includes/WcForceAuthOtp.php:1411
 msgid "Invalid or expired code."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1405
+#: Includes/WcForceAuthOtp.php:1421
 msgid "User not found."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1414
+#: Includes/WcForceAuthOtp.php:1430
 msgid "Could not create the account."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1422
+#: Includes/WcForceAuthOtp.php:1438
 msgid "Could not log you in."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1428
+#: Includes/WcForceAuthOtp.php:1444
 msgid "Login successful!"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:1761
+#: Includes/WcForceAuthOtp.php:1777
 msgid "Verification code"
 msgstr ""
 
 #. translators: %d: digit position.
-#: Includes/WcForceAuthOtp.php:1782
+#: Includes/WcForceAuthOtp.php:1798
 #, php-format
 msgid "Digit %d"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2184
+#: Includes/WcForceAuthOtp.php:2200
 msgid "Sending code..."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2185
+#: Includes/WcForceAuthOtp.php:2201
 msgid "Verifying code..."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2186
+#: Includes/WcForceAuthOtp.php:2202
 msgid "Connection error. Please try again."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2187
+#: Includes/WcForceAuthOtp.php:2203
 msgid "Please enter a valid email address."
 msgstr ""
 
 #. translators: %d: number of seconds until the resend button is enabled.
-#: Includes/WcForceAuthOtp.php:2189
+#: Includes/WcForceAuthOtp.php:2205
 #, php-format
 msgid "You can resend in %ds"
 msgstr ""
 
 #. translators: %s: time when the code expires.
-#: Includes/WcForceAuthOtp.php:2191
+#: Includes/WcForceAuthOtp.php:2207
 #, php-format
 msgid "Code expires at %s"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2193
+#: Includes/WcForceAuthOtp.php:2209
 msgid "Go back and change the email?"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2195
+#: Includes/WcForceAuthOtp.php:2211
 msgid "Something went wrong"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2196
+#: Includes/WcForceAuthOtp.php:2212
 msgid "Code detected"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2197
+#: Includes/WcForceAuthOtp.php:2213
 msgid "We found your access code in the clipboard."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2198
+#: Includes/WcForceAuthOtp.php:2214
 msgid "Use code"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2199
+#: Includes/WcForceAuthOtp.php:2215
 msgid "Report a problem"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2200
+#: Includes/WcForceAuthOtp.php:2216
 msgid "Your email"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2201
+#: Includes/WcForceAuthOtp.php:2217
 msgid "Contact (optional)"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2203
+#: Includes/WcForceAuthOtp.php:2219
 msgid "Send"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2204
+#: Includes/WcForceAuthOtp.php:2220
 msgid "I did not receive the verification code for {{email}}."
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2205
+#: Includes/WcForceAuthOtp.php:2221
 #: Includes/WcForceAuthSettingsPage.php:325
 msgid "Cancel"
 msgstr ""
 
-#: Includes/WcForceAuthOtp.php:2224
+#: Includes/WcForceAuthOtp.php:2240
 msgid "Traditional registration is disabled. Please use the email code to continue."
 msgstr ""
 
