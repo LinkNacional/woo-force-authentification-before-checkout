@@ -58,7 +58,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</a>
 			</div>
 			<div class="linkn-contact-links">
-				<a href="<?php echo esc_url( 'https://chat.whatsapp.com/C6S3my9Adr818hbeJphPBm' ); ?>" target="_blank" rel="noopener noreferrer">
+				<a href="<?php echo esc_url( 'https://www.linknacional.com.br/assets/whatsapp-grupo-wordpress' ); ?>" target="_blank" rel="noopener noreferrer">
 					<img src="<?php echo esc_url( $whatsapp ); ?>" alt="<?php esc_attr_e( 'WhatsApp', 'woo-force-authentification-before-checkout' ); ?>" class="linkn-contact-icon">
 				</a>
 				<a href="<?php echo esc_url( 'https://t.me/wpprobr' ); ?>" target="_blank" rel="noopener noreferrer">
