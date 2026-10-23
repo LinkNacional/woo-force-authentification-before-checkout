@@ -92,6 +92,11 @@ class WcForceAuth {
 		$settings = new WcForceAuthSettings( $this->plugin_name, $this->version );
 		$this->loader->add_action( 'wp_ajax_' . WcForceAuthSettings::AJAX_ACTION, $settings, 'ajax_save_settings' );
 
+		// The OTP panel inside the "LKN Forms" login block: the block only offers
+		// a slot, the controls come from here.
+		$block_panel = new WcForceAuthBlockPanel( $this->plugin_name, $this->version, $settings );
+		$this->loader->add_action( 'enqueue_block_editor_assets', $block_panel, 'enqueue' );
+
 		$redirect_settings = new WcForceAuthRedirectSettings( $this->plugin_name, $this->version );
 		$this->loader->add_action( 'wp_ajax_' . WcForceAuthRedirectSettings::AJAX_ACTION, $redirect_settings, 'ajax_save_settings' );
 
@@ -132,6 +137,21 @@ class WcForceAuth {
 		// serving our own myaccount/form-login.php template. The callback itself
 		// checks whether OTP is enabled and whether the customer is logged out.
 		$this->loader->add_filter( 'woocommerce_locate_template', $otp, 'locate_form_login_template', 99, 4 );
+
+		// A block that asks for the code flow is a plain login form: its markup is
+		// replaced by this plugin's own screens (see WcForceAuthBlockOtp), so no
+		// OTP option or screen ever lives in another plugin.
+
+		// The "LKN Forms - Login and Register" block draws its own code screens and
+		// drives them with its own script; this plugin backs the flow (code
+		// generation, e-mail, validation). See WcForceAuthBlockOtp::block_flow(),
+		// which that block's plugin calls at render time.
+
+		// "Use this page as the WooCommerce login page": a page of that block
+		// becomes the store's login screen. It is an authentication choice, so it
+		// lives here too.
+		$login_page = new WcForceAuthLoginPage();
+		$login_page->register();
 
 		// Safety net: keep WooCommerce's native registration blocked when the
 		// passwordless (register and login) mode owns the account creation.

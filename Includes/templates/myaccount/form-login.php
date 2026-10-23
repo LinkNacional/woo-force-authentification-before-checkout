@@ -13,7 +13,7 @@
  * available, so new customers can still sign up the classic way.
  *
  * @package Lkn\WcForceAuth
- * @version 1.6.0
+ * @version 1.7.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,7 +28,15 @@ if ( ! $wcfa_otp instanceof \Lkn\WcForceAuth\Includes\WcForceAuthOtp ) {
 	return;
 }
 
-do_action( 'woocommerce_before_customer_login_form' );
+/*
+ * The customer-login hooks belong to whoever owns the page: when this template is
+ * injected in place of a block's login form (see WcForceAuthBlockOtp) the page is
+ * not the account page, so they are skipped — and when it *is* the account page,
+ * the wrapper template already fired them.
+ */
+if ( empty( $wcfa_skip_form_hooks ) ) {
+	do_action( 'woocommerce_before_customer_login_form' );
+}
 
 $wcfa_show_register = $wcfa_otp->should_show_native_registration();
 
@@ -65,7 +73,6 @@ $wcfa_btn_text            = (string) $wcfa_otp->option( 'register_button_text' )
 						<div class="wcfa-field">
 							<label class="wcfa-label" for="reg_username">
 								<?php echo esc_html( $wcfa_label_username ); ?>
-								<span class="wcfa-required" aria-hidden="true">*</span>
 								<span class="screen-reader-text"><?php esc_html_e( 'Required', 'woo-force-authentification-before-checkout' ); ?></span>
 							</label>
 							<div class="wcfa-input-wrap">
@@ -81,7 +88,6 @@ $wcfa_btn_text            = (string) $wcfa_otp->option( 'register_button_text' )
 					<div class="wcfa-field">
 						<label class="wcfa-label" for="reg_email">
 							<?php echo esc_html( $wcfa_label_email ); ?>
-							<span class="wcfa-required" aria-hidden="true">*</span>
 							<span class="screen-reader-text"><?php esc_html_e( 'Required', 'woo-force-authentification-before-checkout' ); ?></span>
 						</label>
 						<div class="wcfa-input-wrap" id="wcfa-reg-email-wrap">
@@ -97,7 +103,6 @@ $wcfa_btn_text            = (string) $wcfa_otp->option( 'register_button_text' )
 						<div class="wcfa-field">
 							<label class="wcfa-label" for="reg_password">
 								<?php echo esc_html( $wcfa_label_password ); ?>
-								<span class="wcfa-required" aria-hidden="true">*</span>
 								<span class="screen-reader-text"><?php esc_html_e( 'Required', 'woo-force-authentification-before-checkout' ); ?></span>
 							</label>
 							<div class="wcfa-password">
@@ -129,4 +134,6 @@ $wcfa_btn_text            = (string) $wcfa_otp->option( 'register_button_text' )
 	<?php endif; ?>
 </div>
 <?php
-do_action( 'woocommerce_after_customer_login_form' );
+if ( empty( $wcfa_skip_form_hooks ) ) {
+	do_action( 'woocommerce_after_customer_login_form' );
+}

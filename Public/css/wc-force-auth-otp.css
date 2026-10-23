@@ -162,10 +162,6 @@
 	color: var(--wcfa-text);
 }
 
-.wcfa-required {
-	color: #e5484d;
-}
-
 .wcfa-input-wrap {
 	position: relative;
 	display: flex;
@@ -920,10 +916,6 @@
 	font-size: 15px;
 	font-weight: 600;
 	color: var(--wcfa-text) !important;
-}
-
-.wcfa-account-register .woocommerce-form-register .wcfa-required {
-	color: #e5484d !important;
 }
 
 .wcfa-account-register .wcfa-register-password-hint {

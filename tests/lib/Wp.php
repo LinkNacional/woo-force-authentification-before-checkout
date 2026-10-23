@@ -4,6 +4,7 @@ namespace WcfaTests\Lib;
 
 use Lkn\WcForceAuth\Includes\WcForceAuthCheckoutSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthOtp;
+use Lkn\WcForceAuth\Includes\WcForceAuthLoginPage;
 use Lkn\WcForceAuth\Includes\WcForceAuthRedirectSettings;
 use Lkn\WcForceAuth\Includes\WcForceAuthSettings;
 
@@ -42,6 +43,11 @@ class Wp {
 		foreach ( array_keys( WcForceAuthRedirectSettings::defaults() ) as $key ) {
 			$names[] = WcForceAuthRedirectSettings::OPTION_PREFIX . $key;
 		}
+
+		// The login page is not a "config" option (it is a page id written by the
+		// block editor), but it changes where guests are sent: the tests control it
+		// explicitly instead of inheriting the site's value.
+		$names[] = WcForceAuthLoginPage::OPTION_PAGE_ID;
 
 		return $names;
 	}
@@ -94,6 +100,15 @@ class Wp {
 	 *
 	 * @param array<string,string> $overrides Key => value.
 	 */
+	/**
+	 * Choose (or clear) the page that receives the guests of "My account".
+	 *
+	 * @param int $page_id Page id, 0 for none.
+	 */
+	public static function setLoginPage( int $page_id ): void {
+		update_option( WcForceAuthLoginPage::OPTION_PAGE_ID, $page_id, false );
+	}
+
 	public static function setForceConfig( array $overrides ): void {
 		$config = array_merge(
 			WcForceAuthCheckoutSettings::defaults(),
@@ -123,6 +138,36 @@ class Wp {
 		}
 
 		delete_transient( 'wcfa_otp_ip_' . md5( self::clientIp() ) );
+	}
+
+	/**
+	 * Drop the page context a request may have left behind.
+	 *
+	 * The flow keeps a page's settings in place for the whole request — that is
+	 * what lets the endpoint's callback read them — and a request normally ends
+	 * right after. Under the single process of this runner it does not, so the
+	 * context has to be dropped by hand or the next case inherits it. The
+	 * instance that matters is the one registered on the route, not necessarily
+	 * `WcForceAuthOtp::instance()`.
+	 */
+	public static function clearOtpContext(): void {
+		$prefix = '/' . WcForceAuthOtp::REST_NAMESPACE . '/';
+
+		foreach ( rest_get_server()->get_routes() as $path => $handlers ) {
+			if ( 0 !== strpos( $path, $prefix ) ) {
+				continue;
+			}
+
+			foreach ( $handlers as $handler ) {
+				foreach ( array( 'callback', 'permission_callback' ) as $key ) {
+					$callback = isset( $handler[ $key ] ) ? $handler[ $key ] : null;
+
+					if ( is_array( $callback ) && isset( $callback[0] ) && $callback[0] instanceof WcForceAuthOtp ) {
+						$callback[0]->clear_context();
+					}
+				}
+			}
+		}
 	}
 
 	/**

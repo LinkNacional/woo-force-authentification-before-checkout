@@ -44,6 +44,8 @@ class ForceCheckoutTest extends WpTestCase {
 	public function test_login_url_mode_account_is_default(): void {
 		$checkout = $this->checkout();
 
+		// No page holds the login screen: the account page is the login page.
+		Wp::setLoginPage( 0 );
 		Wp::setForceConfig( array( 'login_url_mode' => 'account', 'login_url' => 'https://x.test/ignored/' ) );
 		$this->assertSame(
 			get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ),
@@ -52,9 +54,43 @@ class ForceCheckoutTest extends WpTestCase {
 		);
 	}
 
+	/**
+	 * A page that took the login screen over is where the form is: guests are
+	 * sent straight to it (one redirect, not "account page then that page").
+	 */
+	public function test_login_url_mode_account_follows_the_chosen_login_page(): void {
+		$checkout = $this->checkout();
+		$page_id  = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => 'Test login page',
+				'post_name'    => 'test-login-page',
+				'post_content' => '<!-- wp:paragraph --><p><!-- wp:lknform/login-register /--></p><!-- /wp:paragraph -->',
+			)
+		);
+
+		Wp::setLoginPage( (int) $page_id );
+		Wp::setForceConfig( array( 'login_url_mode' => 'account', 'login_url' => '' ) );
+
+		$this->assertSame(
+			get_permalink( $page_id ),
+			$this->call( $checkout, 'get_login_page_url' ),
+			'a chosen login page wins over the account page'
+		);
+
+		// A custom URL still wins over both.
+		Wp::setForceConfig( array( 'login_url_mode' => 'custom', 'login_url' => 'https://x.test/login/' ) );
+		$this->assertSame( 'https://x.test/login/', $this->call( $checkout, 'get_login_page_url' ), 'custom url wins' );
+
+		Wp::setLoginPage( 0 );
+		wp_delete_post( (int) $page_id, true );
+	}
+
 	public function test_login_url_mode_custom_uses_the_url(): void {
 		$checkout = $this->checkout();
 
+		Wp::setLoginPage( 0 );
 		Wp::setForceConfig( array( 'login_url_mode' => 'custom', 'login_url' => 'https://x.test/custom-login/' ) );
 		$this->assertSame( 'https://x.test/custom-login/', $this->call( $checkout, 'get_login_page_url' ), 'custom login url' );
 

@@ -199,7 +199,9 @@ class WcForceAuthRedirectSettings extends WcForceAuthSettingsPage {
 				'show_when'         => 'custom',
 				'block_title'       => __( 'Custom destination URL', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Used only when "Custom URL" is selected above.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( 'Full URL the customer is sent to after login. Leave empty to fall back to the account dashboard.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( 'Full URL the customer is sent to after login. Leave empty to fall back to the account dashboard. The button beside the field fills it with the "My account" page defined in WooCommerce, so you do not have to copy the URL by hand.', 'woo-force-authentification-before-checkout' ),
+				// A button beside the input that fills it with that page's URL.
+				'fill_with'         => 'myaccount',
 			),
 		);
 	}
@@ -263,6 +265,13 @@ class WcForceAuthRedirectSettings extends WcForceAuthSettingsPage {
 			$url = trim( (string) self::option( 'login_url', '' ) );
 		}
 
+		// A page holding the store login screen is where the form really is: send
+		// guests straight to it instead of making "My account" forward them (one
+		// redirect instead of two, and the marker survives).
+		if ( '' === $url && WcForceAuthLoginPage::owns_login() ) {
+			$url = (string) get_permalink( WcForceAuthLoginPage::page_id() );
+		}
+
 		if ( '' === $url ) {
 			$url = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 		}
@@ -299,22 +308,36 @@ class WcForceAuthRedirectSettings extends WcForceAuthSettingsPage {
 	public static function get_after_login_url() {
 		switch ( self::option( 'redirect_after', 'checkout' ) ) {
 			case 'account':
-				return self::get_account_url();
+				$url = self::get_account_url();
+				break;
 
 			case 'previous':
 				$previous = self::get_return_url();
 
-				return '' !== $previous ? $previous : self::get_account_url();
+				$url = '' !== $previous ? $previous : self::get_account_url();
+				break;
 
 			case 'custom':
 				$custom = trim( (string) self::option( 'redirect_custom', '' ) );
 
-				return '' !== $custom ? esc_url_raw( $custom ) : self::get_account_url();
+				$url = '' !== $custom ? esc_url_raw( $custom ) : self::get_account_url();
+				break;
 
 			case 'checkout':
 			default:
-				return self::get_checkout_page_url();
+				$url = self::get_checkout_page_url();
+				break;
 		}
+
+		/**
+		 * Filters the URL the customer is sent to right after authenticating.
+		 *
+		 * Lets integrations render the OTP UI outside the account page (e.g. a
+		 * login block on another page) and still honour their own destination.
+		 *
+		 * @param string $url Destination URL.
+		 */
+		return (string) apply_filters( 'wc_force_auth_after_login_url', $url );
 	}
 
 	/**

@@ -209,8 +209,11 @@ class WcForceAuthOtpEmail extends \WC_Email {
 			'email_message'      => $this->tokens( $this->otp_option( 'email_message', __( 'Use the code below to access your account:', 'woo-force-authentification-before-checkout' ) ) ),
 			'email_footer_note'  => $this->tokens( $this->otp_option( 'email_footer_note', __( 'If you did not request this code, you can safely ignore this email.', 'woo-force-authentification-before-checkout' ) ) ),
 			'expiration_minutes' => $otp ? $otp->get_expiration_minutes() : 10,
-			'logo_url'           => $otp ? $otp->get_logo_url() : '',
-			'site_name'          => $otp ? $otp->get_brand_name() : get_bloginfo( 'name' ),
+			// Both follow the source of the code: an integration that drives the
+			// flow with its own screens (the block) sends a simple e-mail, site
+			// name only. The store's own login screen keeps its logo.
+			'logo_url'           => $otp ? $otp->get_email_logo_url() : '',
+			'site_name'          => $otp ? $otp->get_email_site_name() : get_bloginfo( 'name' ),
 			'email'              => $this,
 		);
 	}

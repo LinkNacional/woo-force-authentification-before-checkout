@@ -117,7 +117,13 @@ foreach ($form_fields as $wcfa_field) {
                                     // Fields flagged with `preview_link` get a "Visualizar"
                                     // link beside the input (it drops below on narrow screens).
                                     $wcfa_show_preview = ! empty($field['preview_link']) && in_array($field['type'], array('text', 'number', 'color'), true);
-                                    if ($wcfa_show_preview) {
+                                    // `fill_with`: a button beside the input that fills it with a page URL
+                                    // (e.g. the WooCommerce "My account" page), so nobody has to copy it.
+                                    $wcfa_fill_url = ! empty($field['fill_with']) && in_array($field['type'], array('text', 'number'), true) && function_exists('wc_get_page_permalink')
+                                        ? (string) wc_get_page_permalink($field['fill_with'])
+                                        : '';
+                                    $wcfa_input_row = $wcfa_show_preview || '' !== $wcfa_fill_url;
+                                    if ($wcfa_input_row) {
                                         echo '<div class="admin-layout-input-row">';
                                     }
 
@@ -322,6 +328,21 @@ foreach ($form_fields as $wcfa_field) {
                                             <span class="admin-layout-preview-link__text"><?php esc_html_e('Visualizar', 'woo-force-authentification-before-checkout'); ?></span>
                                         </button>
                                         <?php
+                                    }
+                                    if ('' !== $wcfa_fill_url) {
+                                        ?>
+                                        <button
+                                            type="button"
+                                            class="admin-layout-preview-link admin-layout-fill-link"
+                                            data-wcfa-fill="<?php echo esc_url($wcfa_fill_url); ?>"
+                                            data-wcfa-fill-target="<?php echo esc_attr($field['id'] ? $field['id'] : $key); ?>"
+                                        >
+                                            <span class="dashicons dashicons-admin-page" aria-hidden="true"></span>
+                                            <span class="admin-layout-preview-link__text"><?php echo esc_html(! empty($field['fill_with_label']) ? $field['fill_with_label'] : __("Use the 'My account' page", 'woo-force-authentification-before-checkout')); ?></span>
+                                        </button>
+                                        <?php
+                                    }
+                                    if ($wcfa_input_row) {
                                         echo '</div>';
                                     }
                                     ?>

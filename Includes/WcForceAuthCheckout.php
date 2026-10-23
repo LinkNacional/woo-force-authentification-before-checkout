@@ -131,8 +131,9 @@ class WcForceAuthCheckout {
 			return;
 		}
 
-		// Only the page that hosts the login form is a useful capture point.
-		if ( ! is_account_page() ) {
+		// Only the page that hosts the login form is a useful capture point: the
+		// account page (its default) and the page that took that role over.
+		if ( ! is_account_page() && ! WcForceAuthLoginPage::is_login_screen() ) {
 			return;
 		}
 
@@ -148,13 +149,20 @@ class WcForceAuthCheckout {
 			return;
 		}
 
-		// Never remember the account/login page itself (e.g. an internal refresh
-		// or the checkout→account redirect), so "Previous page" does not loop.
+		// Never remember a login screen itself (an internal refresh, or the
+		// checkout→login redirect), so "Previous page" does not loop. Both count:
+		// the page that receives the guests and the account page they come from.
 		$referer_path = wp_parse_url( $referer, PHP_URL_PATH );
-		$account_path = wp_parse_url( $this->get_login_page_url(), PHP_URL_PATH );
 
-		if ( $referer_path && $account_path && untrailingslashit( $referer_path ) === untrailingslashit( $account_path ) ) {
-			return;
+		$login_screens = array(
+			wp_parse_url( $this->get_login_page_url(), PHP_URL_PATH ),
+			wp_parse_url( wc_get_page_permalink( 'myaccount' ), PHP_URL_PATH ),
+		);
+
+		foreach ( array_filter( $login_screens ) as $screen_path ) {
+			if ( $referer_path && untrailingslashit( $referer_path ) === untrailingslashit( $screen_path ) ) {
+				return;
+			}
 		}
 
 		WcForceAuthRedirectSettings::store_return_url( $referer );

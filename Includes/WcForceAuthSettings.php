@@ -105,7 +105,7 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 	public function get_fields(): array {
 		$p = WcForceAuthOtp::OPTION_PREFIX;
 
-		return array(
+		$fields = array(
 			'general_title' => array(
 				'title'    => __( 'General', 'woo-force-authentification-before-checkout' ),
 				'type'     => 'title',
@@ -118,18 +118,21 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'id'                => $p . 'enable_type',
 				'options'           => array(
 					'disabled'           => __( 'Disabled', 'woo-force-authentification-before-checkout' ),
-					'login_only'         => __( 'Login only', 'woo-force-authentification-before-checkout' ),
+					// The labels say what happens to registration, not just to the code:
+					// "Login only" alone left the reader guessing whether new customers
+					// could still sign up.
+					'login_only'         => __( 'Login only + Register', 'woo-force-authentification-before-checkout' ),
 					'register_and_login' => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' )
-						? __( 'Register and login', 'woo-force-authentification-before-checkout' )
+						? __( 'Login and register', 'woo-force-authentification-before-checkout' )
 						/* translators: %s: the WooCommerce setting name. */
-						: sprintf( __( 'Register and login (unavailable: enable “%s” in WooCommerce first)', 'woo-force-authentification-before-checkout' ), __( 'Allow customers to create an account', 'woocommerce' ) ),
+						: sprintf( __( 'Login and register (unavailable: enable “%s” in WooCommerce first)', 'woo-force-authentification-before-checkout' ), __( 'Allow customers to create an account', 'woocommerce' ) ),
 				),
 				'options_disabled'  => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ? array() : array( 'register_and_login' ),
 				'default'           => 'disabled',
 				'description'       => __( 'Turns email OTP (one-time password) authentication on and chooses how it behaves. While disabled, the default WooCommerce login and registration forms are used.', 'woo-force-authentification-before-checkout' ),
 				'block_title'       => __( 'Authentication mode', 'woo-force-authentification-before-checkout' ),
 				'block_sub_title'   => __( 'Defines whether customers sign in with an emailed code and whether new accounts can be created.', 'woo-force-authentification-before-checkout' ),
-				'input_description' => __( '"Disabled": keeps the standard WooCommerce login/registration. "Login only": only customers that already have an account can sign in with a code (the native registration form stays available for new customers). "Register and login": the 2-in-1 flow — the customer types their email, and we log them in if the account exists or create a passwordless account with the same code if it does not.', 'woo-force-authentification-before-checkout' ),
+				'input_description' => __( '"Disabled": keeps the standard WooCommerce login/registration. "Login only + Register": only customers that already have an account can sign in with a code, and the native registration form stays available for new customers. "Login and register": the 2-in-1 flow — the customer types their email, and we log them in if the account exists or create a passwordless account with the same code if it does not.', 'woo-force-authentification-before-checkout' ),
 			),
 			$p . 'expiration_time' => array(
 				'title'             => __( 'Code expiration in Minutes', 'woo-force-authentification-before-checkout' ),
@@ -350,6 +353,8 @@ class WcForceAuthSettings extends WcForceAuthSettingsPage {
 				'id'    => $p . 'text_editor',
 			),
 		);
+
+		return $fields;
 	}
 
 	/**

@@ -47,6 +47,8 @@ class RedirectSettingsTest extends WpTestCase {
 	public function test_login_page_url_modes(): void {
 		$account = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 
+		// Nothing overrides the login screen: the account page is the login page.
+		Wp::setLoginPage( 0 );
 		Wp::setForceConfig( array( 'login_url_mode' => 'account', 'login_url' => 'https://x.test/ignored/' ) );
 		$this->assertSame( $account, WcForceAuthRedirectSettings::get_login_page_url(), 'account mode uses the account page' );
 
@@ -55,6 +57,34 @@ class RedirectSettingsTest extends WpTestCase {
 
 		Wp::setForceConfig( array( 'login_url_mode' => 'custom', 'login_url' => '' ) );
 		$this->assertSame( $account, WcForceAuthRedirectSettings::get_login_page_url(), 'custom empty -> account page' );
+	}
+
+	/**
+	 * A page holding the login screen is the destination: it is the page that
+	 * really draws the form, so "My account" does not have to forward guests.
+	 */
+	public function test_login_page_url_follows_the_chosen_page(): void {
+		$page_id = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => 'Login page under test',
+				'post_name'    => 'login-page-under-test',
+				'post_content' => '<!-- wp:lknform/login-register /-->',
+			)
+		);
+
+		Wp::setLoginPage( (int) $page_id );
+		Wp::setForceConfig( array( 'login_url_mode' => 'account', 'login_url' => '' ) );
+
+		$this->assertSame(
+			get_permalink( $page_id ),
+			WcForceAuthRedirectSettings::get_login_page_url(),
+			'the chosen login page is the login url'
+		);
+
+		Wp::setLoginPage( 0 );
+		wp_delete_post( (int) $page_id, true );
 	}
 
 	public function test_checkout_page_url_modes(): void {

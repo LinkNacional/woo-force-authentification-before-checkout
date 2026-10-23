@@ -29,6 +29,19 @@ class WcForceAuthOtp {
 	public const REST_NAMESPACE = 'wc-force-auth/v1';
 
 	/**
+	 * Nonce action required by the OTP REST endpoints (also used by blocks that
+	 * drive the flow with their own markup).
+	 */
+	public const NONCE_ACTION = 'wcfa_otp_nonce';
+
+	/**
+	 * `source` value an integration sends with /send-code when it drives the flow
+	 * with its own screens (the "Login and Register Form" block). It only says who
+	 * is asking: the code rules and the e-mail are the store's own settings.
+	 */
+	public const BLOCK_SOURCE = 'lknform';
+
+	/**
 	 * Bundled SweetAlert2 version.
 	 */
 	public const SWEETALERT_VERSION = '11.0.0';
@@ -63,6 +76,29 @@ class WcForceAuthOtp {
 	 * @var WcForceAuthOtp|null
 	 */
 	private static $instance = null;
+
+	/**
+	 * Who asked for the current code (empty, or self::BLOCK_SOURCE).
+	 *
+	 * Set from the /send-code request: it decides the code length and whether the
+	 * e-mail carries the logo. Request-scoped state, never persisted.
+	 *
+	 * @var string
+	 */
+	private $source = '';
+
+	/**
+	 * Settings of one page, replacing the store-wide ones for this request.
+	 *
+	 * A "Login and Register" block can carry its own OTP settings, page by page:
+	 * two login pages can then ask for different codes (length, lifetime, resend
+	 * interval, branding, mode). This array is that page's set; while it is in
+	 * place, `option()` answers from it first. Request-scoped, never persisted —
+	 * the page's values live in the block, in the post.
+	 *
+	 * @var array<string,string>
+	 */
+	private $context = array();
 
 	/**
 	 * Constructor.
@@ -131,6 +167,8 @@ class WcForceAuthOtp {
 			'verify_button_text' => __( 'Verify & Continue', 'woo-force-authentification-before-checkout' ),
 			'verify_button_resend' => __( 'Resend code', 'woo-force-authentification-before-checkout' ),
 			'verify_button_back' => __( 'Use another email', 'woo-force-authentification-before-checkout' ),
+			'verify_button_report' => __( 'Didn\'t receive the code?', 'woo-force-authentification-before-checkout' ),
+			'verify_placeholder_code' => '',
 			'otp_sent_message'  => __( 'A one-time password (OTP) has been sent to your registered email address.', 'woo-force-authentification-before-checkout' ),
 			'legal_text'        => __( 'By clicking on "Login" you agree to our Privacy Policy and Terms of Service.', 'woo-force-authentification-before-checkout' ),
 			// Email.
@@ -213,6 +251,11 @@ class WcForceAuthOtp {
 
 		if ( '' === $default && isset( $defaults[ $key ] ) ) {
 			$default = self::default_for( $key );
+		}
+
+		// The page's own value wins while a context is in place (see use_context).
+		if ( array_key_exists( $key, $this->context ) && '' !== (string) $this->context[ $key ] ) {
+			return $this->context[ $key ];
 		}
 
 		$value = get_option( self::OPTION_PREFIX . $key, null );
@@ -315,6 +358,163 @@ class WcForceAuthOtp {
 	}
 
 	/**
+	 * Option keys a page may set for itself.
+	 *
+	 * These are the settings that shape what a particular page asks of the
+	 * customer: the mode, the code rules and the e-mail branding. Anything else
+	 * (colors, redirects, notifications) stays store-wide on purpose — it is what
+	 * makes the site look like one site.
+	 *
+	 * @return string[]
+	 */
+	public static function context_keys() {
+		return array(
+			// Behaviour.
+			'enable_type',
+			'expiration_time',
+			'resend_interval',
+			'code_length',
+			'code_format',
+			'code_input',
+			// Branding.
+			'brand_name_show',
+			'brand_name',
+			'logo_show',
+			'logo_url',
+			// Texts of the screens, so a page can word its own flow.
+			'login_heading',
+			'login_subheading',
+			'login_label_email',
+			'login_placeholder_email',
+			'login_button_text',
+			'verify_heading',
+			'verify_subheading',
+			'verify_label_code',
+			'verify_placeholder_code',
+			'verify_button_text',
+			'verify_button_resend',
+			'verify_button_back',
+			'verify_button_report',
+			// The e-mail the customer receives.
+			'email_subject',
+		);
+	}
+
+	/**
+	 * Use one page's settings for this request.
+	 *
+	 * Only the keys in `context_keys()` are taken, and only string values: the
+	 * caller (a block, or a verified request token) never reaches anything else.
+	 * An empty value means "not set on this page", so the store-wide option keeps
+	 * answering for it.
+	 *
+	 * @param array<string,mixed> $values Setting values keyed without the prefix.
+	 */
+	public function use_context( array $values ) {
+		$this->context = self::sanitize_context( $values );
+	}
+
+	/**
+	 * Drop the page context (back to the store-wide settings).
+	 */
+	public function clear_context() {
+		$this->context = array();
+	}
+
+	/**
+	 * The page context in place, if any.
+	 *
+	 * @return array<string,string>
+	 */
+	public function context() {
+		return $this->context;
+	}
+
+	/**
+	 * Normalize a set of page values to what `use_context()` accepts.
+	 *
+	 * @param array<string,mixed> $values Raw values.
+	 * @return array<string,string>
+	 */
+	private static function sanitize_context( array $values ) {
+		$clean = array();
+
+		foreach ( self::context_keys() as $key ) {
+			if ( ! isset( $values[ $key ] ) || is_array( $values[ $key ] ) || is_object( $values[ $key ] ) ) {
+				continue;
+			}
+
+			$value = (string) $values[ $key ];
+
+			if ( '' === $value ) {
+				continue;
+			}
+
+			$clean[ $key ] = $value;
+		}
+
+		if ( isset( $clean['enable_type'] ) && ! in_array( $clean['enable_type'], array( 'disabled', 'login_only', 'register_and_login' ), true ) ) {
+			unset( $clean['enable_type'] );
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * The page context as a signed token, to carry it across requests.
+	 *
+	 * The code is generated and checked in requests of their own (/send-code and
+	 * /verify-code), far from the page that asked for it. The token is how the
+	 * page says "use these settings" — signed, so the browser cannot invent a
+	 * longer code lifetime or a mode that creates accounts.
+	 *
+	 * @return string Empty when there is no context.
+	 */
+	public function context_token() {
+		if ( empty( $this->context ) ) {
+			return '';
+		}
+
+		$payload = wp_json_encode( $this->context );
+
+		if ( ! is_string( $payload ) ) {
+			return '';
+		}
+
+		$encoded = base64_encode( $payload ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Carrying data in an attribute, not hiding code.
+
+		return $encoded . '.' . wp_hash( $encoded, 'nonce' );
+	}
+
+	/**
+	 * Read a context token back.
+	 *
+	 * @param mixed $token Token from the request.
+	 * @return array<string,string> Empty when the token is missing or not ours.
+	 */
+	public static function context_from_token( $token ) {
+		if ( ! is_string( $token ) || '' === $token || false === strpos( $token, '.' ) ) {
+			return array();
+		}
+
+		list( $encoded, $signature ) = explode( '.', $token, 2 );
+
+		if ( ! hash_equals( wp_hash( $encoded, 'nonce' ), $signature ) ) {
+			return array();
+		}
+
+		$decoded = base64_decode( $encoded, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- See context_token().
+
+		if ( ! is_string( $decoded ) ) {
+			return array();
+		}
+
+		$values = json_decode( $decoded, true );
+
+		return is_array( $values ) ? self::sanitize_context( $values ) : array();
+	}
+
+	/**
 	 * Current authentication mode.
 	 *
 	 * @return string disabled|login_only|register_and_login
@@ -333,6 +533,27 @@ class WcForceAuthOtp {
 		}
 
 		return $mode;
+	}
+
+	/**
+	 * The authentication mode as stored in the database.
+	 *
+	 * `get_option()` reports "disabled" while the block page owns the login screen
+	 * (see WcForceAuthSettings::normalize_value()), so the raw value is read from
+	 * the object cache to keep the store's real choice intact.
+	 *
+	 * @return string
+	 */
+	public static function stored_mode(): string {
+		$option = self::OPTION_PREFIX . 'enable_type';
+
+		// Prime the cache first: get_option() applies filters to the value it
+		// returns, but the object cache keeps what is really stored.
+		get_option( $option, 'disabled' );
+
+		$stored = wp_cache_get( $option, 'options' );
+
+		return false === $stored ? 'disabled' : (string) $stored;
 	}
 
 	/**
@@ -371,6 +592,16 @@ class WcForceAuthOtp {
 		$length = (int) $this->option( 'code_length', 6 );
 
 		return in_array( $length, array( 4, 6, 8 ), true ) ? $length : 6;
+	}
+
+	/**
+	 * Who is asking for this code: '' (the store's own screens) or the source
+	 * slug of an integration.
+	 *
+	 * @return string
+	 */
+	public function get_source() {
+		return $this->source;
 	}
 
 	/**
@@ -690,19 +921,35 @@ class WcForceAuthOtp {
 	}
 
 	/**
-	 * Verify the request nonce (CSRF protection).
+	 * Check the request may run the flow, and that it comes from the site.
+	 *
+	 * Two questions, in this order:
+	 *
+	 *  - is the flow on? A page can turn the code on for itself while the
+	 *    store-wide mode stays off (the block's own switch — see
+	 *    WcForceAuthBlockOtp), and that choice travels in the request's signed
+	 *    context. The context has to be applied here, before the mode is judged:
+	 *    this callback runs before the request's own callback, so nothing else
+	 *    has read the token yet. A request without one — this plugin's own
+	 *    screens — still obeys the store-wide setting.
+	 *  - is the nonce ours (CSRF protection)?
+	 *
+	 * The context stays in place for the callback that follows (same instance,
+	 * same request), which is what makes the page's code rules apply there.
 	 *
 	 * @param \WP_REST_Request $request The request.
 	 * @return bool|\WP_Error
 	 */
 	public function check_permission( $request ) {
+		$this->apply_request_context( $request );
+
 		if ( ! $this->is_enabled() ) {
 			return new \WP_Error( 'wcfa_otp_disabled', __( 'OTP authentication is not enabled.', 'woo-force-authentification-before-checkout' ), array( 'status' => 403 ) );
 		}
 
 		$nonce = $request->get_param( 'nonce' );
 
-		if ( ! $nonce || ! wp_verify_nonce( $nonce, 'wcfa_otp_nonce' ) ) {
+		if ( ! $nonce || ! wp_verify_nonce( $nonce, self::NONCE_ACTION ) ) {
 			return new \WP_Error( 'wcfa_bad_nonce', __( 'Security check failed. Please reload the page.', 'woo-force-authentification-before-checkout' ), array( 'status' => 403 ) );
 		}
 
@@ -716,7 +963,17 @@ class WcForceAuthOtp {
 	 * @return \WP_REST_Response
 	 */
 	public function rest_send_code( $request ) {
+		// The page's own rules (mode, code length, lifetime, resend interval,
+		// branding) apply to this request when it brings its signed context.
+		$this->apply_request_context( $request );
+
 		$email = sanitize_email( $request->get_param( 'email' ) );
+
+		// Which screens asked for this code. It only affects presentation (code
+		// length and the e-mail's logo), never the validation below.
+		$source = sanitize_key( (string) $request->get_param( 'source' ) );
+
+		$this->source = self::BLOCK_SOURCE === $source ? self::BLOCK_SOURCE : '';
 
 		if ( ! $this->ip_allowed() ) {
 			return new \WP_REST_Response(
@@ -804,6 +1061,10 @@ class WcForceAuthOtp {
 	 * @return \WP_REST_Response
 	 */
 	public function rest_verify_code( $request ) {
+		// The mode decides whether a new account may be created, so it comes from
+		// the page's signed settings too.
+		$this->apply_request_context( $request );
+
 		$email = sanitize_email( $request->get_param( 'email' ) );
 		$code  = sanitize_text_field( (string) $request->get_param( 'code' ) );
 
@@ -816,6 +1077,29 @@ class WcForceAuthOtp {
 		}
 
 		return new \WP_REST_Response( $result, $status );
+	}
+
+	/**
+	 * Apply the page settings a request carries, if it carries any.
+	 *
+	 * The token is signed by `context_token()` on the page, so a request cannot
+	 * invent its own rules (a longer lifetime, a mode that creates accounts). A
+	 * missing or tampered token simply means "use the store-wide settings".
+	 *
+	 * @param \WP_REST_Request $request The request.
+	 */
+	private function apply_request_context( $request ) {
+		$token = $request->get_param( 'context' );
+
+		if ( ! is_string( $token ) || '' === $token ) {
+			return;
+		}
+
+		$values = self::context_from_token( $token );
+
+		if ( ! empty( $values ) ) {
+			$this->use_context( $values );
+		}
 	}
 
 	/**
@@ -1000,9 +1284,9 @@ class WcForceAuthOtp {
 
 		$template_data = array(
 			'otp_code'           => $code,
-			'site_name'          => $this->get_brand_name(),
+			'site_name'          => $this->get_email_site_name(),
 			'site_url'           => home_url(),
-			'logo_url'           => $this->get_logo_url(),
+			'logo_url'           => $this->get_email_logo_url(),
 			'expiration_minutes' => $this->get_expiration_minutes(),
 			'primary_color'      => $this->get_primary_color(),
 			'email_heading'      => $this->replace_email_tokens(
@@ -1057,7 +1341,7 @@ class WcForceAuthOtp {
 	public function replace_email_tokens( $text, $code ) {
 		return str_replace(
 			array( '{code}', '{site_name}', '{expiration}' ),
-			array( (string) $code, $this->get_brand_name(), (string) $this->get_expiration_minutes() ),
+			array( (string) $code, $this->get_email_site_name(), (string) $this->get_expiration_minutes() ),
 			(string) $text
 		);
 	}
@@ -1316,6 +1600,47 @@ class WcForceAuthOtp {
 	}
 
 	/**
+	 * What an integration needs to drive the OTP flow with its own markup.
+	 *
+	 * The integration (e.g. a login block) renders the e-mail and code screens
+	 * itself and only calls the endpoints below, so the visitor keeps the site's
+	 * own design instead of this plugin's card. Nothing here is secret: the nonce
+	 * is the same one the bundled script receives.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public function get_block_config() {
+		$route = static function ( $path ) {
+			return esc_url_raw( rest_url( self::REST_NAMESPACE . $path ) );
+		};
+
+		return array(
+			'sendCode'       => $route( '/send-code' ),
+			'verifyCode'     => $route( '/verify-code' ),
+			'reportCode'     => $route( '/report-code' ),
+			'nonce'          => wp_create_nonce( self::NONCE_ACTION ),
+			// Where the block says it comes from.
+			'source'         => self::BLOCK_SOURCE,
+			// The code rules come from this plugin's settings, so changing them
+			// there changes what the block asks for — no value is baked into the
+			// block's saved markup.
+			'codeLength'     => $this->get_code_length(),
+			'codeFormat'     => $this->get_code_format(),
+			'codeGroups'     => $this->get_code_group_sizes(),
+			'codeSeparator'  => 'dash' === $this->get_code_format() ? '-' : ' ',
+			'codeMaxlength'  => $this->get_code_maxlength(),
+			'codeInput'      => $this->get_code_input(),
+			'expiration'     => $this->get_expiration_minutes() * 60,
+			'resendInterval' => $this->get_resend_interval(),
+			// Branding the block's screens show above the form and the e-mail
+			// prints above the code. Resolved here (empty when the store turned it
+			// off), so the block only has to print what it receives.
+			'brandLogo'      => $this->get_logo_url(),
+			'brandName'      => $this->get_brand_name(),
+		);
+	}
+
+	/**
 	 * Whether the native WooCommerce registration form should be shown
 	 * alongside the OTP login (only in "Login only" mode).
 	 *
@@ -1339,7 +1664,10 @@ class WcForceAuthOtp {
 		$l_ph       = (string) $this->option( 'login_placeholder_email' );
 		$l_btn      = (string) $this->option( 'login_button_text' );
 		$v_heading  = (string) $this->option( 'verify_heading' );
-		$v_subhead  = (string) $this->option( 'verify_subheading' );
+		// The e-mail is printed right after this line, so a `%s` placeholder in the
+		// text (how a page may word it) is dropped — with the punctuation that came
+		// right after it — instead of showing up.
+		$v_subhead  = trim( (string) preg_replace( '/\s*%s\s*[.,;:!?]?/', ' ', (string) $this->option( 'verify_subheading' ) ) );
 		$v_label    = (string) $this->option( 'verify_label_code' );
 		$v_btn      = (string) $this->option( 'verify_button_text' );
 		$v_btn_resend = (string) $this->option( 'verify_button_resend' );
@@ -1354,7 +1682,24 @@ class WcForceAuthOtp {
 
 		ob_start();
 		?>
-		<div class="wcfa-otp-wrapper" data-mode="<?php echo esc_attr( $mode ); ?>" data-notify="<?php echo esc_attr( $notify ); ?>" style="<?php echo $this->get_color_style(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside get_color_style(). ?>">
+		<?php
+		/*
+		 * The wrapper carries the values the script needs, so the same script can
+		 * serve several screens with different rules (the store's own pages and any
+		 * number of "Login and Register" pages, each with its own settings). The
+		 * signed context is what takes those rules to /send-code and /verify-code.
+		 */
+		?>
+		<div class="wcfa-otp-wrapper"
+			data-mode="<?php echo esc_attr( $mode ); ?>"
+			data-notify="<?php echo esc_attr( $notify ); ?>"
+			data-code-length="<?php echo esc_attr( (string) $this->get_code_length() ); ?>"
+			data-code-format="<?php echo esc_attr( $this->get_code_format() ); ?>"
+			data-code-input="<?php echo esc_attr( $this->get_code_input() ); ?>"
+			data-expiration="<?php echo esc_attr( (string) ( $this->get_expiration_minutes() * 60 ) ); ?>"
+			data-resend-interval="<?php echo esc_attr( (string) $this->get_resend_interval() ); ?>"
+			data-context="<?php echo esc_attr( $this->context_token() ); ?>"
+			style="<?php echo $this->get_color_style(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside get_color_style(). ?>">
 			<div class="wcfa-otp-card">
 				<div class="wcfa-brand">
 					<?php if ( $logo ) : ?>
@@ -1375,7 +1720,6 @@ class WcForceAuthOtp {
 					<form id="wcfa-login-form" class="wcfa-form" novalidate>
 						<label class="wcfa-label" for="wcfa_email">
 							<?php echo esc_html( $l_label ); ?>
-							<span class="wcfa-required">*</span>
 						</label>
 						<div class="wcfa-input-wrap" id="wcfa-email-wrap">
 							<span class="wcfa-input-icon" aria-hidden="true">
@@ -1425,7 +1769,6 @@ class WcForceAuthOtp {
 					<form id="wcfa-verify-form" class="wcfa-form" novalidate>
 						<label class="wcfa-label" for="<?php echo $this->is_segmented_input() ? 'wcfa_code_0' : 'wcfa_code'; ?>">
 							<?php echo esc_html( $v_label ); ?>
-							<span class="wcfa-required">*</span>
 						</label>
 						<?php if ( $this->is_segmented_input() ) : ?>
 							<div class="wcfa-otp-boxes" id="wcfa-otp-boxes"
@@ -1476,7 +1819,7 @@ class WcForceAuthOtp {
 									maxlength="<?php echo esc_attr( (string) $this->get_code_maxlength() ); ?>"
 									data-code-length="<?php echo esc_attr( (string) $this->get_code_length() ); ?>"
 									data-code-format="<?php echo esc_attr( $this->get_code_format() ); ?>"
-									placeholder="<?php echo esc_attr( $this->get_code_placeholder() ); ?>"
+									placeholder="<?php echo esc_attr( '' !== (string) $this->option( 'verify_placeholder_code' ) ? (string) $this->option( 'verify_placeholder_code' ) : $this->get_code_placeholder() ); ?>"
 									required
 								/>
 							</div>
@@ -1504,7 +1847,7 @@ class WcForceAuthOtp {
 						<span class="wcfa-report-icon" aria-hidden="true">
 							<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
 						</span>
-						<?php esc_html_e( "Didn't receive the code?", 'woo-force-authentification-before-checkout' ); ?>
+						<?php echo esc_html( (string) $this->option( 'verify_button_report' ) ); ?>
 					</button>
 				</div>
 
@@ -1529,6 +1872,28 @@ class WcForceAuthOtp {
 		$name = trim( (string) $this->option( 'brand_name', '' ) );
 
 		return '' !== $name ? $name : get_bloginfo( 'name' );
+	}
+
+	/**
+	 * Logo printed on the e-mailed code.
+	 *
+	 * The same logo configured for the store's screens: an integration that
+	 * renders its own screens (the login block) reads the branding from here, so
+	 * there is no reason to strip it.
+	 *
+	 * @return string
+	 */
+	public function get_email_logo_url() {
+		return $this->get_logo_url();
+	}
+
+	/**
+	 * Site name printed on the e-mailed code.
+	 *
+	 * @return string
+	 */
+	public function get_email_site_name() {
+		return $this->get_brand_name();
 	}
 
 	/**
@@ -1746,19 +2111,30 @@ class WcForceAuthOtp {
 	/**
 	 * Whether the OTP assets should be loaded on the current request.
 	 *
+	 * The OTP UI is rendered by this plugin on the WooCommerce account page. A
+	 * block that drives the flow with its own markup (see get_block_config())
+	 * does not need these assets: it styles and scripts the form itself.
+	 *
 	 * @return bool
 	 */
 	public function should_enqueue() {
-		return $this->is_enabled() && function_exists( 'is_account_page' ) && is_account_page();
+		if ( ! $this->is_enabled() ) {
+			return false;
+		}
+
+		return function_exists( 'is_account_page' ) && is_account_page();
 	}
 
 	/**
 	 * Enqueue the public OTP stylesheet.
 	 *
 	 * Hook: wp_enqueue_scripts.
+	 *
+	 * @param bool $force Enqueue even when should_enqueue() is false (used by
+	 *                    integrations that render the OTP after the page head).
 	 */
-	public function enqueue_styles() {
-		if ( ! $this->should_enqueue() ) {
+	public function enqueue_styles( $force = false ) {
+		if ( ! $force && ! $this->should_enqueue() ) {
 			return;
 		}
 
@@ -1781,9 +2157,12 @@ class WcForceAuthOtp {
 	 * Enqueue the public OTP script and localize its data.
 	 *
 	 * Hook: wp_enqueue_scripts.
+	 *
+	 * @param bool $force Enqueue even when should_enqueue() is false (used by
+	 *                    integrations that render the OTP after the page head).
 	 */
-	public function enqueue_scripts() {
-		if ( ! $this->should_enqueue() ) {
+	public function enqueue_scripts( $force = false ) {
+		if ( ! $force && ! $this->should_enqueue() ) {
 			return;
 		}
 
@@ -1808,7 +2187,7 @@ class WcForceAuthOtp {
 			'wcForceAuthOtp',
 			array(
 				'restUrl'       => esc_url_raw( rest_url( self::REST_NAMESPACE ) ),
-				'nonce'         => wp_create_nonce( 'wcfa_otp_nonce' ),
+				'nonce'         => wp_create_nonce( self::NONCE_ACTION ),
 				'mode'          => $this->get_mode(),
 				'codeLength'    => $this->get_code_length(),
 				'codeFormat'    => $this->get_code_format(),
